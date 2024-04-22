@@ -1,6 +1,11 @@
 import React from "react";
+import { useFormik } from "formik";
 
-const LoginForm = () => {
+
+const LoginForm:React.FC= () => {
+
+  
+
   return (
     <body className="flex font-poppins items-center justify-center">
       <div className="h-screen w-screen flex justify-center items-center bg-zinc-200">
