@@ -1,33 +1,42 @@
 import React from "react";
 import { useFormik } from "formik";
+import {Link} from "react-router-dom"
 import axios from "axios";
+import { useAppDispatch } from "../../redux/store/store";
 import { LoginValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
+import { setUser } from "../../redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
+import showToast from "../../utils/toast";
 
-const onSubmit=({email,password})=>{
-
-  axios
-  .post(USER_API+"/auth/login",{email,password})
-  .then(({data})=>{
-    console.log(data);
-    
-  })
-  
-
-}
-
-
-const LoginForm:React.FC= () => {
-
-  const {values,isSubmitting,touched,handleBlur,handleChange,errors,handleSubmit}=useFormik({
-    initialValues:{
-      email:"",
-      password:""
-    },
-    validationSchema:LoginValidation,
-    onSubmit
-  })
-  
+const LoginForm: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
+    useFormik({
+      initialValues: {
+        email: "",
+        password: "",
+      },
+      validationSchema: LoginValidation,
+      onSubmit: ({ email, password }) => {
+        axios
+          .post(USER_API + "/auth/login", { email, password })
+          .then(({ data }) => {
+            const access_token = data.accessToken;
+            const { name, role, _id } = data.user;
+            console.log(data);
+            localStorage.setItem("access_token", access_token);
+            showToast(data.message,"success")
+            dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+            navigate("/user");
+          })
+          .catch(({ response }) => {
+            console.log(response);
+            showToast(response?.data?.message,"error")
+          });
+      },
+    });
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -77,17 +86,17 @@ const LoginForm:React.FC= () => {
                 className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
-                LOG IN
+                SIGN IN
               </button>
             </form>
             <div className="flex flex-col mt-4 items-center justify-center text-sm">
               <h3 className="text-gray-300">
                 Don't have an account?
-                <a className="group text-blue-400 transition-all duration-100 ease-in-out">
+                <Link to="/user/register" className="group text-blue-400 transition-all duration-100 ease-in-out">
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                     Sign Up
                   </span>
-                </a>
+                </Link>
               </h3>
             </div>
 

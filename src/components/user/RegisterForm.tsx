@@ -1,31 +1,43 @@
 import React from "react";
 import { useFormik } from "formik";
-import axios from "axios"
+import { Link } from "react-router-dom";
+import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
-
-const onSubmit = ({ name, email, password,phone }) => {
-    axios
-      .post(USER_API+"/auth/register",{name,email,password,phone})
-      .then(({data})=>{
-        console.log(data);   
-      })
-   
-};
+import showToast from "../../utils/toast";
 
 const RegisterForm = () => {
-  const { values,isSubmitting,touched, handleBlur, errors, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-        cpassword: "",
-      },
-      validationSchema: RegisterValidation,
-      onSubmit,
-    });
+  const {
+    values,
+    isSubmitting,
+    touched,
+    handleBlur,
+    errors,
+    handleChange,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      cpassword: "",
+    },
+    validationSchema: RegisterValidation,
+    onSubmit: ({ name, email, password, phone }) => {
+      axios
+        .post(USER_API + "/auth/register", { name, email, password, phone })
+        .then(({ data }) => {
+          console.log(data);
+          showToast(data.message,"success")
+        })
+        .then((response)=>{
+          
+          console.log(response);
+          
+        })
+    },
+  });
 
   console.log(errors);
 
@@ -119,7 +131,8 @@ const RegisterForm = () => {
                 <p className="text-red-600">{errors.cpassword}</p>
               )}
               <button
-                disabled={isSubmitting} className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                disabled={isSubmitting}
+                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN UP
@@ -128,11 +141,11 @@ const RegisterForm = () => {
             <div className="flex flex-col mt-4 items-center justify-center text-sm">
               <h3 className="text-gray-300">
                 already have an account?
-                <a className="group text-blue-400 transition-all duration-100 ease-in-out">
+                <Link to="/user/register" className="group text-blue-400 transition-all duration-100 ease-in-out">
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                     Sign In
                   </span>
-                </a>
+                </Link>
               </h3>
             </div>
           </div>
