@@ -13,3 +13,9 @@ export const RegisterValidation = yup.object().shape({
     .required("Confirm password is required")
     .oneOf([yup.ref("password"), null], "Passwords must match")
 });
+
+
+export const LoginValidation=yup.object().shape({
+  email:yup.string().required("email is required").email("please enter a vlaid email"),
+  password:yup.string().min(4,"Minimum 4 characters required").required("password is required")
+});

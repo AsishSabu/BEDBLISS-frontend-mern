@@ -1,9 +1,32 @@
 import React from "react";
 import { useFormik } from "formik";
+import axios from "axios";
+import { LoginValidation } from "../../utils/validation";
+import { USER_API } from "../../constants";
+
+const onSubmit=({email,password})=>{
+
+  axios
+  .post(USER_API+"/auth/login",{email,password})
+  .then(({data})=>{
+    console.log(data);
+    
+  })
+  
+
+}
 
 
 const LoginForm:React.FC= () => {
 
+  const {values,isSubmitting,touched,handleBlur,handleChange,errors,handleSubmit}=useFormik({
+    initialValues:{
+      email:"",
+      password:""
+    },
+    validationSchema:LoginValidation,
+    onSubmit
+  })
   
 
   return (
@@ -14,27 +37,37 @@ const LoginForm:React.FC= () => {
             <h1 className="pt-8 pb-6 font-bold text-blue-800 text-4xl text-center cursor-default">
               Sign In
             </h1>
-            <form action="#" method="post" className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="mb-2  text-gray-400 text-lg">Email</label>
                 <input
                   id="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   className="border p-2  text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="email"
                   placeholder="Email"
-                  required
                 />
               </div>
+              {errors.email && touched.email && (
+                <p className="text-red-600">{errors.email}</p>
+              )}
               <div>
                 <label className="mb-2 text-gray-400 text-lg">Password</label>
                 <input
                   id="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   className="border p-2  text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="Password"
-                  required
                 />
               </div>
+              {errors.password && touched.password && (
+                <p className="text-red-600">{errors.password}</p>
+              )}
               <a className="group text-blue-700 transition-all duration-100 ease-in-out">
                 <span className="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                   Forget your password?
