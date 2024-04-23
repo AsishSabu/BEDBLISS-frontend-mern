@@ -1,13 +1,20 @@
 import React from "react";
 import { useFormik } from "formik";
+import axios from "axios"
 import { RegisterValidation } from "../../utils/validation";
+import { USER_API } from "../../constants";
 
-const onSubmit = ({ name, email, password },actions) => {
-
+const onSubmit = ({ name, email, password,phone }) => {
+    axios
+      .post(USER_API+"/auth/register",{name,email,password,phone})
+      .then(({data})=>{
+        console.log(data);   
+      })
+   
 };
 
 const RegisterForm = () => {
-  const { values,isSubmitting touched, handleBlur, errors, handleChange, handleSubmit } =
+  const { values,isSubmitting,touched, handleBlur, errors, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
         name: "",
@@ -71,7 +78,7 @@ const RegisterForm = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
-                  type="number"
+                  type="text"
                   placeholder="enter your phone number"
                 />
               </div>
