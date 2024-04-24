@@ -1,12 +1,14 @@
 import React from "react";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
+import { setItemToLocalStorage } from "../../utils/localStorage";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const {
     values,
     isSubmitting,
@@ -28,14 +30,18 @@ const RegisterForm = () => {
       axios
         .post(USER_API + "/auth/register", { name, email, password, phone })
         .then(({ data }) => {
+          const { message, newUser } = data;
           console.log(data);
-          showToast(data.message,"success")
+          showToast(data.message, "success");
+          setTimeout(() => {
+            setItemToLocalStorage("userId", newUser._id);
+            navigate("/user/verifyOtp");
+          }, 1000);
         })
-        .then((response)=>{
-          
-          console.log(response);
-          
-        })
+        .catch(({ response }) => {
+          const { message } = response.data;
+          showToast(message, "error");
+        });
     },
   });
 
@@ -141,7 +147,10 @@ const RegisterForm = () => {
             <div className="flex flex-col mt-4 items-center justify-center text-sm">
               <h3 className="text-gray-300">
                 already have an account?
-                <Link to="/user/register" className="group text-blue-400 transition-all duration-100 ease-in-out">
+                <Link
+                  to="/user/register"
+                  className="group text-blue-400 transition-all duration-100 ease-in-out"
+                >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                     Sign In
                   </span>
