@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
-import { USER_API } from "../../constants";
+import { OWNER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 
@@ -27,21 +27,20 @@ const RegisterForm = () => {
     },
     validationSchema: RegisterValidation,
     onSubmit: ({ name, email, password, phone }) => {
+      
       axios
-        .post(USER_API + "/auth/register", { name, email, password, phone })
+        .post(OWNER_API + "/auth/register", { name, email, password, phone })
         .then(({ data }) => {
           const { message, newUser } = data;
           console.log(data);
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
-            navigate("/user/verifyOtp");
+            navigate("/owner/verifyOtp")
           }, 1000);
         })
         .catch(({ response }) => {
           const { message } = response.data;
-          console.log(message,"message");
-          
           showToast(message, "error");
         });
     },
@@ -150,7 +149,7 @@ const RegisterForm = () => {
               <h3 className="text-gray-300">
                 already have an account?
                 <Link
-                  to="/user/register"
+                  to="/owner/register"
                   className="group text-blue-400 transition-all duration-100 ease-in-out"
                 >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Formik, useFormik } from "formik";
-import { USER_API } from "../../constants";
+import { OWNER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -21,18 +21,18 @@ const VerifyOtp:React.FC= () => {
         console.log(otp);       
         if(userid){
             axios
-            .post(USER_API+"/auth/verifyOtp",{otp,userid})
+            .post(OWNER_API+"/auth/verifyOtp",{otp,userid})
             .then(({data})=>{
                 showToast(data.message,"success");
                 removeItemFromLocalStorage("userId");
-                navigate("/user/login");             
+                navigate("/owner/login")            
             })
             .catch(({response})=>{
                 showToast(response.data.message,"error")
             })
         }else{
             showToast("something went wrong", "error");
-            return navigate("/user/login", { replace: true });
+            return navigate("/owner/login", { replace: true });
         }    
     }    
   });

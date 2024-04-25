@@ -4,7 +4,8 @@ export default {
   theme: {
     extend: {
       colors:{
-        varBlue:"#003B95"
+        varBlue:"#003B95",
+        varGreen:"#22c55e"
       }
     },
     fontFamily:{

@@ -6,11 +6,11 @@ import Banner from "../components/user/Banner/Banner"
 
 const Home= () => {
   return (
-    <>
+    <div className="overflow-hidden">
     <Navbar />
     <Banner />
     <Footer />
-    </>
+    </div>
   )
 }
 
