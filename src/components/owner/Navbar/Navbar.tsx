@@ -12,10 +12,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const handleLogOut = () => {
     dispatch(clearUser());
-    navigate("/user/login");
+    navigate("/owner/login");
   };
   return (
-    <nav className="sticky top-0  z-10 block w-full max-w-full ps-8 py-2 text-white bg-varBlue  rounded-none shadow-md h-max  bg-opacity-100 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
+    <nav className="sticky top-0 z-10 block w-full max-w-full ps-8 py-2 text-white bg-varBlue  rounded-none shadow-md h-max  bg-opacity-100 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
       <div className="flex items-center justify-between text-blue-gray-900">
         <a
           href="#"
@@ -65,14 +65,14 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
-                  to="/user/login"
+                  to="/owner/login"
                   className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
                   type="button"
                 >
                   <span>SIGN IN</span>
                 </Link>
                 <Link
-                  to="/user/register"
+                  to="/owner/register"
                   className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
                   type="button"
                 >
