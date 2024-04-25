@@ -3,7 +3,6 @@ import { FC } from "react";
 import Home from "../../pages/Home";
 import Login from "../../pages/user/Login";
 import Register from "../../pages/user/Register";
-import React from "react";
 import { PublicRoutes } from "../publicRoutes";
 import { ProtectedUserRoute } from "../protectedRoutes";
 import VerifyOtp from "../../components/user/VerifyOtp";

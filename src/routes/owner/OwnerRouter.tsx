@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom";
 import { FC } from "react";
-import React from "react";
 import { PublicRoutes } from "../publicRoutes";
 import { ProtectedUserRoute } from "../protectedRoutes";
 import Home from "../../pages/owner/Home";
