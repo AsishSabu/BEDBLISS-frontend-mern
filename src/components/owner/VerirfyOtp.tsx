@@ -4,55 +4,61 @@ import { OWNER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getItemFromLocalStorage, removeItemFromLocalStorage } from "../../utils/localStorage";
+import {
+  getItemFromLocalStorage,
+  removeItemFromLocalStorage,
+} from "../../utils/localStorage";
 
-
-const VerifyOtp:React.FC= () => {
-    const navigate=useNavigate()
+const VerifyOtp: React.FC = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      otp:Array.from({length:6}).fill("")
+      otp: Array.from({ length: 6 }).fill(""),
     },
-    
-    onSubmit:(values)=>{
-        const userid=getItemFromLocalStorage("userId");
-        console.log("...........",userid);
-        const otp=values.otp.join("")
-        console.log(otp);       
-        if(userid){
-            axios
-            .post(OWNER_API+"/auth/verifyOtp",{otp,userid})
-            .then(({data})=>{
-                showToast(data.message,"success");
-                removeItemFromLocalStorage("userId");
-                navigate("/owner/login")            
-            })
-            .catch(({response})=>{
-                showToast(response.data.message,"error")
-            })
-        }else{
-            showToast("something went wrong", "error");
-            return navigate("/owner/login", { replace: true });
-        }    
-    }    
+
+    onSubmit: (values) => {
+      const userid = getItemFromLocalStorage("userId");
+      console.log("...........", userid);
+      const otp = values.otp.join("");
+      console.log(otp);
+      if (userid) {
+        axios
+          .post(OWNER_API + "/auth/verifyOtp", { otp, userid })
+          .then(({ data }) => {
+            showToast(data.message, "success");
+            removeItemFromLocalStorage("userId");
+            navigate("/owner/login");
+          })
+          .catch(({ response }) => {
+            showToast(response.data.message, "error");
+          });
+      } else {
+        showToast("something went wrong", "error");
+        return navigate("/owner/login", { replace: true });
+      }
+    },
   });
- const inputRef = useRef<HTMLInputElement[]>([]);
- 
+  const inputRef = useRef<HTMLInputElement[]>([]);
+
   useEffect(() => {
     const currentInput = inputRef.current[0];
     if (currentInput) {
-        currentInput.focus();
-        currentInput.addEventListener("paste", pasteText);
-        return () => currentInput.removeEventListener("paste", pasteText);
-    }  }, []);
+      currentInput.focus();
+      currentInput.addEventListener("paste", pasteText);
+      return () => currentInput.removeEventListener("paste", pasteText);
+    }
+  }, []);
 
   const pasteText = (event: ClipboardEvent) => {
     const pastedText = event.clipboardData?.getData("text");
-    const newOtp = pastedText?.split("").slice(0, 6).map((char) => char || "");
-    formik.setValues((prev:any)=>({
-        ...prev,
-        otp:newOtp
-    }))
+    const newOtp = pastedText
+      ?.split("")
+      .slice(0, 6)
+      .map((char) => char || "");
+    formik.setValues((prev: any) => ({
+      ...prev,
+      otp: newOtp,
+    }));
     inputRef.current[5]?.focus();
   };
   const handleChange = (
@@ -60,12 +66,12 @@ const VerifyOtp:React.FC= () => {
     index: number
   ) => {
     const { value } = event.target;
-   
-    const currentOtp=[...formik.values.otp]
-    currentOtp[index]=value.slice(-1)
-    formik.setValues((prev)=>({
-        ...prev,
-        otp:currentOtp
+
+    const currentOtp = [...formik.values.otp];
+    currentOtp[index] = value.slice(-1);
+    formik.setValues((prev) => ({
+      ...prev,
+      otp: currentOtp,
     }));
     if (value && index < 5) {
       inputRef.current[index + 1]?.focus();
@@ -116,11 +122,11 @@ const VerifyOtp:React.FC= () => {
               </header>
               <form id="otp-form">
                 <Formik>
-                <div className="flex items-center justify-center gap-3">
-                  {renderInput()}
-                </div>
+                  <div className="flex items-center justify-center gap-3">
+                    {renderInput()}
+                  </div>
                 </Formik>
-                
+
                 <div className="max-w-[260px] mx-auto mt-4">
                   <button
                     onClick={formik.handleSubmit}

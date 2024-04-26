@@ -2,7 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { auth, googleProvider, facebookProvider } from "../../firebase/config";
-import {signInWithPopup} from "firebase/auth"
+import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import { useAppDispatch } from "../../redux/store/store";
 import { LoginValidation } from "../../utils/validation";
@@ -43,40 +43,45 @@ const LoginForm: React.FC = () => {
 
   const handleGoogleSignIn = () => {
     signInWithPopup(auth, googleProvider).then((data) => {
-      const userData={name:data.user.displayName,
-        email:data.user.email,
-        picture:data.user.photoURL,
-        email_verified:data.user.emailVerified
-      }
-      axios
-        .post(USER_API+"/auth/googleSignIn",userData)
-        .then(({data})=>{
-          const {message,accessToken}=data;
-          const { name, role, _id } = data.user;
-          setItemToLocalStorage("access_token",accessToken)
-          showToast(message,"success")
-          dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-          
-          
-        })
+      const userData = {
+        name: data.user.displayName,
+        email: data.user.email,
+        picture: data.user.photoURL,
+        email_verified: data.user.emailVerified,
+      };
+      axios.post(USER_API + "/auth/googleSignIn", userData).then(({ data }) => {
+        const { message, accessToken } = data;
+        const { name, role, _id } = data.user;
+        setItemToLocalStorage("access_token", accessToken);
+        showToast(message, "success");
+        dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+      })
+      .catch((response)=>{
+        console.log(response);
+        showToast(response?.data?.message, "error");
+      })
     });
   };
   const handleFacebookSignIn = () => {
     signInWithPopup(auth, facebookProvider).then((data) => {
-      const userData={name:data.user.displayName,
-        email:data.user.email,
-        picture:data.user.photoURL,
-        email_verified:data.user.emailVerified
-      }
+      const userData = {
+        name: data.user.displayName,
+        email: data.user.email,
+        picture: data.user.photoURL,
+        email_verified: data.user.emailVerified,
+      };
       axios
-        .post(USER_API+"/auth/facebookSignIn",userData)
-        .then(({data})=>{
-          const {message,accessToken}=data;
+        .post(USER_API + "/auth/facebookSignIn", userData)
+        .then(({ data }) => {
+          const { message, accessToken } = data;
           const { name, role, _id } = data.user;
-          setItemToLocalStorage("access_token",accessToken)
-          showToast(message,"success")
+          setItemToLocalStorage("access_token", accessToken);
+          showToast(message, "success");
           dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-
+        })
+        .catch((response)=>{
+          console.log(response);
+          showToast(response?.data?.message, "error");
         })
     });
   };
