@@ -40,8 +40,8 @@ const RegisterForm = () => {
         })
         .catch(({ response }) => {
           const { message } = response.data;
-          console.log(message,"message");
-          
+          console.log(message, "message");
+
           showToast(message, "error");
         });
     },

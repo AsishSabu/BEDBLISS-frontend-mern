@@ -27,7 +27,6 @@ const RegisterForm = () => {
     },
     validationSchema: RegisterValidation,
     onSubmit: ({ name, email, password, phone }) => {
-      
       axios
         .post(OWNER_API + "/auth/register", { name, email, password, phone })
         .then(({ data }) => {
@@ -36,7 +35,7 @@ const RegisterForm = () => {
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
-            navigate("/owner/verifyOtp")
+            navigate("/owner/verifyOtp");
           }, 1000);
         })
         .catch(({ response }) => {
