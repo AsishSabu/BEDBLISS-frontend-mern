@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div>
+
       <footer className="relative bg-varBlue pt-8 pb-4">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap text-left lg:text-left">
@@ -148,7 +148,7 @@ const Footer = () => {
           </div>
         </div>
       </footer>
-    </div>
+
   );
 };
 

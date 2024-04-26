@@ -1,6 +1,8 @@
 import React from "react";
 import { useFormik } from "formik";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
+import { auth, googleProvider, facebookProvider } from "../../firebase/config";
+import {signInWithPopup} from "firebase/auth"
 import axios from "axios";
 import { useAppDispatch } from "../../redux/store/store";
 import { LoginValidation } from "../../utils/validation";
@@ -8,6 +10,7 @@ import { USER_API } from "../../constants";
 import { setUser } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import showToast from "../../utils/toast";
+import { setItemToLocalStorage } from "../../utils/localStorage";
 
 const LoginForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -27,16 +30,56 @@ const LoginForm: React.FC = () => {
             const { name, role, _id } = data.user;
             console.log(data);
             localStorage.setItem("access_token", access_token);
-            showToast(data.message,"success")
+            showToast(data.message, "success");
             dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
             navigate("/user");
           })
           .catch(({ response }) => {
             console.log(response);
-            showToast(response?.data?.message,"error")
+            showToast(response?.data?.message, "error");
           });
       },
     });
+
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, googleProvider).then((data) => {
+      const userData={name:data.user.displayName,
+        email:data.user.email,
+        picture:data.user.photoURL,
+        email_verified:data.user.emailVerified
+      }
+      axios
+        .post(USER_API+"/auth/googleSignIn",userData)
+        .then(({data})=>{
+          const {message,accessToken}=data;
+          const { name, role, _id } = data.user;
+          setItemToLocalStorage("access_token",accessToken)
+          showToast(message,"success")
+          dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+          
+          
+        })
+    });
+  };
+  const handleFacebookSignIn = () => {
+    signInWithPopup(auth, facebookProvider).then((data) => {
+      const userData={name:data.user.displayName,
+        email:data.user.email,
+        picture:data.user.photoURL,
+        email_verified:data.user.emailVerified
+      }
+      axios
+        .post(USER_API+"/auth/facebookSignIn",userData)
+        .then(({data})=>{
+          const {message,accessToken}=data;
+          const { name, role, _id } = data.user;
+          setItemToLocalStorage("access_token",accessToken)
+          showToast(message,"success")
+          dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+
+        })
+    });
+  };
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -92,7 +135,10 @@ const LoginForm: React.FC = () => {
             <div className="flex flex-col mt-4 items-center justify-center text-sm">
               <h3 className="text-gray-300">
                 Don't have an account?
-                <Link to="/user/register" className="group text-blue-400 transition-all duration-100 ease-in-out">
+                <Link
+                  to="/user/register"
+                  className="group text-blue-400 transition-all duration-100 ease-in-out"
+                >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                     Sign Up
                   </span>
@@ -104,7 +150,10 @@ const LoginForm: React.FC = () => {
               id="third-party-auth"
               className="flex items-center justify-center mt-5 flex-wrap"
             >
-              <button className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
+              <button
+                onClick={handleGoogleSignIn}
+                className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
+              >
                 <img
                   className="max-w-[25px]"
                   src="https://ucarecdn.com/8f25a2ba-bdcf-4ff1-b596-088f330416ef/"
@@ -112,7 +161,10 @@ const LoginForm: React.FC = () => {
                 />
               </button>
 
-              <button className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
+              <button
+                onClick={handleFacebookSignIn}
+                className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
+              >
                 <img
                   className="max-w-[25px]"
                   src="https://ucarecdn.com/6f56c0f1-c9c0-4d72-b44d-51a79ff38ea9/"
