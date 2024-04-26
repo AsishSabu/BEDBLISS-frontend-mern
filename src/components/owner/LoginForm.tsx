@@ -1,5 +1,7 @@
 import React from "react";
 import { useFormik } from "formik";
+import { auth,googleProvider,facebookProvider} from "../../firebase/config";
+import {signInWithPopup} from "firebase/auth"
 import {Link} from "react-router-dom"
 import axios from "axios";
 import { useAppDispatch } from "../../redux/store/store";
@@ -37,6 +39,23 @@ const LoginForm: React.FC = () => {
           });
       },
     });
+
+
+    const handleGoogleSignIn=()=>{
+      signInWithPopup(auth,googleProvider)
+      .then((data)=>{
+        console.log(data);
+        
+      })
+    }
+    const handleFacebookSignIn=()=>{
+      signInWithPopup(auth,facebookProvider)
+      .then((data)=>{
+        console.log(data);
+        
+      })
+    }
+
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -104,7 +123,7 @@ const LoginForm: React.FC = () => {
               id="third-party-auth"
               className="flex items-center justify-center mt-5 flex-wrap"
             >
-              <button className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
+              <button onClick={handleGoogleSignIn} className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
                 <img
                   className="max-w-[25px]"
                   src="https://ucarecdn.com/8f25a2ba-bdcf-4ff1-b596-088f330416ef/"
@@ -112,7 +131,7 @@ const LoginForm: React.FC = () => {
                 />
               </button>
 
-              <button className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
+              <button onClick={handleFacebookSignIn} className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1">
                 <img
                   className="max-w-[25px]"
                   src="https://ucarecdn.com/6f56c0f1-c9c0-4d72-b44d-51a79ff38ea9/"

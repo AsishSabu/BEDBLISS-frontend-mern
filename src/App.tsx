@@ -1,4 +1,5 @@
 import { Toaster } from "react-hot-toast";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import MainRouter from "./routes";
@@ -11,9 +12,11 @@ function App() {
     <>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
-          <BrowserRouter>
-            <MainRouter />
-          </BrowserRouter>
+          <GoogleOAuthProvider clientId="795475586008-7gksni89s7ohmd400mbb2a57cn00knfh.apps.googleusercontent.com">
+            <BrowserRouter>
+              <MainRouter />
+            </BrowserRouter>
+          </GoogleOAuthProvider>
           <Toaster />
         </PersistGate>
       </Provider>
