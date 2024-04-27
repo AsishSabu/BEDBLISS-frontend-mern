@@ -125,11 +125,11 @@ const LoginForm: React.FC = () => {
               {errors.password && touched.password && (
                 <p className="text-red-600">{errors.password}</p>
               )}
-              <a className="group text-blue-700 transition-all duration-100 ease-in-out">
+              <Link to="/user/forgotPassword" className="group text-blue-700 transition-all duration-100 ease-in-out">
                 <span className="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                   Forget your password?
                 </span>
-              </a>
+              </Link>
               <button
                 className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
