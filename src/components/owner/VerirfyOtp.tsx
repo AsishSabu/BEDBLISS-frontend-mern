@@ -10,6 +10,7 @@ import {
 } from "../../utils/localStorage";
 
 const VerifyOtp: React.FC = () => {
+  const [seconds, setSeconds] = useState(10);
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -48,6 +49,29 @@ const VerifyOtp: React.FC = () => {
       return () => currentInput.removeEventListener("paste", pasteText);
     }
   }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds((prevSeconds) => prevSeconds - 1);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [seconds]);
+  const resendOtp=()=>{
+    setSeconds(10);
+    const ownerId=getItemFromLocalStorage("userId");
+    if(ownerId){
+      console.log(ownerId);
+      
+      axios.post(OWNER_API+"/auth/resendOtp",{ownerId})
+      .then(({data})=>{
+        showToast(data.message,"success")
+      })
+      .catch(({response})=>{
+        showToast(response.data.message,"error");
+      });
+    }
+  }
 
   const pasteText = (event: ClipboardEvent) => {
     const pastedText = event.clipboardData?.getData("text");
@@ -139,13 +163,17 @@ const VerifyOtp: React.FC = () => {
               </form>
               <div className="text-sm text-slate-500 mt-4">
                 Didn't receive code?{" "}
-                <a
-                  className="font-medium text-indigo-500 hover:text-indigo-600"
-                  href="#0"
-                >
-                  Resend
-                </a>
+                <button className="text-blue-500 underline focus:outline-none hover:text-blue-700"
+              onClick={resendOtp}
+              disabled={seconds !== 0} 
+              >
+                Resend OTP
+               
+              </button>
               </div>
+              <span className="font-medium">
+                {seconds !== 0 && ` (${seconds}s)`}
+              </span>
             </div>
           </div>
         </div>
