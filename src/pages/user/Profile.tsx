@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 const Profile = () => {
   return (
-    <div>
+    <div className="flex flex-col ">
       <Navbar />
       <div className="flex flex-row gap-2">
         <ProfileSidebar />
