@@ -44,7 +44,7 @@ const Navbar = () => {
               </li>
               {user.isAuthenticated &&user.role==="user"? (
                 <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                  <Link to="/user/blocks" className="flex items-center">
+                  <Link to="/user/profile" className="flex items-center">
                     Profile
                   </Link>
                 </li>

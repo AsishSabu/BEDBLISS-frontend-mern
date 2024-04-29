@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { FC } from "react";
 import { PublicRoutes } from "../publicRoutes";
-import { ProtectedUserRoute } from "../protectedRoutes";
+import { ProtectedOwnerRoute} from "../protectedRoutes";
 import Home from "../../pages/owner/Home";
 import Login from "../../pages/owner/Login";
 import Register from "../../pages/owner/Register";
@@ -20,7 +20,7 @@ const OwnerRouter: FC = () => {
       </Route>
       {/*user private routes*/}
 
-      <Route path="" element={<ProtectedUserRoute />}></Route>
+      <Route path="" element={<ProtectedOwnerRoute />}></Route>
     </Routes>
   );
 };
