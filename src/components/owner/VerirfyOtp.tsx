@@ -10,7 +10,7 @@ import {
 } from "../../utils/localStorage";
 
 const VerifyOtp: React.FC = () => {
-  const [seconds, setSeconds] = useState(10);
+  const [seconds, setSeconds] = useState(60);
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -58,7 +58,7 @@ const VerifyOtp: React.FC = () => {
     return () => clearInterval(timer);
   }, [seconds]);
   const resendOtp=()=>{
-    setSeconds(10);
+    setSeconds(60);
     const ownerId=getItemFromLocalStorage("userId");
     if(ownerId){
       console.log(ownerId);
