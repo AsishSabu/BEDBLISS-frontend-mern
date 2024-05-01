@@ -38,16 +38,12 @@ const RegisterForm = () => {
             navigate("/user/verifyOtp");
           }, 1000);
         })
-        .catch(({ response }) => {
+        .catch(({ response }) => {          
           const { message } = response.data;
-          console.log(message, "message");
-
-          showToast(message, "error");
+          showToast(message,"error");
         });
     },
   });
-
-  console.log(errors);
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -150,7 +146,7 @@ const RegisterForm = () => {
               <h3 className="text-gray-300">
                 already have an account?
                 <Link
-                  to="/user/register"
+                  to="/user/login"
                   className="group text-blue-400 transition-all duration-100 ease-in-out"
                 >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
