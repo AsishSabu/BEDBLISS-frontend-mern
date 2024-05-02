@@ -29,6 +29,7 @@ const UserProfile = () => {
             className="hidden"
           />
         </label>
+        
       </div>
 
       <div className="bg-white w-4/4 p-6 mb-3 rounded-lg shadow-lg">
@@ -45,6 +46,7 @@ const UserProfile = () => {
             onChange={handleInputChange}
           />
         </div>
+        {error && <p className="text-red-500">{error}</p>}
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 font-semibold">
             Email:
@@ -58,7 +60,7 @@ const UserProfile = () => {
             onChange={handleInputChange}
           />
         </div>
-
+        {error && <p className="text-red-500">{error}</p>}
         <div className="mb-4">
           <label
             htmlFor="phoneNumber"
@@ -67,7 +69,7 @@ const UserProfile = () => {
             Phone Number:
           </label>
           <input
-            type="tel"
+            type="text"
             id="phoneNumber"
             className="border text-gray-700 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-500"
             value={formData?.phone ?? ""}
@@ -75,7 +77,7 @@ const UserProfile = () => {
             onChange={handleInputChange}
           />
         </div>
-
+        {error && <p className="text-red-500">{error}</p>}
         {/* Update Profile Button */}
         <button  onClick={handleSubmit}  className="bg-blue-900 text-white py-2 px-4 mt-3 rounded-md hover:bg-blue-800 focus:outline-none focus:ring focus:border-blue-500">
           Update Profile

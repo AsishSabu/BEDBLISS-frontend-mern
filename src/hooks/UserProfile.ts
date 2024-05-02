@@ -44,7 +44,9 @@ const useProfile = () => {
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+   const { name, value } = e.target;
+   console.log(name,"...............",value);
+   
     let errorMessage = "";
     if (name === "name") {
       if (!value.trim()) {
@@ -59,13 +61,17 @@ const useProfile = () => {
       } else if (!emailRegex.test(value)) {
         errorMessage = "Enter a valid email";
       }
-    } else if (name === "phoneNumber") {
+    } else if (name === "phone") {
       if (!value.trim()) {
         errorMessage = "Phone number is required";
       } else if (!phoneRegex.test(value)) {
         errorMessage = "Phone number must have 10 numbers";
       }
     }
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
     setError(errorMessage);
   };
 
