@@ -1,18 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useFormik } from "formik";
-import { Link } from "react-router-dom";
-import { auth, googleProvider, facebookProvider } from "../../firebase/config";
-import { signInWithPopup } from "firebase/auth";
 import axios from "axios";
-import { useAppDispatch } from "../../redux/store/store";
-import { LoginValidation } from "../../utils/validation";
+import { signInWithPopup } from "firebase/auth";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { USER_API } from "../../constants";
+import { auth, facebookProvider, googleProvider } from "../../firebase/config";
 import { setUser } from "../../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
-import showToast from "../../utils/toast";
+import { useAppDispatch } from "../../redux/store/store";
 import { setItemToLocalStorage } from "../../utils/localStorage";
+import showToast from "../../utils/toast";
+import { LoginValidation } from "../../utils/validation";
+import Modal from "./Modal";
 
-const LoginForm: React.FC = () => {
+type Provider = "google" | "facebook";
+type Role="user"|"owner"
+const Login: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [provider, setProvider] = useState<Provider | null>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
@@ -28,11 +32,17 @@ const LoginForm: React.FC = () => {
           .then(({ data }) => {
             const access_token = data.accessToken;
             const { name, role, _id } = data.user;
-            console.log(data);
-            localStorage.setItem("access_token", access_token);
-            showToast(data.message, "success");
-            dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-            navigate("/user");
+            if (role === "user") {
+              localStorage.setItem("access_token", access_token);
+              showToast(data.message, "success");
+              dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+              navigate("/user");
+            } else {
+              localStorage.setItem("access_token", access_token);
+              showToast(data.message, "success");
+              dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+              navigate("/owner");
+            }
           })
           .catch(({ response }) => {
             console.log(response);
@@ -41,50 +51,58 @@ const LoginForm: React.FC = () => {
       },
     });
 
-  const handleGoogleSignIn = () => {
-    signInWithPopup(auth, googleProvider).then((data) => {
-      const userData = {
-        name: data.user.displayName,
-        email: data.user.email,
-        picture: data.user.photoURL,
-        email_verified: data.user.emailVerified,
-      };
-      axios.post(USER_API + "/auth/googleSignIn", userData).then(({ data }) => {
-        const { message, accessToken } = data;
-        const { name, role, _id } = data.user;
-        setItemToLocalStorage("access_token", accessToken);
-        showToast(message, "success");
-        dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+  const handleSignIn = (roles:Role) => {
+    const selectedProvider=provider
+    console.log(selectedProvider,"selectedProvider");
+    console.log(roles,"role");
+    
+    
+    signInWithPopup(
+      auth,
+      selectedProvider === "google" ? googleProvider : facebookProvider
+    )
+      .then((data) => {
+        const userData = {
+          name: data.user.displayName,
+          email: data.user.email,
+          picture: data.user.photoURL,
+          email_verified: data.user.emailVerified,
+          role: roles,
+        };
+        axios
+          .post(USER_API + `/auth/googleAndFacebookSignIn`, userData)
+          .then(({ data }) => {
+            const { message, accessToken } = data;
+            const { name, role, _id } = data.user;
+            setItemToLocalStorage("access_token", accessToken);
+            showToast(message, "success");
+            dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+            navigate(role === "user" ? "/user" : "/owner");
+          })
+          .catch(({ response }) => {
+            console.log(response);
+            showToast(response?.data?.message, "error");
+          });
       })
-      .catch((response)=>{
+      .catch(({ response }) => {
         console.log(response);
         showToast(response?.data?.message, "error");
-      })
-    });
+      });
   };
-  const handleFacebookSignIn = () => {
-    signInWithPopup(auth, facebookProvider).then((data) => {
-      const userData = {
-        name: data.user.displayName,
-        email: data.user.email,
-        picture: data.user.photoURL,
-        email_verified: data.user.emailVerified,
-      };
-      axios
-        .post(USER_API + "/auth/facebookSignIn", userData)
-        .then(({ data }) => {
-          const { message, accessToken } = data;
-          const { name, role, _id } = data.user;
-          setItemToLocalStorage("access_token", accessToken);
-          showToast(message, "success");
-          dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-        })
-        .catch((response)=>{
-          console.log(response);
-          showToast(response?.data?.message, "error");
-        })
-    });
+
+  const handleProvider = (selectedProvider: Provider) => {    
+    setProvider(selectedProvider);
+    setOpen(true);
+    
   };
+  const handleRole=(selectedRole:Role)=>{
+    console.log(selectedRole,"esfsdfsdsdsdfds");
+    setOpen(false)
+   handleSignIn(selectedRole)
+    
+  }
+  const handleClose=()=>setOpen(false)
+
 
 
   return (
@@ -126,7 +144,12 @@ const LoginForm: React.FC = () => {
               {errors.password && touched.password && (
                 <p className="text-red-600">{errors.password}</p>
               )}
-              <Link to="/user/forgotPassword" className="group text-blue-700 transition-all duration-100 ease-in-out">
+              {open && <Modal onSelectRole={handleRole} onClose={handleClose} />}
+             
+              <Link
+                to="/user/forgotPassword"
+                className="group text-blue-700 transition-all duration-100 ease-in-out"
+              >
                 <span className="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
                   Forget your password?
                 </span>
@@ -157,7 +180,7 @@ const LoginForm: React.FC = () => {
               className="flex items-center justify-center mt-5 flex-wrap"
             >
               <button
-                onClick={handleGoogleSignIn}
+                onClick={() => handleProvider("google")}
                 className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
               >
                 <img
@@ -168,7 +191,7 @@ const LoginForm: React.FC = () => {
               </button>
 
               <button
-                onClick={handleFacebookSignIn}
+                onClick={() => handleProvider("facebook")}
                 className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
               >
                 <img
@@ -202,4 +225,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default Login;

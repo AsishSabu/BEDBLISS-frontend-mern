@@ -4,21 +4,25 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { USER_API, emailRegex, nameRegex, phoneRegex } from "../constants";
 import showToast from "../utils/toast";
 import axiosJWT from "../utils/axiosService";
+import uploadImagesToCloudinary from "../api/imageUpload";
 axios.defaults.withCredentials = true;
 
 const useProfile = () => {
   const [profile, setProfile] = useState<UserInterface | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [formData, setFormData] = useState<{
     name: string;
-    email: string;
     phone: string;
+    email:string
+    imageFile:File[]
   }>({
     name: "",
-    email: "",
     phone: "",
+    email:"",
+    imageFile:[]
   });
-
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -41,45 +45,64 @@ const useProfile = () => {
       .catch(() => showToast("Oops!something went wrong","error"));
   }, []);
 
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    let errorMessage = "";
-    if (name === "name") {
-      if (!value.trim()) {
-        errorMessage = "Name is required";
-      } else if (!nameRegex.test(value)) {
-        errorMessage =
-          "First letter must be capital and no leading or trailing space";
-      }
-    } else if (name === "email") {
-      if (!value.trim()) {
-        errorMessage = "Email is required";
-      } else if (!emailRegex.test(value)) {
-        errorMessage = "Enter a valid email";
-      }
-    } else if (name === "phoneNumber") {
-      if (!value.trim()) {
-        errorMessage = "Phone number is required";
-      } else if (!phoneRegex.test(value)) {
-        errorMessage = "Phone number must have 10 numbers";
-      }
+console.log(name,"-----------",value);
+
+    if (name === "imageFile") {
+        const fileInput = e.target as HTMLInputElement;
+        const file = fileInput.files && fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            setFormData((prev) => ({
+                ...prev,
+                imageFile: [file],
+            }));
+        }
+    } else {
+        let errorMessage = "";
+
+        if (name === "name") {
+            if (!value.trim()) {
+                errorMessage = "Name is required";
+            } else if (!nameRegex.test(value)) {
+                errorMessage = "First letter must be capital and no leading or trailing space";
+            }
+            setNameError(errorMessage);
+        } else if (name === "phone") {
+            if (!value.trim()) {
+                errorMessage = "Phone number is required";
+            } else if (!phoneRegex.test(value)) {
+                errorMessage = "Phone number must have 10 numbers";
+            }
+            setPhoneError(errorMessage);
+        }
+
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: value,
+        }));
     }
-    setError(errorMessage);
-  };
+};
 
   const handleSubmit = async () => {
-    if (!error) {
+    if (!nameError&&!phoneError) {
       setIsSubmitting(true);
-
+      const url=(await uploadImagesToCloudinary(formData.imageFile)).toString()
+      console.log(url,"url");
+      
       axiosJWT
         .patch(
           USER_API + "/profile/edit",
           {
             name: formData.name,
-            email: formData.email,
             phoneNumber: formData.phone,
+            profilePic: url || profile?.profilePic,
           },
           {
             headers: {
@@ -103,10 +126,12 @@ const useProfile = () => {
   return {
     profile,
     formData,
-    error,
+    nameError,
+    phoneError,
+    imagePreview,
     isSubmitting,
     handleInputChange,
-    handleSubmit,
+    handleSubmit
   };
 };
 

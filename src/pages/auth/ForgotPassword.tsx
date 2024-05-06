@@ -1,10 +1,10 @@
-import React from "react";
-import { useFormik } from "formik";
-import { Link } from "react-router-dom";
-import showToast from "../../utils/toast";
 import axios from "axios";
-import { emailValidation } from "../../utils/validation";
+import { useFormik } from "formik";
+import React from "react";
+import { Link } from "react-router-dom";
 import { USER_API } from "../../constants";
+import showToast from "../../utils/toast";
+import { emailValidation } from "../../utils/validation";
 
 const ForgotPassword = () => {
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
@@ -18,14 +18,14 @@ const ForgotPassword = () => {
 
         axios
           .post(USER_API + "/auth/forgot-password", { email })
-          .then(({data}) => {
-            showToast(data.message,"success")          
+          .then(({ data }) => {
+            showToast(data.message, "success");
           })
-          .catch((response)=>{
+          .catch((response) => {
             console.log(response);
-            
-            showToast(response.message,"error")
-          })
+
+            showToast(response.message, "error");
+          });
       },
     });
   console.log(values);

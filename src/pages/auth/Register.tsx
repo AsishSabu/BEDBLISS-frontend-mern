@@ -1,13 +1,13 @@
-import React from "react";
-import { useFormik } from "formik";
-import { Link, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { RegisterValidation } from "../../utils/validation";
-import { OWNER_API } from "../../constants";
-import showToast from "../../utils/toast";
+import { useFormik } from "formik";
+import React from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { USER_API } from "../../constants";
 import { setItemToLocalStorage } from "../../utils/localStorage";
+import showToast from "../../utils/toast";
+import { RegisterValidation } from "../../utils/validation";
 
-const RegisterForm = () => {
+const Register = () => {
   const navigate = useNavigate();
   const {
     values,
@@ -24,18 +24,27 @@ const RegisterForm = () => {
       phone: "",
       password: "",
       cpassword: "",
+      role: "",
     },
     validationSchema: RegisterValidation,
-    onSubmit: ({ name, email, password, phone }) => {
+    onSubmit: ({ name, email, password, phone, role }) => {
+      console.log(role);
+
       axios
-        .post(OWNER_API + "/auth/register", { name, email, password, phone })
+        .post(USER_API + "/auth/register", {
+          name,
+          email,
+          password,
+          phone,
+          role,
+        })
         .then(({ data }) => {
           const { message, newUser } = data;
           console.log(data);
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
-            navigate("/owner/verifyOtp");
+            navigate("/user/verifyOtp");
           }, 1000);
         })
         .catch(({ response }) => {
@@ -45,17 +54,15 @@ const RegisterForm = () => {
     },
   });
 
-  console.log(errors);
-
   return (
     <body className="flex font-poppins items-center justify-center">
       <div className="h-screen w-screen flex justify-center items-center bg-zinc-200">
-        <div className="grid gap-8">
-          <div className="border-[10px] border-transparent rounded-[20px] bg-gray-100 shadow-lg xl:p-5 2xl:p-5 lg:p-5 md:p-5 sm:p-2 ">
-            <h1 className="pt-8 pb-6 font-bold text-blue-800 text-4xl text-center cursor-default">
+        <div className="grid gap-4">
+          <div className="border-[10px] border-transparent rounded-[20px] bg-gray-100 shadow-lg xl:p-4 2xl:p-4 lg:p-4 md:p-4 sm:p-2 ">
+            <h1 className="pt-4 pb-4 font-bold text-blue-800 text-4xl text-center cursor-default">
               Sign Up
             </h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="">
               <div>
                 <label className="mb-2  text-gray-400 text-lg">Name</label>
                 <input
@@ -69,7 +76,7 @@ const RegisterForm = () => {
                 />
               </div>
               {errors.name && touched.name && (
-                <p className="text-red-600">{errors.name}</p>
+                <p className="text-red-600 ">{errors.name}</p>
               )}
               <div>
                 <label className="mb-2  text-gray-400 text-lg">Email</label>
@@ -85,23 +92,6 @@ const RegisterForm = () => {
               </div>
               {errors.email && touched.email && (
                 <p className="text-red-600">{errors.email}</p>
-              )}
-              <div>
-                <label className="mb-2  text-gray-400 text-lg">
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  value={values.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
-                  type="text"
-                  placeholder="enter your phone number"
-                />
-              </div>
-              {errors.phone && touched.phone && (
-                <p className="text-red-600">{errors.phone}</p>
               )}
               <div>
                 <label className="mb-2  text-gray-400 text-lg">Password</label>
@@ -136,6 +126,24 @@ const RegisterForm = () => {
               {errors.cpassword && touched.cpassword && (
                 <p className="text-red-600">{errors.cpassword}</p>
               )}
+              <div>
+                <label className="mb-2  text-gray-400 text-lg">Role</label>
+                <select
+                  id="role"
+                  name="role"
+                  value={values.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                >
+                  <option value="">Select</option>
+                  <option value="user">User</option>
+                  <option value="owner">Owner</option>
+                </select>
+              </div>
+              {errors.role && touched.role && (
+                <p className="text-red-500">{errors.role}</p>
+              )}
               <button
                 disabled={isSubmitting}
                 className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
@@ -148,7 +156,7 @@ const RegisterForm = () => {
               <h3 className="text-gray-300">
                 already have an account?
                 <Link
-                  to="/owner/register"
+                  to="/user/login"
                   className="group text-blue-400 transition-all duration-100 ease-in-out"
                 >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
@@ -164,4 +172,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default Register;
