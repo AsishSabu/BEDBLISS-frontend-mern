@@ -1,10 +1,10 @@
-import React from "react";
-import { useFormik } from "formik";
-import { useNavigate, useParams } from "react-router-dom";
-import showToast from "../../utils/toast";
 import axios from "axios";
-import { passwordValidation } from "../../utils/validation";
+import { useFormik } from "formik";
+import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { USER_API } from "../../constants";
+import showToast from "../../utils/toast";
+import { passwordValidation } from "../../utils/validation";
 
 const ResetPassword = () => {
   const { id } = useParams();

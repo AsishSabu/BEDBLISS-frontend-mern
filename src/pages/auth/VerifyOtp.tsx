@@ -1,16 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Formik, useFormik } from "formik";
-import { OWNER_API } from "../../constants";
-import showToast from "../../utils/toast";
 import axios from "axios";
+import { Formik, useFormik } from "formik";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { USER_API } from "../../constants";
 import {
   getItemFromLocalStorage,
   removeItemFromLocalStorage,
 } from "../../utils/localStorage";
+import showToast from "../../utils/toast";
 
 const VerifyOtp: React.FC = () => {
   const [seconds, setSeconds] = useState(60);
+
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -24,18 +25,18 @@ const VerifyOtp: React.FC = () => {
       console.log(otp);
       if (userid) {
         axios
-          .post(OWNER_API + "/auth/verifyOtp", { otp, userid })
+          .post(USER_API + "/auth/verifyOtp", { otp, userid })
           .then(({ data }) => {
             showToast(data.message, "success");
             removeItemFromLocalStorage("userId");
-            navigate("/owner/login");
+            navigate("/user/login");
           })
           .catch(({ response }) => {
             showToast(response.data.message, "error");
           });
       } else {
         showToast("something went wrong", "error");
-        return navigate("/owner/login", { replace: true });
+        return navigate("/user/login", { replace: true });
       }
     },
   });
@@ -57,21 +58,21 @@ const VerifyOtp: React.FC = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, [seconds]);
-  const resendOtp=()=>{
+
+  const resendOtp = () => {
     setSeconds(60);
-    const ownerId=getItemFromLocalStorage("userId");
-    if(ownerId){
-      console.log(ownerId);
-      
-      axios.post(OWNER_API+"/auth/resendOtp",{ownerId})
-      .then(({data})=>{
-        showToast(data.message,"success")
-      })
-      .catch(({response})=>{
-        showToast(response.data.message,"error");
-      });
+    const userId = getItemFromLocalStorage("userId");
+    if (userId) {
+      axios
+        .post(USER_API + "/auth/resendOtp", { userId })
+        .then(({ data }) => {
+          showToast(data.message, "success");
+        })
+        .catch(({ response }) => {
+          showToast(response.data.message, "error");
+        });
     }
-  }
+  };
 
   const pasteText = (event: ClipboardEvent) => {
     const pastedText = event.clipboardData?.getData("text");
@@ -163,13 +164,13 @@ const VerifyOtp: React.FC = () => {
               </form>
               <div className="text-sm text-slate-500 mt-4">
                 Didn't receive code?{" "}
-                <button className="text-blue-500 underline focus:outline-none hover:text-blue-700"
-              onClick={resendOtp}
-              disabled={seconds !== 0} 
-              >
-                Resend OTP
-               
-              </button>
+                <button
+                  className="text-blue-500 underline focus:outline-none hover:text-blue-700"
+                  onClick={resendOtp}
+                  disabled={seconds !== 0}
+                >
+                  Resend OTP
+                </button>
               </div>
               <span className="font-medium">
                 {seconds !== 0 && ` (${seconds}s)`}
