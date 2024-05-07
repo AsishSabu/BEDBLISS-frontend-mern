@@ -1,7 +1,5 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import React from "react";
-import { Link } from "react-router-dom";
 import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { emailValidation } from "../../utils/validation";
@@ -46,7 +44,7 @@ const ForgotPassword = () => {
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2  text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2  text-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="email"
                   placeholder="Email"
                 />
@@ -56,7 +54,7 @@ const ForgotPassword = () => {
               )}
 
               <button
-                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                className="bg-blue-600 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN IN

@@ -1,12 +1,11 @@
-import React from "react";
-import Navbar from "../../components/user/Navbar/Navbar";
 import ProfileSidebar from "../../components/user/ProfileSidebar";
 import { Outlet } from "react-router-dom";
+import Header from "../../components/user/Navbar/Navbar";
 
 const Profile = () => {
   return (
     <div className="flex flex-col ">
-      <Navbar />
+      <Header />
       <div className="flex flex-row gap-2">
         <ProfileSidebar />
         <Outlet />

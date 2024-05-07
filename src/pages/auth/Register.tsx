@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import React from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { USER_API } from "../../constants";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 import showToast from "../../utils/toast";
 import { RegisterValidation } from "../../utils/validation";
 
-const Register = () => {
+const Register:React.FC = () => {
   const navigate = useNavigate();
   const {
     values,
@@ -41,7 +41,7 @@ const Register = () => {
         .then(({ data }) => {
           const { message, newUser } = data;
           console.log(data);
-          showToast(data.message, "success");
+          showToast(message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
             navigate("/user/verifyOtp");
@@ -70,7 +70,7 @@ const Register = () => {
                   value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="text"
                   placeholder="enter your name"
                 />
@@ -85,7 +85,7 @@ const Register = () => {
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="email"
                   placeholder="enter your email"
                 />
@@ -100,7 +100,7 @@ const Register = () => {
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="enter the password"
                 />
@@ -118,7 +118,7 @@ const Register = () => {
                   value={values.cpassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="re-enter the password"
                 />
@@ -134,7 +134,7 @@ const Register = () => {
                   value={values.role}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                 >
                   <option value="">Select</option>
                   <option value="user">User</option>
@@ -146,7 +146,7 @@ const Register = () => {
               )}
               <button
                 disabled={isSubmitting}
-                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2  rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN UP

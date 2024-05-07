@@ -6,7 +6,6 @@ const UserProfile = () => {
     formData,
     nameError,
     phoneError,
-    isSubmitting,
     imagePreview,
     handleInputChange,
     handleSubmit,

@@ -5,7 +5,7 @@ import { LiaWalletSolid } from "react-icons/lia";
 import { TbBrandBooking } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
-const ProfileSidebar = () => {
+const ProfileSidebar:React.FC = () => {
   return (
     <aside
       id="default-sidebar"

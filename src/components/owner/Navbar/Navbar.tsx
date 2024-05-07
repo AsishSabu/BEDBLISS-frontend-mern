@@ -1,5 +1,4 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { UseSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux/reducer/reducer";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../redux/store/store";
@@ -18,7 +17,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between text-blue-gray-900">
         <a
           href="#"
-          className="mr-4 block cursor-pointer py-1.5 text-2xl font text-base font-head leading-relaxed "
+          className="mr-4 block cursor-pointer py-1.5 text-2xl font  font-head leading-relaxed "
         >
           BedBliss
         </a>

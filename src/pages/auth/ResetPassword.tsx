@@ -6,7 +6,7 @@ import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { passwordValidation } from "../../utils/validation";
 
-const ResetPassword = () => {
+const ResetPassword:React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const {
@@ -56,7 +56,7 @@ const ResetPassword = () => {
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="enter the password"
                 />
@@ -74,7 +74,7 @@ const ResetPassword = () => {
                   value={values.cpassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="re-enter the password"
                 />
@@ -84,7 +84,7 @@ const ResetPassword = () => {
               )}
               <button
                 disabled={isSubmitting}
-                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN UP
