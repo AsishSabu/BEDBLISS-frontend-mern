@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { FC } from "react";
+import { FC, lazy } from "react";
 import { PublicRoutes } from "../publicRoutes";
-import { ProtectedAdminRoute} from "../protectedRoutes";
-import LoginForm from "../../pages/admin/Login";
-import Layout from "../../pages/admin/Layout";
-import DashBoard from "../../components/admin/DashBoard";
+import { ProtectedAdminRoute } from "../protectedRoutes";
+const LoginForm = lazy(() => import("../../pages/admin/Login"));
+const Layout = lazy(() => import("../../pages/admin/Layout"));
+const DashBoard = lazy(() => import("../../components/admin/DashBoard"));
 
 const AdminRouter: FC = () => {
   return (
@@ -18,7 +18,7 @@ const AdminRouter: FC = () => {
 
       <Route path="" element={<ProtectedAdminRoute />}>
         <Route path="/" element={<Layout />}>
-          <Route index element={<DashBoard/>}/>
+          <Route index element={<DashBoard />} />
         </Route>
       </Route>
     </Routes>

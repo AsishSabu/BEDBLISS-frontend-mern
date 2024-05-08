@@ -1,11 +1,11 @@
-import { FC } from "react";
+import { FC, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import ForgotPassword from "../../pages/auth/ForgotPassword";
-import Login from "../../pages/auth/Login";
-import Register from "../../pages/auth/Register";
-import ResetPassword from "../../pages/auth/ResetPassword";
-import VerifyOtp from "../../pages/auth/VerifyOtp";
 import { PublicRoutes } from "../publicRoutes";
+const ForgotPassword = lazy(() => import("../../pages/auth/ForgotPassword"));
+const Login = lazy(() => import("../../pages/auth/Login"));
+const Register = lazy(() => import("../../pages/auth/ResetPassword"));
+const ResetPassword = lazy(() => import("../../pages/auth/Register"));
+const VerifyOtp = lazy(() => import("../../pages/auth/VerifyOtp"));
 
 const AuthRouter: FC = () => {
   return (

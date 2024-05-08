@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
-import { FC } from "react";
+import { FC,lazy } from "react";
 import { ProtectedOwnerRoute} from "../protectedRoutes";
-import Home from "../../pages/owner/Home";
+const  Home=lazy(()=>import("../../pages/owner/Home"))
 
 const OwnerRouter: FC = () => {
   return (
