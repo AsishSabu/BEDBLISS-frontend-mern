@@ -1,7 +1,7 @@
 import { UserInterface } from "./../../../backend/src/types/userInterfaces";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
-import { USER_API, emailRegex, nameRegex, phoneRegex } from "../constants";
+import { USER_API,nameRegex, phoneRegex } from "../constants";
 import showToast from "../utils/toast";
 import axiosJWT from "../utils/axiosService";
 import uploadImagesToCloudinary from "../api/imageUpload";
@@ -75,9 +75,7 @@ console.log(name,"-----------",value);
             }
             setNameError(errorMessage);
         } else if (name === "phone") {
-            if (!value.trim()) {
-                errorMessage = "Phone number is required";
-            } else if (!phoneRegex.test(value)) {
+           if (value.trim()&&!phoneRegex.test(value)) {
                 errorMessage = "Phone number must have 10 numbers";
             }
             setPhoneError(errorMessage);

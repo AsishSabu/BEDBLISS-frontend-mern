@@ -62,7 +62,7 @@ const UserProfile = () => {
             className="border text-gray-700 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-500"
             value={formData?.email ?? ""}
             name="email"
-            onChange={handleInputChange}
+          
           />
         </div>
         <div className="mb-4">
