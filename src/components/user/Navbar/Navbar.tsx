@@ -24,7 +24,7 @@ const Navbar:React.FC= () => {
   };
 
   const navLinks = [
-    { label: "Pages", to: "/user/pages" },
+    { label: "Home", to: "/" },
     { label: "Account", to: "/user/account" },
     { label: "Docs", to: "/user/docs" },
     ...(user.isAuthenticated && user.role === "user"
