@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { PublicRoutes } from "../publicRoutes";
 const ForgotPassword = lazy(() => import("../../pages/auth/ForgotPassword"));
 const Login = lazy(() => import("../../pages/auth/Login"));
-const Register = lazy(() => import("../../pages/auth/ResetPassword"));
-const ResetPassword = lazy(() => import("../../pages/auth/Register"));
+const Register = lazy(() => import("../../pages/auth/Register"));
+const ResetPassword = lazy(() => import("../../pages/auth/ResetPassword"));
 const VerifyOtp = lazy(() => import("../../pages/auth/VerifyOtp"));
 
 const AuthRouter: FC = () => {

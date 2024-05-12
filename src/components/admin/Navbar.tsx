@@ -3,7 +3,7 @@ import {Popover,Menu} from "@headlessui/react"
 
 const Navbar = () => {
   return (
-    <div className='fixed top-0 z-10  w-full max-w-full ps-8 py-2 bg-gray-600 h-16 px-4 flex justify-between items-center border-b border-black '>
+    <div className=' relative z-10 h-full w-full  ps-8 py-2 bg-adminDash  px-4 flex justify-between items-center border-b border-black '>
       <div className='text-white'>ADMIN PANEL</div>
       <div className='flex item-center gap-2 mr-2'>
         {/* <Popover>

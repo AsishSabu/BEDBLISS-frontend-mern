@@ -6,7 +6,9 @@ import { CgProfile } from "react-icons/cg";
 import { MdFavoriteBorder } from "react-icons/md";
 import { LiaWalletSolid } from "react-icons/lia";
 import { TbBrandBooking } from "react-icons/tb";
+import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from "react-router-dom";
+
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -20,11 +22,11 @@ const Sidebar = () => {
   return (
     <aside
       id="default-sidebar"
-      className="  w-60 h-screen mt-16  fixed"
+      className="relative w-full h-screen "
       aria-label="Sidebar"
       
     >
-      <div className="h-full px-3 py-4 overflow-y-auto  bg-gray-600 border-black border-x">
+      <div className="h-full px-3 py-4 overflow-y-auto  bg-adminDash border-black border-x">
         <ul className="space-y-5 font-medium">
           <li>
             <Link
@@ -94,6 +96,10 @@ const Sidebar = () => {
               <span className="flex-1 ms-3 whitespace-nowrap">Saved</span>
             </Link>
           </li>
+          <div onClick={handleLogout} className= "items-center text-red-900 flex flex-row gap-2">
+           <HiOutlineLogout fontSize={20}/>
+          <div >Logout</div>
+        </div>
         </ul>
       </div>
     </aside>
