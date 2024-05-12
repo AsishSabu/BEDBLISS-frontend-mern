@@ -1,20 +1,24 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
-import Sidebar from '../../components/admin/Sidebar'
-import Navbar from '../../components/admin/Navbar'
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../../components/admin/Sidebar";
+import Navbar from "../../components/admin/Navbar";
 
-const Layout = () => {
+const Layout: React.FC = () => {
   return (
-    <div className='flex flex-row bg-green-200 h-screen w-screen overflow-hidden'>
-        <Sidebar/>
-        <div className='flex-1'>
-        <Navbar/>
-        <div>{<Outlet/>}</div>
+    <div className="flex flex-col h-screen overflow-x-hidden">
+      <div className="flex-none  w-screen">
+        <Navbar />
+      </div>
+      <div className="flex flex-grow  overflow-y-auto">
+        <div className="flex-none " style={{ width: "20%" }}>
+          <Sidebar />
         </div>
-
-      
+        <div className="flex-grow">
+          <Outlet />
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

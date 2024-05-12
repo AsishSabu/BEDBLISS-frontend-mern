@@ -10,6 +10,7 @@ export default {
       colors: {
         varBlue: "#003B95",
         varGreen: "#22c55e",
+        adminDash:"rgb(36, 48, 63)"
       },
     },
     fontFamily: {
