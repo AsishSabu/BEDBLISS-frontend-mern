@@ -22,5 +22,24 @@ const useUsers = () => {
     users,
   };
 };
+export const useOwners = () => {
+  const [users, setUsers] = useState<UserInterface[]>([]);
+  useEffect(() => {
+    axios
+      .get(ADMIN_API + "/owners")
+      .then(({ data }) => {
+        console.log(data,"data");
+        
+        const {users} = data;
+        setUsers(users);
+        console.log(users);
+        
+      })
+      .catch((error: any) => console.log(error));
+  },[setUsers]);
+  return {
+    users,
+  };
+};
 
 export default useUsers;

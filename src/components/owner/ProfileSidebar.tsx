@@ -48,7 +48,7 @@ const ProfileSidebar:React.FC = () => {
               </svg>
               <span className="flex-1 ms-3 whitespace-nowrap">
                 {" "}
-                My Bookings
+                My Hotels
               </span>
             </Link>
           </li>
@@ -66,10 +66,10 @@ const ProfileSidebar:React.FC = () => {
               >
                 <LiaWalletSolid fontSize={22} />{" "}
               </svg>
-              <span className="flex-1 ms-3 whitespace-nowrap">Wallet</span>
+              <span className="flex-1 ms-3 whitespace-nowrap">Bookings</span>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/"
               className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-400 group"
@@ -83,9 +83,9 @@ const ProfileSidebar:React.FC = () => {
               >
                 <MdFavoriteBorder fontSize={22} />{" "}
               </svg>
-              <span className="flex-1 ms-3 whitespace-nowrap">Saved</span>
+              <span className="flex-1 ms-3 whitespace-nowrap"></span>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </aside>

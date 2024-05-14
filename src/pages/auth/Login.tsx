@@ -147,7 +147,7 @@ const Login: React.FC = () => {
               {open && <Modal onSelectRole={handleRole} onClose={handleClose} />}
              
               <Link
-                to="/user/forgotPassword"
+                to="/auth/forgotPassword"
                 className="group text-blue-700 transition-all duration-100 ease-in-out"
               >
                 <span className="bg-left-bottom bg-gradient-to-r text-sm from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">
@@ -165,7 +165,7 @@ const Login: React.FC = () => {
               <h3 className="text-gray-300">
                 Don't have an account?
                 <Link
-                  to="/user/register"
+                  to="/auth/register"
                   className="group text-blue-400 transition-all duration-100 ease-in-out"
                 >
                   <span className="bg-left-bottom bg-gradient-to-r from-blue-400 to-blue-400 bg-[length:0%_2px] bg-no-repeat group-hover:bg-[length:100%_2px] transition-all duration-500 ease-out">

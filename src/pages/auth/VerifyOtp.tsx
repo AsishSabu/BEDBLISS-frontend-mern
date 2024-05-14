@@ -29,14 +29,14 @@ const VerifyOtp: React.FC = () => {
           .then(({ data }) => {
             showToast(data.message, "success");
             removeItemFromLocalStorage("userId");
-            navigate("/user/login");
+            navigate("/auth/login");
           })
           .catch(({ response }) => {
             showToast(response.data.message, "error");
           });
       } else {
         showToast("something went wrong", "error");
-        return navigate("/user/login", { replace: true });
+        return navigate("/auth/login", { replace: true });
       }
     },
   });
