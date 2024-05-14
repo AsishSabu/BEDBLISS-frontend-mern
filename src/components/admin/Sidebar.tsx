@@ -47,7 +47,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/users"
+              to="/admin/users"
               className="flex items-center p-2 text-white  rounded-lg hover:bg-gray-400 group"
             >
               <svg
@@ -64,7 +64,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/"
+              to="/admin/owners"
               className="flex items-center p-2 text-white rounded-lg hover:bg-gray-400 group"
             >
               <svg
@@ -81,7 +81,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to="/"
+              to=""
               className="flex items-center p-2 text-white rounded-lg hover:bg-gray-400 group"
             >
               <svg
