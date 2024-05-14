@@ -30,7 +30,7 @@ const ResetPassword:React.FC = () => {
         .post(USER_API + `/auth/reset_password/${id}`, { password })
         .then(({ data }) => {
           showToast(data.message, "success");
-          navigate("/user/login");
+          navigate("/auth/login");
         })
         .catch((response) => {
           console.log(response);
