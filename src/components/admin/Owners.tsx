@@ -1,9 +1,9 @@
 import React from "react";
-import useUsers from "../../hooks/useUsers";
+import {useOwners} from "../../hooks/useUsers";
 import UserData from "./UserData";
 
 const Users = () => {
-  const { users } = useUsers();
+  const { users } = useOwners();
 
   return (
     <div className="w-full relative ">
