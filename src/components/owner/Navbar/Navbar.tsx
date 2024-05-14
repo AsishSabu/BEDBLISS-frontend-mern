@@ -25,8 +25,8 @@ const Navbar = () => {
           <div className="hidden mr-4 lg:block">
             <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/owner/pages" className="flex items-center">
-                  Pages
+                <Link to="/owner" className="flex items-center">
+                  Home
                 </Link>
               </li>
               <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
@@ -42,7 +42,7 @@ const Navbar = () => {
               </li>
               {user.isAuthenticated && user.role === "owner" ? (
                 <li className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                  <Link to="/owner/blocks" className="flex items-center">
+                  <Link to="/owner/profile" className="flex items-center">
                     Profile
                   </Link>
                 </li>

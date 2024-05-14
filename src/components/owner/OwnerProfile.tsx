@@ -1,6 +1,6 @@
 import useProfile from "../../hooks/UserProfile";
 
-const UserProfile = () => {
+const OwnerProfile = () => {
   const {
     profile,
     formData,
@@ -92,4 +92,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default OwnerProfile;
