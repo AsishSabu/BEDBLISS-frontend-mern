@@ -1,11 +1,12 @@
 import React from 'react'
 
-const Hotels = () => {
+const Hotels:React.FC = () => {
   return (
-    <div className='ml-60 mt-16 bg-yellow-600 w-screen h-screen  '>
+    <div className=' '>
       Hotels
     </div>
   )
 }
 
 export default Hotels
+

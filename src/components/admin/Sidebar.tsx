@@ -4,7 +4,6 @@ import showToast from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { MdFavoriteBorder } from "react-icons/md";
-import { LiaWalletSolid } from "react-icons/lia";
 import { TbBrandBooking } from "react-icons/tb";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Link } from "react-router-dom";
@@ -22,7 +21,7 @@ const Sidebar = () => {
   return (
     <aside
       id="default-sidebar"
-      className="relative w-full h-screen "
+      className=" w-full h-screen "
       aria-label="Sidebar"
       
     >
@@ -81,7 +80,7 @@ const Sidebar = () => {
           </li>
           <li>
             <Link
-              to=""
+              to="/admin/hotels"
               className="flex items-center p-2 text-white rounded-lg hover:bg-gray-400 group"
             >
               <svg
@@ -93,7 +92,7 @@ const Sidebar = () => {
               >
                 <MdFavoriteBorder fontSize={22} />{" "}
               </svg>
-              <span className="flex-1 ms-3 whitespace-nowrap">Saved</span>
+              <span className="flex-1 ms-3 whitespace-nowrap">Hotels</span>
             </Link>
           </li>
           <div onClick={handleLogout} className= "items-center text-red-900 flex flex-row gap-2">

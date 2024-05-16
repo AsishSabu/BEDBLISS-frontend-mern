@@ -13,12 +13,10 @@ const UserData: React.FC<UserInterface> = ({ _id, name, email, isBlocked }) => {
   };
   return (
     <tr className="bg-white border-b  hover:bg-gray-50 ">
+
+    <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">{name}</td>
+    <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">{email}</td>
     <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">
-      {_id}
-    </td>
-    <td className="px-6 py-4 text-left">{name}</td>
-    <td className="px-6 py-4 text-left">{email}</td>
-    <td className="px-6 py-4 text-left">
       <div className="flex items-center gap-2">
         <div
           className={`w-3 h-3 rounded-full ${
@@ -28,7 +26,7 @@ const UserData: React.FC<UserInterface> = ({ _id, name, email, isBlocked }) => {
         <p>{isChecked ? "Blocked" : "Active"}</p>
       </div>
     </td>
-    <td className="px-6 py-4 text-left">
+    <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">
       <label className="flex cursor-pointer select-none items-center ">
         <div className="relative">
           <input

@@ -1,9 +1,9 @@
 import React from 'react'
-import {Popover,Menu} from "@headlessui/react"
+import {Menu} from "@headlessui/react"
 
-const Navbar = () => {
+const Navbar:React.FC= () => {
   return (
-    <div className=' relative z-10 h-full w-full  ps-8 py-2 bg-adminDash  px-4 flex justify-between items-center border-b border-black '>
+    <div className=' relative z-10 h-20 w-full  ps-8 py-2 bg-adminDash  px-4 flex justify-between items-center border-b border-black '>
       <div className='text-white'>ADMIN PANEL</div>
       <div className='flex item-center gap-2 mr-2'>
         {/* <Popover>

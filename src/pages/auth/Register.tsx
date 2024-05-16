@@ -7,7 +7,7 @@ import { setItemToLocalStorage } from "../../utils/localStorage";
 import showToast from "../../utils/toast";
 import { RegisterValidation } from "../../utils/validation";
 
-const Register:React.FC = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate();
   const {
     values,
@@ -48,8 +48,7 @@ const Register:React.FC = () => {
           }, 1000);
         })
         .catch(({ response }) => {
-          const { message } = response.data;
-          showToast(message, "error");
+          showToast(response?.data?.message, "error");
         });
     },
   });

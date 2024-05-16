@@ -85,7 +85,6 @@ const Login: React.FC = () => {
           });
       })
       .catch(({ response }) => {
-        console.log(response);
         showToast(response?.data?.message, "error");
       });
   };
