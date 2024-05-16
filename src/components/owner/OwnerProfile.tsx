@@ -31,6 +31,7 @@ const OwnerProfile = () => {
             id="profile-image"
             name="imageFile"
             className="hidden"
+            accept="image/*"
             onChange={handleInputChange} 
           />
         </label>

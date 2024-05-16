@@ -12,21 +12,17 @@ const ForgotPassword = () => {
       },
       validationSchema: emailValidation,
       onSubmit: ({ email }) => {
-        console.log("dkjsnkgjndsk");
-
         axios
           .post(USER_API + "/auth/forgot-password", { email })
           .then(({ data }) => {
             showToast(data.message, "success");
           })
-          .catch((response) => {
-            console.log(response);
-
-            showToast(response.message, "error");
+          .catch(({ response }) => {
+            showToast(response?.data?.message, "error");
           });
       },
     });
-  console.log(values);
+
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -57,7 +53,7 @@ const ForgotPassword = () => {
                 className="bg-blue-600 shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
-                SIGN IN
+                Confirm
               </button>
             </form>
           </div>

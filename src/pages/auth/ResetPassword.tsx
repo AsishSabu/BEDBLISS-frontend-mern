@@ -32,9 +32,8 @@ const ResetPassword:React.FC = () => {
           showToast(data.message, "success");
           navigate("/auth/login");
         })
-        .catch((response) => {
-          console.log(response);
-          showToast(response.message, "error");
+        .catch(({ response }) => {
+          showToast(response?.data?.message, "error");
         });
     },
   });

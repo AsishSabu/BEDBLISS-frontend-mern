@@ -5,13 +5,8 @@ export const RegisterValidation = yup.object().shape({
   email: yup
     .string()
     .email("Please enter a valid email")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid email address")
     .required("Email is required"),
-  // phone: yup
-  //   .string()
-  //   .matches(/^[0-9]+$/, "Phone number must contain only digits")
-  //   .min(10, "Minimum 10 numbers required")
-  //   .max(10, "Maximum 10 numbers required")
-  //   .required("Phone number is required"),
   password: yup
     .string()
     .min(4, "Minimum 4 characters required")
@@ -27,7 +22,8 @@ export const LoginValidation = yup.object().shape({
   email: yup
     .string()
     .required("email is required")
-    .email("please enter a vlaid email"),
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid email address")
+    .email("please enter a valid email"),
   password: yup
     .string()
     .min(4, "Minimum 4 characters required")
@@ -38,7 +34,8 @@ export const emailValidation = yup.object().shape({
   email: yup
     .string()
     .required("email is required")
-    .email("please enter a vlaid email"),
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Enter a valid email address")
+    .email("please enter a valid email"),
 });
 export const passwordValidation = yup.object().shape({
   password: yup
