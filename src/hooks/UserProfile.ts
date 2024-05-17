@@ -47,7 +47,6 @@ const useProfile = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-console.log(name,"-----------",value);
 
     if (name === "imageFile") {
         const fileInput = e.target as HTMLInputElement;

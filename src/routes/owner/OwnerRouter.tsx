@@ -1,9 +1,10 @@
 import { Routes, Route } from "react-router-dom";
-import { FC,lazy } from "react";
-import { ProtectedOwnerRoute} from "../protectedRoutes";
+import { FC, lazy } from "react";
+import { ProtectedOwnerRoute } from "../protectedRoutes";
 import AddHotel from "../../pages/owner/AddHotel";
 import OwnerProfile from "../../components/owner/OwnerProfile";
-const  Home=lazy(()=>import("../../pages/owner/Home"))
+import HotelList from "../../pages/owner/HotelList";
+const Home = lazy(() => import("../../pages/owner/Home"));
 const Profile = lazy(() => import("../../pages/owner/OwnerProfile"));
 
 const OwnerRouter: FC = () => {
@@ -14,10 +15,12 @@ const OwnerRouter: FC = () => {
       {/*user private routes*/}
 
       <Route path="" element={<ProtectedOwnerRoute />}>
-      <Route path="/addHotel" element={<AddHotel />} /></Route>
+        <Route path="/addHotel" element={<AddHotel />} />
+        <Route path="/hotels" element={<HotelList/>} />
+      </Route>
       <Route path="/profile" element={<Profile />}>
-          <Route index element={<OwnerProfile />} />
-        </Route>
+        <Route index element={<OwnerProfile />} />
+      </Route>
     </Routes>
   );
 };

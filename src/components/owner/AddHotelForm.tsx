@@ -1,8 +1,9 @@
-import React from "react";
-import { ChangeEvent, FormEvent } from "react";
+// import React from "react";
+// import { ChangeEvent, FormEvent } from "react";
 import useHotel from "../../hooks/UseHotel";
 
 const AddHotelForm = () => {
+
   const {
     formData,
     handleChange,
@@ -12,8 +13,11 @@ const AddHotelForm = () => {
     emailError,
     placeError,
     descriptionError,
-    propertyRulesError,
+    // propertyRulesError,
     aboutPropertyError,
+    predefinedAmenities,
+    handleAddAmenity,
+    imagePreview,
   } = useHotel();
   return (
     <div className="px-14 py-7">
@@ -108,23 +112,29 @@ const AddHotelForm = () => {
 
             <div className="flex flex-1 flex-col justify-center items-center gap-3 ">
               <img
-                src="https://picsum.photos/200"
+                src={
+                  imagePreview
+                    ? imagePreview
+                    :  "https://picsum.photos/200"
+                }
                 alt="Profile"
-                className=" rounded-2xl  w-3/5 border-blue-200"
+                className="rounded-2xl  w-3/5 border-blue-200"
               />
-              <label
-                htmlFor="profile-image"
-                className=" flex items-center justify-center bg-orange-400 text-black font-semibold  rounded-2xl cursor-pointer border-4 border-white w-1/5 h-12"
-              >
-                Upload Image
-                <input
-                  type="file"
-                  id="profile-image"
-                  name="imageFile"
-                  className="hidden"
-                  // onChange={handleInputChange}
-                />
-              </label>
+              <input
+                type="file"
+                id="profile-image"
+                name="imageFile"
+                className="hidden"
+                onChange={(e) => handleChange(e, null, "image")}
+              />
+              <div className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <label
+                  htmlFor="profile-image"
+                  className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0"
+                >
+                  Upload Image
+                </label>
+              </div>
             </div>
           </div>
 
@@ -155,28 +165,24 @@ const AddHotelForm = () => {
             </div>
           </div>
           <div className="mb-4 ">
-            <label className="text-gray-700 text-lg font-bold mb-2 flex items-center">
-              Amenities:
-            </label>
-            {formData.amenities.map((amenity, index) => (
-              <div key={index} className="mb-2">
-                <input
-                  type="text"
-                  className="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-1/2 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                  placeholder="Amenity"
-                  value={amenity}
-                  onChange={(e) => handleChange(e, index, "amenities")}
-                  required
-                />
+            <div className="mb-4 flex gap-3">
+              <label className="text-gray-700 text-lg font-bold mb-2 flex items-center">
+                Amenities:
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {predefinedAmenities.map((amenity, index) => (
+                  <label key={index} className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-purple-600"
+                      value={amenity}
+                      onChange={() => handleAddAmenity(amenity)}
+                    />
+                    <span className="ml-2 text-gray-700">{amenity}</span>
+                  </label>
+                ))}
               </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => handleAddMore("amenities")}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Add More
-            </button>
+            </div>
           </div>
           <div className="mb-4 ">
             <label className="text-gray-700 text-lg font-bold mb-2 flex items-center">
@@ -256,6 +262,9 @@ const AddHotelForm = () => {
               Submit
             </button>
           </div>
+
+
+          
         </form>
       </div>
     </div>

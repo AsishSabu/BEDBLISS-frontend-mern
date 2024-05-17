@@ -9,15 +9,17 @@ const Layout: React.FC = () => {
       <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
         <Navbar />
       </div>
+<div className="flex">
+<div className="z-40 mt-20 h-screen w-2/12">
+          <Sidebar />
+        </div>
 
-      <div className="fixed left-0 w-64  bg-white shadow-md z-40 mt-20">
-        <Sidebar />
+        <div className=" mt-20 w-10/12">
+          <Outlet />
+        </div>
+</div>
+     
       </div>
-
-      <div className="flex flex-grow overflow-y-auto ml-64 mt-20  p-10 ">
-        <Outlet />
-      </div>
-    </div>
   );
 };
 

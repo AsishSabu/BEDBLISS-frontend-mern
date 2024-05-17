@@ -80,7 +80,6 @@ const Login: React.FC = () => {
             navigate(role === "user" ? "/user" : "/owner");
           })
           .catch(({ response }) => {
-            console.log(response);
             showToast(response?.data?.message, "error");
           });
       })
