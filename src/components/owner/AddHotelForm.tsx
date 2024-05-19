@@ -1,6 +1,6 @@
 // import React from "react";
 // import { ChangeEvent, FormEvent } from "react";
-import useHotel from "../../hooks/UseHotel";
+import useHotel from "../../hooks/owner/UseHotel";
 
 const AddHotelForm = () => {
 

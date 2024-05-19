@@ -1,4 +1,4 @@
-import useProfile from "../../hooks/UserProfile";
+import useProfile from "../../hooks/user/UserProfile";
 
 const OwnerProfile = () => {
   const {

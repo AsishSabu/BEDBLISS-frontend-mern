@@ -1,5 +1,5 @@
 import React from "react";
-import useUserHotels from "../../hooks/useUserHotels";
+import useUserHotels from "../../hooks/user/useUserHotels";
 import { useNavigate } from "react-router-dom";
 
 interface HotelDataProps {
@@ -43,7 +43,7 @@ const handleClick=()=>{
         </div>
 
         <p className="mb-3 text-lg font-thin text-gray-700 dark:text-gray-400">
-          $1000
+        ₹1000
         </p>
       </div>
     </div>
@@ -52,6 +52,8 @@ const handleClick=()=>{
 
 const HomePage: React.FC = () => {
   const { hotels } = useUserHotels();
+
+  
 
   return (
     <div className="py-10 px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

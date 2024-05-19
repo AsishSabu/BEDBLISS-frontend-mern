@@ -1,6 +1,7 @@
 export type RoomInterface = {
     roomType: string;
-    price: number;
+    price: string;
+    number:string;
   };
   
   export type HotelInterface = {

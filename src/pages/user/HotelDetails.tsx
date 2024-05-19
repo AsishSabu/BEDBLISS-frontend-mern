@@ -3,7 +3,7 @@ import Navbar from '../../components/user/Navbar/Navbar'
 import HotelDetail from '../../components/user/HotelDetail'
 import Footer from '../../components/user/Footer/Footer'
 
-const HotelDetails = () => {
+const HotelDetails:React.FC= () => {
   return (
     <div>
       <Navbar/>

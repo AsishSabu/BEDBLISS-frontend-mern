@@ -1,5 +1,5 @@
 import React from "react";
-import useHotelList from "../../hooks/UseHotelList";
+import useHotelList from "../../hooks/owner/UseHotelList";
 import {Button} from "flowbite-react"
 
 

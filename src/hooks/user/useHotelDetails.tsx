@@ -1,24 +1,21 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { HotelInterface } from '../types/hotelInterface';
-import { USER_API } from '../constants';
+import { HotelInterface } from '../../types/hotelInterface';
+import { USER_API } from '../../constants';
 
 const useHotelDetails = (id: string) => {
   const [hotel, setHotel] = useState<HotelInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
-        const response = await axios.get(`${USER_API}/hotels/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        });
-        setHotel(response.data);
-      } catch (err) {
-        setError(true);
+        const { data } = await axios.get(`${USER_API}/hotelDetails/${id}`);        
+        setHotel(data.Hotel);
+      } catch (error) {
+        setError("Failed to fetch hotel details");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -26,6 +23,7 @@ const useHotelDetails = (id: string) => {
 
     fetchHotelDetails();
   }, [id]);
+  console.log(hotel,".............")
 
   return { hotel, loading, error };
 };
