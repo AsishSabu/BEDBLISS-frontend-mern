@@ -1,5 +1,5 @@
 // import React from "react";
-// import { ChangeEvent, FormEvent } from "react";
+import { ChangeEvent, FormEvent } from "react";
 import { useState } from "react"
 import useHotel from "../../hooks/owner/UseHotel"
 
@@ -35,6 +35,7 @@ const AddHotelForm = () => {
 
 
   return (
+    <>
     <div className="px-14 py-7">
       <div className="px-14 py-7 rounded-3xl shadow-lg border border-spacing-y-9">
         <h1 className="p-6 text-3xl font-bold mb-4 text-center">Add Hotel</h1>
@@ -160,7 +161,7 @@ const AddHotelForm = () => {
                   <input
                     type="text"
                     className="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-1/2 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-                    placeholder={property rule ${index + 1}}
+                    placeholder={`property rule ${index + 1}`}
                     value={rule}
                     onChange={e => handleChange(e, index, "propertyRules")}
                     required
@@ -221,11 +222,11 @@ const AddHotelForm = () => {
                       </label>
                       <input
                         type="number"
-                        name={rooms_${index}_price}
+                        name={`rooms_${index}_price`}
                         className="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         placeholder="Price"
                         value={formData.rooms[index]?.price || ""}
-                        onChange={e => handleChange(e, index, rooms_price)}
+                        onChange={e => handleChange(e, index,"rooms_price")}
                         disabled={!roomType.enabled}
                       />
                     </div>
@@ -237,11 +238,11 @@ const AddHotelForm = () => {
                       </label>
                       <input
                         type="number"
-                        name={rooms_${index}_number}
+                        name={`rooms_${index}_number`}
                         className="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-full py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
                         placeholder="Count"
                         value={formData.rooms[index]?.number || ""}
-                        onChange={e => handleChange(e, index, rooms_number)}
+                        onChange={e => handleChange(e, index, "rooms_number")}
                         disabled={!roomType.enabled}
                       />
                     </div>
@@ -261,6 +262,7 @@ const AddHotelForm = () => {
         </form>
       </div>
     </div>
+    </>
   )
 }
 
