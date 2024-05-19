@@ -1,9 +1,9 @@
+import { Response } from "express"
 import { ChangeEvent, useState } from "react"
+import uploadImagesToCloudinary from "../../api/imageUpload"
 import { OWNER_API, emailRegex } from "../../constants"
 import axios from "axios"
 import showToast from "../../utils/toast"
-import uploadImagesToCloudinary from "../../api/imageUpload"
-import { useNavigate } from "react-router-dom"
 
 const predefinedAmenities = [
   "Swimming Pool",
@@ -14,20 +14,19 @@ const predefinedAmenities = [
 ]
 
 const useHotel = () => {
-  const navigate = useNavigate()
-  const [nameError, setNameError] = useState<string | null>(null)
+  // const [nameError, setNameError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null)
   const [placeError, setPlaceError] = useState<string | null>(null)
   const [descriptionError, setDescriptionError] = useState<string | null>(null)
-  const [propertyRulesError, setPropertyRulesError] = useState<string | null>(
-    null
-  )
+  // const [propertyRulesError, setPropertyRulesError] = useState<string | null>(
+  //   null
+  // );
   const [aboutPropertyError, setAboutPropertyError] = useState<string | null>(
     null
   )
-  const [roomError, setRoomError] = useState<string | null>(null)
-  const [amenitiesError, setAmenitiesError] = useState<string | null>(null)
-  const [imageError, setImageError] = useState<string | null>(null)
+  // const [roomError, setRoomError] = useState<string | null>(null);
+  // const [amenitiesError, setAmenitiesError] = useState<string | null>(null);
+  // const [imageError, setImageError] = useState<string | null>(null);
   const [formData, setFormData] = useState<{
     name: string
     email: string
@@ -35,7 +34,7 @@ const useHotel = () => {
     description: string
     propertyRules: string[]
     aboutProperty: string
-    rooms: { type: string; price: string; number: string; guests: string }[]
+    rooms: { type: string; price: string; number: string }[]
     amenities: string[]
     imageFile: File[]
   }>({
@@ -50,15 +49,29 @@ const useHotel = () => {
     imageFile: [],
   })
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [roomTypes, setRoomTypes] = useState([
+    { name: "Single", enabled: false },
+    { name: "Double", enabled: false },
+    { name: "Duplex", enabled: false },
+  ])
+  // const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const [selectedDescription, setSelectedDescription] = useState("");
+
+  const handleDescriptionChange = (e) => {
+    setSelectedDescription(e.target.value);
+    setFormData({ ...formData, description: e.target.value }); // Update form data
+  };
+
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>,
-    index: number | null,
+    index: number | null = null,
     fieldName: string
   ) => {
     let errorMessage = ""
 
+    const { name, value } = e.target
     if (fieldName === "image") {
       const fileInput = e.target as HTMLInputElement
       const file = fileInput.files && fileInput.files[0]
@@ -74,48 +87,70 @@ const useHotel = () => {
           imageFile: [file],
         }))
       }
-    } else {
-      const { name, value } = e.target
-      if (fieldName === "email") {
-        if (!emailRegex.test(value)) {
-          errorMessage = "please enter a valid email address"
-        }
-        setEmailError(errorMessage)
-        setFormData({ ...formData, [name]: value })
-      } else if (fieldName === "place") {
-        if (value.length < 5) {
-          errorMessage = "please enter atleast 5 characters"
-        }
-        setPlaceError(errorMessage)
-        setFormData({ ...formData, [name]: value })
-      } else if (fieldName === "description") {
-        if (value.length < 12) {
-          errorMessage = "please enter atleast 12 characters"
-        }
-        setDescriptionError(errorMessage)
-        setFormData({ ...formData, [name]: value })
-      } else if (fieldName === " aboutProperty") {
-        if (value.length < 15) {
-          errorMessage = "please enter atleast 15 characters"
-        }
-        setAboutPropertyError(errorMessage)
-        setFormData({ ...formData, [name]: value })
-      } else if (fieldName === "propertyRules") {
-        const updatedRules = [...formData.propertyRules]
-        updatedRules[index as number] = value
-        setFormData({ ...formData, propertyRules: updatedRules })
-      } else if (fieldName.includes("rooms")) {
-        const roomIndex = parseInt(fieldName.split("-")[1])
-        const propertyName = fieldName.split(
-          "-"
-        )[2] as keyof (typeof formData.rooms)[0]
-        const updatedRooms = [...formData.rooms]
-        updatedRooms[roomIndex][propertyName] = value
-        setFormData({ ...formData, rooms: updatedRooms })
-      } else {
-        setFormData({ ...formData, [name]: value })
+    } else if (fieldName === "email") {
+      if (!emailRegex.test(value)) {
+        errorMessage = "please enter a valid email address"
       }
+      setEmailError(errorMessage)
+      setFormData({ ...formData, [name]: value })
+    } else if (fieldName === "place") {
+      if (value.length < 5) {
+        errorMessage = "please enter at least 5 characters"
+      }
+      setPlaceError(errorMessage)
+      setFormData({ ...formData, [name]: value })
+    } else if (fieldName === "description") {
+      console.log(value);
+      setFormData({ ...formData, [name]: value })
+    } else if (fieldName === "aboutProperty") {
+      if (value.length < 15) {
+        errorMessage = "please enter at least 15 characters"
+      }
+      setAboutPropertyError(errorMessage)
+      setFormData({ ...formData, [name]: value })
+    } else if (fieldName === "propertyRules") {
+      const updatedRules = [...formData.propertyRules]
+      if (index !== null) {
+        updatedRules[index] = value
+      }
+      setFormData({ ...formData, propertyRules: updatedRules })
+    } else if (fieldName.includes("rooms")) {
+      const [field, property] = fieldName.split("_")
+      setFormData(prevFormData => {
+        const updatedRooms = [...prevFormData.rooms]
+        if (!updatedRooms[Number(index)]) {
+          updatedRooms[Number(index)] = {
+            type: roomTypes[Number(index)].name,
+            price: "",
+            number: "",
+          }
+        }
+        updatedRooms[Number(index)] = {
+          ...updatedRooms[Number(index)],
+          [property]: value,
+        }
+        return { ...prevFormData, rooms: updatedRooms }
+      })
+    } else {
+      setFormData({ ...formData, [name]: value })
     }
+  }
+
+  const handleRoomEnabledChange = (roomType: string) => {
+    setRoomTypes(prevRoomTypes =>
+      prevRoomTypes.map(rt =>
+        rt.name === roomType ? { ...rt, enabled: !rt.enabled } : rt
+      )
+    )
+    setFormData(prevFormData => {
+      const updatedRooms = prevFormData.rooms.filter(
+        room => room.type !== roomType
+      )
+      if (!roomTypes.find(rt => rt.name === roomType).enabled) {
+        updatedRooms.push({ type: roomType, price: "", number: "" })
+      }
+      return { ...prevFormData, rooms: updatedRooms }
+    })
   }
 
   const handleAddAmenity = (selectedAmenity: string) => {
@@ -138,22 +173,12 @@ const useHotel = () => {
         ...formData,
         propertyRules: [...formData.propertyRules, ""],
       })
-    } else if (fieldName === "amenities") {
-      setFormData({ ...formData, amenities: [...formData.amenities, ""] })
-    } else if (fieldName === "rooms") {
-      setFormData({
-        ...formData,
-        rooms: [
-          ...formData.rooms,
-          { type: "", price: "", guests: "", number: "" },
-        ],
-      })
     }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const url = (await uploadImagesToCloudinary(formData.imageFile)).toString()
+    const url=(await uploadImagesToCloudinary(formData.imageFile)).toString()
     console.log(formData)
     axios
       .post(
@@ -167,21 +192,23 @@ const useHotel = () => {
           aboutProperty: formData.aboutProperty,
           rooms: formData.rooms,
           amenities: formData.amenities,
-          image: url,
+          image:url
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
+            authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          }
         }
       )
+
+
+
       .then(({ data }) => {
-        showToast(data.message)
-        navigate("/owner/hotels")
+        showToast(data.message);
       })
       .catch(({ response }) => {
-        showToast(response?.data?.message, "error")
-      })
+        showToast(response?.data?.message, "error");
+      });
   }
 
   return {
@@ -189,15 +216,19 @@ const useHotel = () => {
     handleChange,
     handleAddMore,
     handleSubmit,
-    nameError,
+    handleRoomEnabledChange,
+    handleDescriptionChange,
+    // nameError,
     emailError,
     placeError,
     descriptionError,
-    propertyRulesError,
+    // propertyRulesError,
     aboutPropertyError,
     handleAddAmenity,
     predefinedAmenities,
     imagePreview,
+    roomTypes,
+    selectedDescription
   }
 }
 
