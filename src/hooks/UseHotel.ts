@@ -4,6 +4,7 @@ import { OWNER_API, emailRegex } from "../constants";
 import axios from "axios";
 import showToast from "../utils/toast";
 import uploadImagesToCloudinary from "../api/imageUpload";
+import { useNavigate } from 'react-router-dom';
 
 const predefinedAmenities = [
   "Swimming Pool",
@@ -14,6 +15,7 @@ const predefinedAmenities = [
 ];
 
 const useHotel = () => {
+  const navigate=useNavigate()
   const [nameError, setNameError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [placeError, setPlaceError] = useState<string | null>(null);
@@ -178,6 +180,7 @@ const useHotel = () => {
       )
       .then(({ data }) => {
         showToast(data.message);
+        navigate("/owner/hotels")
       })
       .catch(({ response }) => {
         showToast(response?.data?.message, "error");
