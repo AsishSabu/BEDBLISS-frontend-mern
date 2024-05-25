@@ -15,7 +15,7 @@ import {
   HiOutlineLogout,
 } from "react-icons/hi";
 
-const sidebar = () => {
+const AdminSidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -26,6 +26,9 @@ const sidebar = () => {
 
   return (
     <Sidebar aria-label="Default sidebar example">
+            <Sidebar.Logo href="" img="" imgAlt="">
+            BEDBLISS ADMIN
+      </Sidebar.Logo>
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/admin">
@@ -52,4 +55,4 @@ const sidebar = () => {
   );
 };
 
-export default sidebar;
+export default AdminSidebar;

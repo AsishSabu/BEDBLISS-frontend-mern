@@ -1,4 +1,6 @@
-const flowbite = require("flowbite-react/tailwind");
+import flowbite from "flowbite-react/tailwind";
+import daisyui from "daisyui"
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -10,15 +12,19 @@ export default {
     extend: {
       colors: {
         varBlue: "#003B95",
+        varWhite:"#fdfffc",
         varGreen: "#22c55e",
-        adminDash:"rgb(36, 48, 63)"
+        varRed:"#dd1c1a",
+        varCream:"#fff1d0",
+        varGray:"#e9ecef",
       },
     },
-    fontFamily: {
-      head: ["Jersey 15", "sans-serif"],
-    },
+
   },
   plugins: [
-    flowbite.plugin()
+    
+    flowbite.plugin(),
+    daisyui,
+ 
   ],
 };

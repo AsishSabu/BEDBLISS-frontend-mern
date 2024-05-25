@@ -1,15 +1,11 @@
-import React from 'react'
-import AddHotelForm from '../../components/owner/AddHotelForm'
-import Navbar from '../../components/owner/Navbar/Navbar'
-import Footer from '../../components/owner/Footer/Footer'
+import React from "react"
+import AddHotelForm from "../../components/owner/AddHotelForm"
 
-const AddHotel = () => {
+const AddHotel: React.FC = () => {
   return (
-  <>
-  <Navbar/>
-  <AddHotelForm/>
-  <Footer/>
-  </>
+    <>
+      <AddHotelForm />
+    </>
   )
 }
 

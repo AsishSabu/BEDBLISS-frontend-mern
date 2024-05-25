@@ -1,16 +1,12 @@
-import React from 'react'
-import Navbar from '../../components/owner/Navbar/Navbar'
-import Banner from '../../components/owner/Banner/Banner'
-import Footer from '../../components/owner/Footer/Footer'
-import Body from '../../components/owner/Body/Body'
+import React from "react"
+import Banner from "../../components/owner/Banner/Banner"
+import Body from "../../components/owner/Body/Body"
 
-const Home = () => {
+const Home:React.FC = () => {
   return (
     <div className="overflow-hidden">
-      <Navbar/>
-      <Banner/>
-      <Body/>
-      <Footer/>
+      <Banner />
+      <Body />
     </div>
   )
 }

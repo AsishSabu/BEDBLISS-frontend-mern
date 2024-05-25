@@ -17,7 +17,7 @@ const Users: React.FC = () => {
         </Table.Head>
         <Table.Body className="divide-y">
           {users.map((user) => {
-            return <UserData {...user} key={user._id} />;
+            return <UserData {...user} type="user" key={user._id} />;
           })}
         </Table.Body>
       </Table>

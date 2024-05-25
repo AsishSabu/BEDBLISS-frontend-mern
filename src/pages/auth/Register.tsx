@@ -11,7 +11,6 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const {
     values,
-    isSubmitting,
     touched,
     handleBlur,
     errors,
@@ -21,22 +20,19 @@ const Register: React.FC = () => {
     initialValues: {
       name: "",
       email: "",
-      phone: "",
       password: "",
       cpassword: "",
-      role: "",
     },
     validationSchema: RegisterValidation,
-    onSubmit: ({ name, email, password, phone, role }) => {
-      console.log(role);
+    onSubmit: ({ name, email, password }) => {
+console.log("hloooo");
+
 
       axios
         .post(USER_API + "/auth/register", {
           name,
           email,
           password,
-          phone,
-          role,
         })
         .then(({ data }) => {
           const { message, newUser } = data;
@@ -125,26 +121,8 @@ const Register: React.FC = () => {
               {errors.cpassword && touched.cpassword && (
                 <p className="text-red-600">{errors.cpassword}</p>
               )}
-              <div>
-                <label className="mb-2  text-gray-400 text-lg">Role</label>
-                <select
-                  id="role"
-                  name="role"
-                  value={values.role}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
-                >
-                  <option value="">Select</option>
-                  <option value="user">User</option>
-                  <option value="owner">Owner</option>
-                </select>
-              </div>
-              {errors.role && touched.role && (
-                <p className="text-red-500">{errors.role}</p>
-              )}
+             
               <button
-                disabled={isSubmitting}
                 className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2  rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
