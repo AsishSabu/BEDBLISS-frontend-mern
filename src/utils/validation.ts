@@ -15,7 +15,6 @@ export const RegisterValidation = yup.object().shape({
     .string()
     .required("Confirm password is required")
     .oneOf([yup.ref("password")], "Passwords must match"),
-  role: yup.string().required("please select the role"),
 });
 
 export const LoginValidation = yup.object().shape({

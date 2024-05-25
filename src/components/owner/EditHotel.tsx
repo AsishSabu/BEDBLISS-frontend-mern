@@ -1,6 +1,10 @@
 import useHotel from "../../hooks/owner/UseHotel"
+import { useParams } from "react-router-dom"
+import useHotelDetails from "../../hooks/user/useHotelDetails"
 
-const AddHotelForm = () => {
+const EditHotel = () => {
+  const { id } = useParams<{ id: string }>()
+  const { hotel, loading, Error } = useHotelDetails(id)
   const {
     formData,
     handleChange,
@@ -257,19 +261,17 @@ const AddHotelForm = () => {
                         />
                       </div>
                     </div>
-
                   </div>
                 </div>
               ))}
               <div className="flex justify-between">
-              {error.roomPriceError && (
-                <p className="text-red-500">{error.roomPriceError}</p>
-              )}
-                                  {error.roomCountError && (
-                      <p className="text-red-500">{error.roomCountError}</p>
-                    )}
+                {error.roomPriceError && (
+                  <p className="text-red-500">{error.roomPriceError}</p>
+                )}
+                {error.roomCountError && (
+                  <p className="text-red-500">{error.roomCountError}</p>
+                )}
               </div>
-             
             </div>
             {error.roomError && (
               <p className="text-red-500">{error.roomError}</p>
@@ -293,4 +295,4 @@ const AddHotelForm = () => {
   )
 }
 
-export default AddHotelForm
+export default EditHotel

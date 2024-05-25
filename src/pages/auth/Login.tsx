@@ -1,7 +1,6 @@
 import axios from "axios";
 import { signInWithPopup } from "firebase/auth";
 import { useFormik } from "formik";
-import React, {  useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { USER_API } from "../../constants";
 import { auth, facebookProvider, googleProvider } from "../../firebase/config";
@@ -10,13 +9,8 @@ import { useAppDispatch } from "../../redux/store/store";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 import showToast from "../../utils/toast";
 import { LoginValidation } from "../../utils/validation";
-import Modal from "./Modal";
 
-type Provider = "google" | "facebook";
-type Role="user"|"owner"
 const Login: React.FC = () => {
-  const [open, setOpen] = useState(false);
-  const [provider, setProvider] = useState<Provider | null>(null);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
@@ -51,10 +45,8 @@ const Login: React.FC = () => {
       },
     });
 
-  const handleSignIn = (roles:Role) => {
+  const handleSignIn = (provider:string) => {
     const selectedProvider=provider
-    console.log(selectedProvider,"selectedProvider");
-    console.log(roles,"role");
     
     
     signInWithPopup(
@@ -67,7 +59,7 @@ const Login: React.FC = () => {
           email: data.user.email,
           picture: data.user.photoURL,
           email_verified: data.user.emailVerified,
-          role: roles,
+
         };
         axios
           .post(USER_API + `/auth/googleAndFacebookSignIn`, userData)
@@ -87,20 +79,6 @@ const Login: React.FC = () => {
         showToast(response?.data?.message, "error");
       });
   };
-
-  const handleProvider = (selectedProvider: Provider) => {    
-    setProvider(selectedProvider);
-    setOpen(true);
-    
-  };
-  const handleRole=(selectedRole:Role)=>{
-    console.log(selectedRole,"esfsdfsdsdsdfds");
-    setOpen(false)
-   handleSignIn(selectedRole)
-    
-  }
-  const handleClose=()=>setOpen(false)
-
 
 
   return (
@@ -142,7 +120,6 @@ const Login: React.FC = () => {
               {errors.password && touched.password && (
                 <p className="text-red-600">{errors.password}</p>
               )}
-              {open && <Modal onSelectRole={handleRole} onClose={handleClose} />}
              
               <Link
                 to="/auth/forgotPassword"
@@ -178,7 +155,7 @@ const Login: React.FC = () => {
               className="flex items-center justify-center mt-5 flex-wrap"
             >
               <button
-                onClick={() => handleProvider("google")}
+                onClick={() => handleSignIn("google")}
                 className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
               >
                 <img
@@ -189,7 +166,7 @@ const Login: React.FC = () => {
               </button>
 
               <button
-                onClick={() => handleProvider("facebook")}
+                onClick={() => handleSignIn("facebook")}
                 className="hover:scale-105 ease-in-out duration-300 shadow-lg p-2 rounded-lg m-1"
               >
                 <img

@@ -1,14 +1,10 @@
-import React from 'react'
-import Navbar from '../../components/user/Navbar/Navbar'
-import HotelDetail from '../../components/user/HotelDetail'
-import Footer from '../../components/user/Footer/Footer'
+import React from "react"
+import HotelDetail from "../../components/user/HotelDetail"
 
-const HotelDetails:React.FC= () => {
+const HotelDetails: React.FC = () => {
   return (
     <div>
-      <Navbar/>
-      <HotelDetail/>
-      <Footer/>
+      <HotelDetail />
     </div>
   )
 }

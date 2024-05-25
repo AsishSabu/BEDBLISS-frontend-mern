@@ -23,7 +23,6 @@ const useHotelDetails = (id: string) => {
 
     fetchHotelDetails();
   }, [id]);
-  console.log(hotel,".............")
 
   return { hotel, loading, error };
 };

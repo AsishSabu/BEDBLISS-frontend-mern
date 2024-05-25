@@ -1,6 +1,7 @@
 import { FC, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
 import { PublicRoutes } from "../publicRoutes";
+import NotFoundPage from "../../pages/NotFoundPage";
 const ForgotPassword = lazy(() => import("../../pages/auth/ForgotPassword"));
 const Login = lazy(() => import("../../pages/auth/Login"));
 const Register = lazy(() => import("../../pages/auth/Register"));
@@ -18,6 +19,7 @@ const AuthRouter: FC = () => {
         <Route path="/verifyOtp" element={<VerifyOtp />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/resetPassword/:id" element={<ResetPassword />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

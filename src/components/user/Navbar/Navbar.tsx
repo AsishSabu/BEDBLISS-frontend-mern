@@ -1,125 +1,133 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/reducer/reducer";
-import { useAppDispatch } from "../../../redux/store/store";
-import { clearUser } from "../../../redux/slices/userSlice";
-import { Menu, X } from "lucide-react";
-import { logo } from "../../../assets/images";
+import React from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { RootState } from "../../../redux/reducer/reducer"
+import { useAppDispatch } from "../../../redux/store/store"
+import { clearUser } from "../../../redux/slices/userSlice"
+import { logo } from "../../../assets/images"
+import {
+  Avatar,
+  Dropdown,
+  DropdownDivider,
+  DropdownItem,
+  Navbar,
+  NavbarBrand,
+  NavbarCollapse,
+  NavbarLink,
+  NavbarToggle,
+} from "flowbite-react"
 
-
-const Navbar:React.FC= () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const user = useSelector((state: RootState) => state.userSlice);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+const Header: React.FC = () => {
+  const user = useSelector((state: RootState) => state.userSlice)
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
 
   const handleLogOut = () => {
-    dispatch(clearUser());
-    navigate("/auth/login");
-  };
+    dispatch(clearUser())
+    navigate("/auth/login")
+  }
 
-  const toggleNavbar = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const navLinks = [
-    { label: "Home", to: "/" },
+  const UserDropdowns = [
+    { label: "Personal Info", to: "/user/profile" },
     { label: "Account", to: "/user/account" },
     { label: "Docs", to: "/user/docs" },
     ...(user.isAuthenticated && user.role === "user"
       ? [{ label: "Profile", to: "/user/profile" }]
       : []),
-  ];
+  ]
+
+  const OwnerDropdowns = [
+    { label: "Personal Info", to: "/owner/profile" },
+    { label: "Account", to: "/owner/account" },
+    { label: "Listings", to: "/owner/hotels" },
+    ...(user.isAuthenticated
+      ? [{ label: "Profile", to: "/owner/profile" }]
+      : []),
+  ]
+
+  const OwnerNavbarLinks = [
+    { label: "Home", to: "/owner" },
+    { label: "About", to: "/owner/about" },
+    { label: "Listings", to: "/owner/hotels" },
+  ]
+
+  const UserNavbarLinks = [
+    { label: "Home", to: "/user" },
+    { label: "About", to: "/user/about" },
+    { label: "Services", to: "/user/services" },
+    { label: "Pricing", to: "/user/pricing" },
+    { label: "Contact", to: "/user/contact" },
+  ]
 
   return (
-    <nav className="sticky top-0 z-10 block w-full max-w-full ps-8 py-2 text-white bg-varBlue rounded-none shadow-md h-max bg-opacity-100 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
-      <div className="flex items-center justify-between text-blue-gray-900 flex-wrap">
-        
-        <Link
-          to="/"
-          className="mr-4 cursor-pointer py-1.5 text-2xl font font-head leading-relaxed flex gap-2"
-        >
-           <img src={logo} className="h-8" alt="BEDBLISS Logo" />
+    <Navbar fluid rounded>
+      <NavbarBrand href="https://flowbite-react.com">
+        <img src={logo} className="mr-3 h-14" alt="BedBliss Logo" />
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
           BedBliss
-        </Link>
-   
-        <div className="flex items-center gap-4">
-          <div className="hidden mr-4 lg:block">
-            <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-              {navLinks.map((navLink, index) => (
-                <li key={index} className="block p-1 font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                  <Link to={navLink.to} className="flex items-center">
-                    {navLink.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="flex items-center gap-x-1">
-            {user.isAuthenticated && user.role === "user" ? (
-              <button
-                onClick={handleLogOut}
-                className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                type="button"
-              >
-                <span>SIGN OUT</span>
-              </button>
-            ) : (
-              <>
-                <Link
-                  to="/auth/login"
-                  className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                  type="button"
-                >
-                  <span>SIGN IN</span>
-                </Link>
-                <Link
-                  to="/auth/register"
-                  className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                  type="button"
-                >
-                  <span>SIGN UP</span>
-                </Link>
-              </>
-            )}
-          </div>
-          <button
-            className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
-            type="button"
-            onClick={toggleNavbar}
-          >
-            {isOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </div>
-      {isOpen && (
-        <div className="fixed right-0 h-auto w-auto bg-inherit shadow-lg z-20 flex flex-col items-end p-4 md:hidden">
-          {navLinks.map((navLink, index) => (
-            <Link key={index} to={navLink.to} className="my-2">
-              {navLink.label}
-            </Link>
-          ))}
-          {user.isAuthenticated && user.role === "user" ? (
-            <>
-              <button onClick={handleLogOut} className="my-2">
-                SIGN OUT
-              </button>
-            </>
+        </span>
+      </NavbarBrand>
+
+      <div className="flex md:order-2 justify-center">
+        <button
+          // onClick={handleLogOut}
+          className="relative inline-flex mt-3 justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800"
+        >
+          {user.role === "owner" ? (
+            <span className="relative px-3 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Switch To Traveling
+            </span>
+          ) : (
+            <span className="relative px-3 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Switch To Hosting
+            </span>
+          )}
+        </button>
+        <Dropdown
+          arrowIcon={false}
+          inline
+          label={
+            <Avatar
+              alt="User settings"
+              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+              rounded
+            />
+          }
+        >
+          {(user.role === "owner" ? OwnerDropdowns : UserDropdowns).map(
+            (dropdownItem, index) => (
+              <Link key={index} to={dropdownItem.to}>
+                <DropdownItem>{dropdownItem.label}</DropdownItem>
+              </Link>
+            )
+          )}
+          <DropdownDivider />
+          {user.isAuthenticated  ? (
+            <DropdownItem onClick={handleLogOut}>Sign out</DropdownItem>
           ) : (
             <>
-              <Link to="/auth/login" className="my-2">
-                Sign In
+              <Link to="/auth/login">
+                <DropdownItem>Sign In</DropdownItem>
               </Link>
-              <Link to="/user/profile" className="my-2">
-                Sign Up
+              <Link to="/user/register">
+                <DropdownItem>Sign Up</DropdownItem>
               </Link>
             </>
           )}
-        </div>
-      )}
-    </nav>
-  );
-};
+        </Dropdown>
+        <NavbarToggle />
+      </div>
+      <NavbarCollapse>
+        {(user.role === "owner" ? OwnerNavbarLinks : UserNavbarLinks).map(
+          (navbar, index) => (
+            <Link key={index} to={navbar.to}>
+              <NavbarLink>{navbar.label}</NavbarLink>
+            </Link>
+          )
+        )}
+      </NavbarCollapse>
+    </Navbar>
+  )
+}
 
-export default Navbar;
+export default Header

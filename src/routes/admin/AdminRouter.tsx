@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { FC, lazy } from "react";
 import { PublicRoutes } from "../publicRoutes";
 import { ProtectedAdminRoute } from "../protectedRoutes";
+import NotFoundPage from "../../pages/NotFoundPage";
 const Users = lazy(() => import("../../components/admin/Users"))
 const Owners = lazy(() => import("../../components/admin/Owners"))
 const Hotels= lazy(() => import("../../components/admin/Hotels"))
@@ -27,6 +28,7 @@ const AdminRouter: FC = () => {
           <Route path="/hotels" element={<Hotels />} />
         </Route>
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
