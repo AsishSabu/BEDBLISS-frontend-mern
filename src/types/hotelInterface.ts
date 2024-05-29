@@ -1,22 +1,27 @@
-export type RoomInterface = {
-    type: string;
-    price: string;
-    number:string;
-    sold:string
-  };
+interface Address {
+  streetAddress: string;
+  landMark: string;
+  district: string;
+  city: string;
+  pincode: string;
+  country: string;
+}
   
   export type HotelInterface = {
-    _id: string;
     name: string;
-    email: string;
-    image: string;
     place: string;
+    address: Address;
+    stayType: string;
     description: string;
-    isBlocked: boolean;
-    amenities: Array<string>;
-    rooms: Array<RoomInterface>;
-    propertyRules: Array<string>;
-    aboutProperty: string;
-    createdAt: Date;
+    room: string;
+    bed: string;
+    bathroom: string;
+    guests: string;
+    price: number;
+    propertyRules: string[];
+    amenities: string[];
+    reservationType: string;
   };
   
+
+
