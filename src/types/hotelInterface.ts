@@ -1,3 +1,5 @@
+import mongoose from "mongoose"
+
 interface Address {
   streetAddress: string;
   landMark: string;
@@ -8,6 +10,7 @@ interface Address {
 }
   
   export type HotelInterface = {
+    owner: mongoose.Types.ObjectId,
     _id:string;
     name: string;
     destination: string;

@@ -2,13 +2,13 @@ import { useNavigate } from "react-router-dom";
 
 interface HotelDataProps {
     _id:string;
-    image: string;
+    imageUrls: string[];
     name: string;
-    place: string;
-    description: string;
+    destination: string;
+    stayType: string;
   }
   
-  const HotelData: React.FC<HotelDataProps> = ({_id,image, name, place, description }) => {
+  const HotelData: React.FC<HotelDataProps> = ({_id,imageUrls, name, destination, stayType }) => {
   const navigate=useNavigate()
   const handleClick=()=>{
     navigate(`/user/hotelDetails/${_id}`)
@@ -21,7 +21,7 @@ interface HotelDataProps {
           
           <img
             className="w-full h-full overflow-hidden rounded-lg"
-            src={image}
+            src={imageUrls[0]}
             alt={name}
           />
         </div>
@@ -33,10 +33,10 @@ interface HotelDataProps {
   
           <div className="flex justify-between">
             <p className="mb-3 text-sm font-thin text-gray-700 dark:text-gray-400">
-              {description}
+              {stayType}
             </p>
             <p className="mb-3 text-sm font-thin text-gray-700 dark:text-gray-400">
-              {place}
+              {destination}
             </p>
           </div>
   
