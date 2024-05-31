@@ -8,19 +8,25 @@ interface Address {
 }
   
   export type HotelInterface = {
+    _id:string;
     name: string;
-    place: string;
+    destination: string;
     address: Address;
     stayType: string;
     description: string;
-    room: string;
-    bed: string;
-    bathroom: string;
-    guests: string;
-    price: number;
+    room: number;
+    bed: number;
+    bathroom: number;
+    guests: number;
+    price: string;
     propertyRules: string[];
     amenities: string[];
     reservationType: string;
+    imageUrls:string[];
+    ownerPhoto:string;
+    hotelDocument:string;
+    isVerified:boolean;
+    
   };
   
 

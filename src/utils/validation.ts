@@ -59,7 +59,7 @@ export const passwordValidation = yup.object().shape({
 export const hotelAddValidation = yup.object().shape({
   name: yup.string().required("Hotel name is required"),
   stayType: yup.string().required("Room type is required"),
-  place: yup.string().required("Place is required"),
+  destination: yup.string().required("Destinaiton is required"),
   address: yup.object().shape({
     streetAddress: yup.string().required("Street address is required"),
     landMark: yup.string().required("Landmark is required"),
@@ -67,7 +67,7 @@ export const hotelAddValidation = yup.object().shape({
     city: yup.string().required("City is required"),
     pincode: yup
       .string()
-      .matches(/^[0-9]{5}$/, "Pincode must be exactly 5 digits")
+      .matches(/^[0-9]{6}$/, "Pincode must be exactly 6 digits")
       .required("Pincode is required"),
     country: yup.string().required("Country is required"),
   }),

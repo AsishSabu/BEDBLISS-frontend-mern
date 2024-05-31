@@ -16,6 +16,8 @@ const useHotelList = () => {
           },
         })
         setHotels(data.Hotels)
+        console.log(data.Hotels)
+        
       } catch (error) {
         setError("Failed to fetch hotels")
         console.error(error)

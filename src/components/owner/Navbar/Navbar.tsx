@@ -43,7 +43,8 @@ const Header: React.FC = () => {
   ]
 
   return (
-    <Navbar fluid rounded>
+    
+    <Navbar fluid rounded shadow-lg>
       <NavbarBrand href="https://flowbite-react.com">
         <img src={logo} className="mr-3 h-14 " alt="BedBliss Logo" />
         <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">

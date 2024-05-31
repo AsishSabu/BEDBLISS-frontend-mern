@@ -18,6 +18,8 @@ export default  withMT({
         varRed:"#dd1c1a",
         varCream:"#fff1d0",
         varGray:"#e9ecef",
+        varCream2:"#FEFAF6",
+        varGrey:"#EEEEEE",
         Marine_blue: "hsl(213, 96%, 18%)",
         Purplish_blue: "hsl(243, 100%, 62%)",
         Pastel_blue: "hsl(228, 100%, 84%)",
@@ -28,6 +30,7 @@ export default  withMT({
         Magnolia: "hsl(217, 100%, 97%)",
         Alabaster: "hsl(231, 100%, 99%)",
         White: "hsl(0, 0%, 100%)"
+
       },
     },
 

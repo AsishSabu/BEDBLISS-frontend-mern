@@ -2,22 +2,42 @@ import { FC, useState, useCallback } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { hotelAddValidation } from "../../utils/validation"
 import { useDropzone } from "react-dropzone"
-import DragAndDrop from "../../assets/images/dragAndDrop.svg"
-import uploadImagesToCloudinary from "../../api/imageUpload"
-import { OWNER_API } from "../../constants"
+import { FaTrashAlt } from "react-icons/fa"
 import axios from "axios"
 import { HotelInterface } from "../../types/hotelInterface"
 import showToast from "../../utils/toast"
 import { useNavigate } from "react-router-dom"
+import PhotoUploadModal from "./photoUploadModal"
+import { OWNER_API } from "../../constants"
 
 const AddHotelForm: FC = () => {
-  const amenitiesList = ["Swimming Pool", "Gym", "Spa", "Restaurant", "Parking"]
+  const amenitiesList = [
+    "Swimming Pool",
+    "Gym",
+    "Spa",
+    "Restaurant",
+    "Parking",
+    "Free parking on premises",
+    "Kitchen",
+    "Washing Machine",
+    "Air Conditioning",
+    "BBQ grill",
+    "Hot tub",
+    "Beach Access",
+  ]
   const reservationTypes = ["instant", "approveDecline"]
   const StayTypes = ["House", "Flat/Appartment", "Hotel", "HouseBoat", "Villa"]
   const [images, setImages] = useState<(string | ArrayBuffer | null)[]>([])
+  const [hotelDocument, setHotelDocument] = useState<
+    (string | ArrayBuffer | null)[]
+  >([])
+  const [ownerId, setOwnerId] = useState<(string | ArrayBuffer | null)[]>([])
   const [propertyRules, setPropertyRules] = useState<string[]>([])
   const [newRule, setNewRule] = useState("")
-  const navigate=useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isHotelModalOpen, setIsHotelModalOpen] = useState(false)
+  const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
+  const navigate = useNavigate()
 
   const addPropertyRule = () => {
     if (newRule.trim() !== "") {
@@ -30,42 +50,46 @@ const AddHotelForm: FC = () => {
     setPropertyRules(propertyRules.filter((_, i) => i !== index))
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newImages: (string | ArrayBuffer | null)[] = []
-    acceptedFiles.slice(0, 5).forEach((file: File) => {
-      const reader = new FileReader()
-
-      reader.onabort = () => console.log("file reading was aborted")
-      reader.onerror = () => console.log("file reading has failed")
-      reader.onload = () => {
-        const binaryStr = reader.result
-        if (binaryStr) {
-          newImages.push(binaryStr)
-          setImages(prevImages => [...prevImages, ...newImages].slice(0, 5))
-        }
-      }
-
-      reader.readAsDataURL(file)
-    })
-  }, [])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "image/*": [],
-    },
-  })
-  const handleSubmit = async (values: HotelInterface) => {
-    const imageUrls = await uploadImagesToCloudinary(images)
+  const handleUpload = imageUrls => {
+    console.log("hiiiii")
     console.log(imageUrls)
-    console.log(values)
+
+    setImages(imageUrls)
+    setIsModalOpen(false)
+  }
+
+  const handleHotelDocumentUpload = imageUrls => {
+    console.log("hlooooo")
+    console.log(imageUrls)
+
+    setHotelDocument(imageUrls)
+    setIsHotelModalOpen(false)
+  }
+  const handleOwnerIdUpload = imageUrls => {
+    console.log("/////////")
+    console.log(imageUrls)
+
+    setOwnerId(imageUrls)
+    setIsOwnerModalOpen(false)
+  }
+  const handleRemoveImage = (image: string) => {
+    setImages(prevImages => prevImages.filter(img => img !== image))
+  }
+  const handleRemoveHotelDocument = () => {
+    setHotelDocument([])
+  }
+  const handleRemoveOwner = () => {
+    setOwnerId([])
+  }
+  const handleSubmit = async (values: HotelInterface) => {
+    console.log("hlooooo")
 
     const response = await axios
       .post(
         `${OWNER_API}/addhotel`,
         {
           name: values.name,
-          destination: values.place,
+          destination: values.destination,
           address: {
             streetAddress: values.address.streetAddress,
             landMark: values.address.landMark,
@@ -84,7 +108,9 @@ const AddHotelForm: FC = () => {
           amenities: values.amenities,
           reservationType: values.reservationType,
           propertyRules,
-          imageUrls,
+          imageUrls: images,
+          hotelDocument: hotelDocument[0],
+          ownerPhoto: ownerId[0],
         },
         {
           headers: {
@@ -93,24 +119,20 @@ const AddHotelForm: FC = () => {
         }
       )
       .then(({ data }) => {
-        console.log(data, "data")
         showToast(data.message)
         navigate("/owner/hotels")
       })
       .catch(({ response }) => {
-        console.log(response, "error")
-
         showToast(response?.data?.message, "error")
       })
   }
-
   return (
     <>
       <Formik
         initialValues={{
           name: "",
           stayType: "",
-          place: "",
+          destination: "",
           address: {
             streetAddress: "",
             landMark: "",
@@ -124,19 +146,25 @@ const AddHotelForm: FC = () => {
           bathroom: 0,
           guests: 0,
           price: "",
-          propertyrules: [],
           description: "",
           amenities: [],
-          images: [],
           reservationType: "",
         }}
         validationSchema={hotelAddValidation}
         validate={values => {
+          console.log(values)
+          console.log(propertyRules)
+          console.log(images, "images")
+          console.log(hotelDocument, "hotel")
+          console.log(ownerId, "owner")
+
           const errors: any = {}
 
           // Validate propertyrules
           if (propertyRules.length < 2) {
-            errors.propertyrules = "At least two rules are required"
+            console.log("hiaiii")
+
+            errors.propertyRules = "At least two rules are required"
           }
 
           // Validate images
@@ -145,6 +173,14 @@ const AddHotelForm: FC = () => {
           } else if (images.length > 5) {
             errors.images = "No more than 5 images are allowed"
           }
+
+          if (hotelDocument.length < 1) {
+            errors.hotelDocument = "hotel documetation is required"
+          }
+          if (ownerId.length < 1) {
+            errors.ownerId = "ownerId is required"
+          }
+          console.log(errors)
 
           return errors
         }}
@@ -175,16 +211,16 @@ const AddHotelForm: FC = () => {
 
                   <div>
                     <label className="text-gray-700 text-lg font-bold mb-2">
-                      Place:
+                      destination:
                     </label>
                     <Field
                       type="text"
-                      name="place"
+                      name="destination"
                       className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                       placeholder="Enter the location"
                     />
                     <span className="text-Strawberry_red text-sm">
-                      <ErrorMessage name="place" />
+                      <ErrorMessage name="destination" />
                     </span>
                   </div>
 
@@ -428,7 +464,6 @@ const AddHotelForm: FC = () => {
                         <ErrorMessage name="bed" />
                       </span>
                     </div>
-
                     <div>
                       <label className="text-gray-700 text-lg font-bold mb-2">
                         Bathroom:
@@ -498,7 +533,6 @@ const AddHotelForm: FC = () => {
                         <ErrorMessage name="bathroom" />
                       </span>
                     </div>
-
                     <div>
                       <label className="text-gray-700 text-lg font-bold mb-2">
                         Guests:
@@ -612,7 +646,6 @@ const AddHotelForm: FC = () => {
                         <ErrorMessage name="amenities" />
                       </span>
                     </div>
-
                     <div>
                       <label className="text-gray-700 text-lg font-bold mb-2">
                         Price:
@@ -642,50 +675,50 @@ const AddHotelForm: FC = () => {
                       </span>
                     </div>
                     <div className="col-span-2">
-                      <div>
-                        <label
-                          htmlFor="propertyrules"
-                          className="text-gray-700 text-lg font-bold mb-2"
+                      <label
+                        htmlFor="propertyrules"
+                        className="text-gray-700 text-lg font-bold mb-2"
+                      >
+                        Property Rules
+                      </label>
+                      <div className="flex items-center">
+                        <Field
+                          type="text"
+                          className=""
+                          value={newRule}
+                          onChange={e => setNewRule(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="bg-gray-200 px-2 ml-2"
+                          onClick={addPropertyRule}
                         >
-                          Property Rules
-                        </label>
-                        <div className="flex items-center">
-                          <Field
-                            type="text"
-                            className=""
-                            value={newRule}
-                            onChange={e => setNewRule(e.target.value)}
-                          />
-                          <button
-                            type="button"
-                            className="bg-gray-200 px-2 ml-2"
-                            onClick={addPropertyRule}
-                          >
-                            Add Rule
-                          </button>
-                        </div>
-                        <ul>
-                          {propertyRules.map((rule, index) => (
-                            <li key={index} className="flex items-center">
-                              <span className="block w-3/4 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring">
-                                {rule}
-                              </span>
-                              <button
-                                type="button"
-                                className="bg-gray-200 px-2 ml-2"
-                                onClick={() => removePropertyRule(index)}
-                              >
-                                Remove
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
+                          Add Rule
+                        </button>
                       </div>
-                      <span className="text-Strawberry_red text-sm">
-                        <ErrorMessage name="propertyrules" />
-                      </span>
+                      <ul>
+                        {propertyRules.map((rule, index) => (
+                          <li key={index} className="flex items-center">
+                            <span className="block w-3/4 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring">
+                              {rule}
+                            </span>
+                            <button
+                              type="button"
+                              className="bg-gray-200 px-2 ml-2"
+                              onClick={() => removePropertyRule(index)}
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                      {/* Use ErrorMessage component with the correct name prop */}
+                      <ErrorMessage
+                        name="propertyRules"
+                        component="span"
+                        className="text-Strawberry_red text-sm"
+                      />
                     </div>
-
                     <div className="col-span-2">
                       <label
                         htmlFor="reservationType "
@@ -713,65 +746,132 @@ const AddHotelForm: FC = () => {
                         <ErrorMessage name="reservationType" />
                       </span>
                     </div>
-                    <div className="col-span-2">
-                      <label className="text-gray-700 text-lg font-bold mb-2">
-                        Images
+                    <div className="flex flex-col mt-4 col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Hotel Images
                       </label>
-                      {images.length > 0 ? (
-                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                          <div className="space-y-1 text-center">
-                            <div className="flex text-sm text-gray-600">
-                              <img
-                                src={images[0] as string}
-                                alt="Main Uploaded"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                          <div
-                            className="space-y-1 text-center"
-                            {...getRootProps()}
-                          >
-                            <input {...getInputProps()} />
-                            {isDragActive ? (
-                              <div className="flex text-sm text-gray-600">
-                                <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                  <span>Drag 'n' drop some files here</span>
-                                </label>
-                              </div>
-                            ) : (
-                              <div className="flex text-sm text-gray-600">
-                                <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                  <span>Click to select files</span>
-                                </label>
-                              </div>
-                            )}
-                            <p className="text-xs text-indigo-600">
-                              PNG, JPG, GIF up to 10MB
-                            </p>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="mt-4 grid grid-cols-2 gap-4">
-                        {images.slice(1).map((image, index) => (
-                          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                            <div key={index} className="space-y-1 text-center">
-                              <div className="flex text-sm text-gray-600">
-                                <img
-                                  src={image as string}
-                                  alt={`Additional Image ${index + 1}`}
-                                />
-                              </div>
-                            </div>
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
+                        <button
+                          type="button"
+                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          Add Photos
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {images.map((image, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={image}
+                              alt="Hotel"
+                              className="h-40 w-full object-cover rounded-md"
+                            />
+                            <button
+                              className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
+                              onClick={() => handleRemoveImage(image)}
+                            >
+                              <FaTrashAlt />
+                            </button>
                           </div>
                         ))}
                       </div>
+                      <PhotoUploadModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onUpload={handleUpload}
+                        file={"5"}
+                      />
                     </div>
                     <span className="text-Strawberry_red text-sm">
                       <ErrorMessage name="images" />
+                    </span>
+                    <div className="flex flex-col mt-4 col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Add Hotel Document
+                      </label>
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
+                        <button
+                          type="button"
+                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                          onClick={() => setIsHotelModalOpen(true)}
+                        >
+                          Add Photos
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {hotelDocument.map((image, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={image}
+                              alt="Hotel"
+                              className="h-40 w-full object-cover rounded-md"
+                            />
+                            <button
+                              title="btn"
+                              className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
+                              onClick={() => handleRemoveHotelDocument()}
+                            >
+                              <FaTrashAlt />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <PhotoUploadModal
+                        isOpen={isHotelModalOpen}
+                        onClose={() => setIsHotelModalOpen(false)}
+                        onUpload={handleHotelDocumentUpload}
+                        file={"1"}
+                      />
+                    </div>
+                    <span className="text-Strawberry_red text-sm">
+                      <ErrorMessage name="hotelDocument" />
+                    </span>
+                    <div className="flex flex-col mt-4 col-span-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Add owner Id
+                      </label>
+                      <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
+                        <button
+                          type="button"
+                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                          onClick={() => setIsOwnerModalOpen(true)}
+                        >
+                          Add Photos
+                        </button>
+                      </div>
+                      <ErrorMessage
+                        name="images"
+                        component="div"
+                        className="text-red-500 text-sm mt-1"
+                      />
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        {ownerId.map((image, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={image}
+                              alt="Hotel"
+                              className="h-40 w-full object-cover rounded-md"
+                            />
+                            <button
+                              className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
+                              onClick={() => handleRemoveOwner()}
+                            >
+                              <FaTrashAlt />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <PhotoUploadModal
+                        isOpen={isOwnerModalOpen}
+                        onClose={() => setIsOwnerModalOpen(false)}
+                        onUpload={handleOwnerIdUpload}
+                        file={"1"}
+                      />
+                    </div>
+                    <span className="text-red-500 text-sm mt-1">
+                      <ErrorMessage name="ownerId" />
                     </span>
                   </div>
                   <div className="flex justify-center col-span-2 p-4">
