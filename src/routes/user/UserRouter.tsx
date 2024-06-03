@@ -2,6 +2,7 @@ import { FC, lazy } from "react"
 import { Route, Routes } from "react-router-dom"
 import { ProtectedUserRoute } from "../protectedRoutes"
 import Layout from "../../pages/Layout"
+import CheckoutPage from "../../components/user/CheckoutPage"
 
 const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"))
 const HotelDetails = lazy(() => import("../../pages/user/HotelDetails"))
@@ -17,6 +18,7 @@ const UserRouter: FC = () => {
         <Route index element={<Home />} />
         <Route path="/hotels" element={<Hotels />} />
         <Route path="/hotelDetails/:id" element={<HotelDetails />} />
+        <Route path="/checkout/:id" element={<CheckoutPage />} />
         {/*user private routes*/}
 
         <Route path="" element={<ProtectedUserRoute />}>

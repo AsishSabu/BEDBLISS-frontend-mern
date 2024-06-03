@@ -29,7 +29,7 @@ interface Address {
     ownerPhoto:string;
     hotelDocument:string;
     isVerified:boolean;
-    
+    unavailbleDates:string[]  
   };
   
 
