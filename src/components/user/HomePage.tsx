@@ -6,7 +6,7 @@ const HomePage: React.FC = () => {
   const { hotels } = useUserHotels()
 
   return (
-    <div className="py-10 px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="py-10 px-20  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5  rounded-2xl ">
       {hotels.length > 0 ? (
         hotels.map(hotel => <HotelData key={hotel._id} {...hotel} />)
       ) : (

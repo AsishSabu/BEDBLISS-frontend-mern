@@ -4,7 +4,10 @@ import UserData from "./UserData";
 import { Table } from "flowbite-react";
 
 const Users: React.FC = () => {
-  const { users } = useUsers();
+  const { users, loading, error } = useUsers();
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading users.</div>;
 
   return (
     <div className="overflow-x-auto">

@@ -20,9 +20,9 @@ const SearchBoxUser: React.FC<SearchBoxUserProps> = ({
   handleSearch,
 }) => {
   return (
-    <section className="shadow-lg border rounded-full grid grid-cols-1 md:grid-cols-6 gap-4  container mx-auto  relative bg-white max-w-3xl -mt-8">
+    <section className="shadow-lg bg-varWhite border-varRed border-2 focus:ring-4 md:rounded-full grid sm:grid-cols-2 md:grid-cols-9 md:gap-1 container mx-auto  relative  max-w-3xl -mt-8">
       <input
-        className=" border-hidden rounded-full p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2"
+        className=" border-hidden rounded-l-full p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2"
         type="text"
         placeholder="Where are you going?"
         value={destination}
@@ -30,51 +30,35 @@ const SearchBoxUser: React.FC<SearchBoxUserProps> = ({
       />
       <input
         title="checkin"
-        className="rounded-full border-hidden p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-1"
+        className=" border-hidden p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2"
         type="date"
         value={checkInDate}
         onChange={e => setCheckInDate(e.target.value)}
       />
       <input
         title="checkout"
-        className="rounded-full border-hidden p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-1"
+        className=" border-hidden p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2"
         type="date"
         value={checkOutDate}
         onChange={e => setCheckOutDate(e.target.value)}
       />
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-full border text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2">
-        <input
-          title="checkout"
-          placeholder="No of guests?"
-          className="border-hidden rounded-l-full text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-3"
-          type="text"
-          value={checkOutDate}
-          onChange={e => setCheckOutDate(e.target.value)}
-        />
-        <button
+      <input
+        title="checkout"
+        placeholder="No of guests?"
+        className=" border-hidden p-4 text-gray-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-varGray col-span-1 md:col-span-2"
+        type="text"
+        value={checkOutDate}
+        onChange={e => setCheckOutDate(e.target.value)}
+      />
+
+      <button
         title="search"
-          type="button"
-          className="border-hidden text-gray-700  col-span-1 rounded-full"
-          onClick={handleSearch}
-        >
-          <svg
-            className="w-6 h-6 text-gray-800 dark:text-white rounded-full"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-width="2"
-              d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </button>
-      </div>
+        type="button"
+        className="border-hidden  bg-Marine_blue md:rounded-r-full flex justify-center items-center sm:col-span-2 md:col-span-1 "
+        onClick={handleSearch}
+      >
+        <p className="font-bold text-xl text-varWhite pr-2">search</p>
+      </button>
     </section>
   )
 }

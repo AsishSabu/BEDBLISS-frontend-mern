@@ -22,8 +22,6 @@ const Hotels: React.FC = () => {
             <header className="flex justify-between mb-5">
               <h1 className="text-2xl">Your listing</h1>
               <div className="flex space-x-3">
-                <button className="text-xl">🔍</button>
-                <button className="text-xl">📄</button>
                 <button className="text-xl" onClick={handleAddHotel}>
                   ➕
                 </button>
@@ -64,11 +62,16 @@ const Hotels: React.FC = () => {
       ) : (
         <>
           <div className="p-10 ">
-            <header className=" flex justify-center">
+            <header className=" flex justify-between">
               <h1 className="text-4xl text-red-600 font-body">
                 No Hotels listed yet
               </h1>
+              <button className="text-xl" onClick={handleAddHotel}>
+                  ➕
+                </button>
+              
             </header>
+            
           </div>
         </>
       )}

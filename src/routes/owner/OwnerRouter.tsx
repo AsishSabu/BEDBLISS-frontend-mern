@@ -14,17 +14,14 @@ const OwnerRouter: FC = () => {
   return (
     <Routes>
       <Route path="" element={<Layout />}>
-        <Route index element={<Home />} />
         {/*user private routes*/}
 
         <Route path="" element={<ProtectedOwnerRoute />}>
+          <Route index element={<Home />} />
           <Route path="/addHotel" element={<AddHotel />} />
           <Route path="/hotels" element={<HotelList />} />
           <Route path="/hotelDetails/:id" element={<HotelDetails />} />
           <Route path="/editHotel/:id" element={<HotelDetails />} />
-        </Route>
-        <Route path="/profile" element={<Profile />}>
-          <Route index element={<OwnerProfile />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

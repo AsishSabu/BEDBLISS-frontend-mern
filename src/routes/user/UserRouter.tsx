@@ -1,8 +1,11 @@
 import { FC, lazy } from "react"
 import { Route, Routes } from "react-router-dom"
-import { ProtectedUserRoute } from "../protectedRoutes"
+import { ProtectedAllUserRoute, ProtectedUserRoute } from "../protectedRoutes"
 import Layout from "../../pages/Layout"
 import CheckoutPage from "../../components/user/CheckoutPage"
+import PaymentCompleted from "../../pages/user/PaymentCompleted"
+import BookingHistoryList from "../../pages/user/BookingHistory"
+import BookingDetails from "../../pages/user/BookingDetails"
 
 const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"))
 const HotelDetails = lazy(() => import("../../pages/user/HotelDetails"))
@@ -15,15 +18,22 @@ const UserRouter: FC = () => {
   return (
     <Routes>
       <Route path="" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="/hotels" element={<Hotels />} />
-        <Route path="/hotelDetails/:id" element={<HotelDetails />} />
-        <Route path="/checkout/:id" element={<CheckoutPage />} />
+        <Route path="" element={<ProtectedAllUserRoute />}>
+          <Route index element={<Home />} />
+          <Route path="/hotels" element={<Hotels />} />
+          <Route path="/hotelDetails/:id" element={<HotelDetails />} />
+        </Route>
+
         {/*user private routes*/}
 
         <Route path="" element={<ProtectedUserRoute />}>
+          <Route path="/checkout/:id" element={<CheckoutPage />} />
+          <Route path="/payment_status/:id" element={<PaymentCompleted/>}/>
           <Route path="/profile" element={<Profile />}>
             <Route index element={<UserProfile />} />
+            <Route path="/profile/Mybookings" element={<BookingHistoryList />} />
+            <Route path="/profile/bookingDetails/:id" element={<BookingDetails />} />
+            <Route path="/profile/MyWallet" element={<UserProfile />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFoundPage />} />

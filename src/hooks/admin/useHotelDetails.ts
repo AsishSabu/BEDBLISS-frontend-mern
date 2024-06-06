@@ -1,49 +1,28 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import {  ADMIN_API, USER_API } from "../../constants"
-import { HotelInterface } from "../../types/hotelInterface"
-import { TbArrowAutofitRight } from "react-icons/tb"
-import showToast from "../../utils/toast"
+import useSWR from 'swr';
+import axios from 'axios';
+import { ADMIN_API, USER_API } from '../../constants';
+import { HotelInterface } from '../../types/hotelInterface';
+import showToast from '../../utils/toast';
 
-const useHotelDetails = (id:string) => {
-  const [hotel, setHotel] = useState<HotelInterface | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
-  useEffect(() => {
-    const fetchHotelDetails = async () => {
-      try {
-        const { data } = await axios.get(`${USER_API}/hotelDetails/${id}`);        
-        setHotel(data.Hotel);
-      } catch (error) {
-        setError("Failed to fetch hotel details");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+const useHotelDetails = (id: string) => {
+  const { data, error, mutate } = useSWR(`${USER_API}/hotelDetails/${id}`, fetcher);
 
-    fetchHotelDetails();
-  });
+  const hotel: HotelInterface | null = data?.Hotel || null;
+  const loading: boolean = !error && !data;
 
-  const verifyHotel=()=>{
+  const verifyHotel = async () => {
+    try {
+      const response = await axios.patch(`${ADMIN_API}/verify_hotel/${id}`);
+      showToast(response.data.message, 'success');
+      mutate(); // Revalidate the data after verifying the hotel
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    axios
-      .patch(ADMIN_API +`/verify_hotel/${id}`)
-      .then((response)=>{
-        console.log(response);
-        
-        showToast(response.data.message,"success")
-      })
-      .catch(err => console.log(err));
-    
-    
-  }
-  
-
-  return { hotel, loading, error ,verifyHotel };
+  return { hotel, loading, error, verifyHotel };
 };
 
-
-
-export default useHotelDetails 
+export default useHotelDetails;

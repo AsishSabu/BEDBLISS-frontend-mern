@@ -1,35 +1,29 @@
-import { useEffect, useState } from "react"
-import { ADMIN_API } from "../../constants"
-import axios from "axios"
+import useSWR from 'swr';
+import axios from 'axios';
+import { ADMIN_API } from '../../constants';
+
+// Fetcher function using axios
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useDashboard = () => {
-  const [userCount,setUserCount]=useState("0")
-  const [ownerCount,setOwnerCount]=useState("0")
-  const [hotelCount,setHotelCount]=useState("0")
-  const [bookingCount,setBookingCount]=useState("0")
+  // Use SWR to fetch data
+  const { data, error } = useSWR(`${ADMIN_API}/counts`, fetcher);
 
-  useEffect(()=>{
-    axios
-    .get(ADMIN_API + "/counts")
-    .then(({ data }) => {        
-      console.log(data, "data")
-      setUserCount(data.userCount)
-      setOwnerCount(data.ownerCount)
-      setHotelCount(data.hotelCount)
+  const userCount = data?.userCount || "0";
+  const ownerCount = data?.ownerCount || "0";
+  const hotelCount = data?.hotelCount || "0";
+  const bookingCount = data?.bookingCount || "0";
 
-    })
-    .catch((error) => console.log(error))
-}, [])
+  const loading = !data && !error;
 
-  
-  return{
-      userCount,
-      ownerCount,
-      hotelCount,
-      bookingCount
-  }
-  
-}
+  return {
+    userCount,
+    ownerCount,
+    hotelCount,
+    bookingCount,
+    loading,
+    error
+  };
+};
 
-
-export default useDashboard
+export default useDashboard;

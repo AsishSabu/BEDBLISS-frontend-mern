@@ -1,25 +1,24 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { ADMIN_API } from "../../constants"
-import { HotelInterface } from "../../types/hotelInterface"
+import useSWR from 'swr';
+import axios from 'axios';
+import { ADMIN_API } from '../../constants';
+import { HotelInterface } from '../../types/hotelInterface';
+
+// Fetcher function using axios
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useHotels = () => {
-  const [hotels, setHotels] = useState<HotelInterface[]>([])
-  useEffect(() => {
-    axios
-      .get(ADMIN_API + "/hotels")
-      .then(({ data }) => {
-        console.log(data, "data")
+  // Use SWR to fetch data
+  const { data, error } = useSWR(`${ADMIN_API}/hotels`, fetcher);
 
-        const { Hotels } = data
-       setHotels(Hotels)
-        
-      })
-      .catch((error) => console.log(error))
-  }, [setHotels])
+  // Extract the hotels array from the data
+  const hotels: HotelInterface[] = data?.Hotels || [];
+  const loading = !data && !error;
+
   return {
-    hotels
-  }
-}
+    hotels,
+    loading,
+    error
+  };
+};
 
-export default useHotels
+export default useHotels;

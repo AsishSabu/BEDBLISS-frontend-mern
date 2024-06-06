@@ -1,33 +1,27 @@
-import axios from "axios"
-import { useEffect, useState } from "react"
-import { OWNER_API } from "../../constants"
-import { HotelInterface } from "../../types/hotelInterface"
+import useSWR from "swr";
+import { OWNER_API } from "../../constants";
+import { HotelInterface } from "../../types/hotelInterface";
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch hotels");
+  }
+  return res.json();
+};
 
 const useHotelList = () => {
-  const [hotels, setHotels] = useState<HotelInterface[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const { data: hotels, error } = useSWR(`${OWNER_API}/myHotels`, fetcher);
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const { data } = await axios.get(`${OWNER_API}/myHotels`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        })
-        setHotels(data.Hotels)
-        console.log(data.Hotels)
-        
-      } catch (error) {
-        setError("Failed to fetch hotels")
-        console.error(error)
-      }
-    }
+  return {
+    hotels: hotels?.Hotels ?? [],
+    error: error ? "Failed to fetch hotels" : null,
+    isLoading: !hotels && !error,
+  };
+};
 
-    fetchHotels()
-  }, [])
-
-  return { hotels, error }
-}
-
-export default useHotelList
+export default useHotelList;

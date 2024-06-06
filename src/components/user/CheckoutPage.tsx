@@ -92,21 +92,13 @@ const CheckoutPage = () => {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
-      console.log(response);
-      
+      console.log(response);      
       const sessionId = response.data.id
-    //   const bookingId = response.data.booking.bookingId
       console.log(sessionId);
-    //   console.log(bookingId);
-      
-      
-
       if (stripe) {
         const result = await stripe.redirectToCheckout({ sessionId })
         if (result.error) console.error(result.error)
       }
-
-    //   navigate(`/payment_status/${bookingId}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)
     }

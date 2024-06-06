@@ -1,43 +1,24 @@
-import { useEffect, useState } from "react"
-import { UserInterface } from "../../types/userInterface"
-import axios from "axios"
-import { ADMIN_API } from "../../constants"
+import useSWR from 'swr';
+import axios from 'axios';
+import { ADMIN_API } from '../../constants';
+import { UserInterface } from '../../types/userInterface';
+
+// Fetcher function using axios
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useUsers = () => {
-  const [users, setUsers] = useState<UserInterface[]>([])
-  useEffect(() => {
-    axios
-      .get(ADMIN_API + "/users")
-      .then(({ data }) => {
-        console.log(data, "data")
+  // Use SWR to fetch data
+  const { data, error } = useSWR(`${ADMIN_API}/users`, fetcher);
 
-        const { users } = data
-        setUsers(users)
-        console.log(users)
-      })
-      .catch((error) => console.log(error))
-  }, [setUsers])
+  // Extract the users array from the data
+  const users: UserInterface[] = data?.users || [];
+  const loading = !data && !error;
+
   return {
     users,
-  }
-}
-export const useOwners = () => {
-  const [users, setUsers] = useState<UserInterface[]>([])
-  useEffect(() => {
-    axios
-      .get(ADMIN_API + "/owners")
-      .then(({ data }) => {
-        console.log(data, "data")
+    loading,
+    error
+  };
+};
 
-        const { users } = data
-        setUsers(users)
-        console.log(users)
-      })
-      .catch((error) => console.log(error))
-  }, [setUsers])
-  return {
-    users,
-  }
-}
-
-export default useUsers
+export default useUsers;

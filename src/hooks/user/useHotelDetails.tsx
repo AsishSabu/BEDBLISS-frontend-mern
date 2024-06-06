@@ -1,30 +1,17 @@
-import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import axios from 'axios';
-import { HotelInterface } from '../../types/hotelInterface';
 import { USER_API } from '../../constants';
 
+const fetcher = url => axios.get(url).then(res => res.data);
+
 const useHotelDetails = (id: string) => {
-  const [hotel, setHotel] = useState<HotelInterface | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useSWR(`${USER_API}/hotelDetails/${id}`, fetcher);
 
-  useEffect(() => {
-    const fetchHotelDetails = async () => {
-      try {
-        const { data } = await axios.get(`${USER_API}/hotelDetails/${id}`);        
-        setHotel(data.Hotel);
-      } catch (error) {
-        setError("Failed to fetch hotel details");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchHotelDetails();
-  }, [id]);
-
-  return { hotel, loading, error };
+  return {
+    hotel: data ? data.Hotel : null,
+    loading: !error && !data,
+    error: error ? "Failed to fetch hotel details" : null
+  };
 };
 
 export default useHotelDetails;

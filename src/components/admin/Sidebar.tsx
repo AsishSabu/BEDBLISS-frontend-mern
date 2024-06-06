@@ -37,13 +37,10 @@ const AdminSidebar = () => {
           <Link to="/admin/users">
             <Sidebar.Item icon={HiViewBoards}>Users</Sidebar.Item>
           </Link>
-          <Link to="/admin/owners">
-            <Sidebar.Item icon={HiInbox}>Owners</Sidebar.Item>
-          </Link>
           <Link to="/admin/hotels">
             <Sidebar.Item icon={HiUser}>Hotels</Sidebar.Item>
           </Link>
-          <Link to="">
+          <Link to="/admin/bookings">
             <Sidebar.Item icon={HiShoppingBag}>Bookings</Sidebar.Item>
           </Link>
           <div onClick={handleLogout}>

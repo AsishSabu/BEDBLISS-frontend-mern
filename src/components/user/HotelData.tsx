@@ -16,31 +16,31 @@ interface HotelDataProps {
   
     return (
   
-      <div  onClick={handleClick} className="col-span-1 grid grid-flow-row grid-rows-3 border h-80 border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <div className="row-span-2 rounded-lg">
+      <div  onClick={handleClick} className="bg-varGray col-span-1 relative border rounded-3xl shadow-sm p-2  border-gray-200  dark:bg-gray-800 dark:border-gray-700">
+        <div className=" relative rounded-lg">
           
           <img
-            className="w-full h-full overflow-hidden rounded-lg"
+            className="rounded-2xl object-cover aspect-square"
             src={imageUrls[0]}
             alt={name}
           />
         </div>
   
-        <div className="row-span-1 px-4 pt-2 h-fit rounded-lg">
-          <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <div className=" pt-2 h-fit rounded-lg">
+          <h5 className="mb-1 text-lg font-bold tracking-tight text-gray-900 dark:text-white">
             {name}
           </h5>
   
           <div className="flex justify-between">
-            <p className="mb-3 text-sm font-thin text-gray-700 dark:text-gray-400">
+            <p className="mb-1 text-sm font-thin text-gray-700 dark:text-gray-400">
               {stayType}
             </p>
-            <p className="mb-3 text-sm font-thin text-gray-700 dark:text-gray-400">
+            <p className="mb-1 text-sm font-thin text-gray-700 dark:text-gray-400">
               {destination}
             </p>
           </div>
   
-          <p className="mb-3 text-lg font-thin text-gray-700 dark:text-gray-400">
+          <p className="mb-1 text-lg font-thin text-gray-700 dark:text-gray-400">
           ₹1000
           </p>
         </div>
