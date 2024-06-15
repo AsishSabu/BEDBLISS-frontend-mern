@@ -4,12 +4,6 @@ import useUserHotels from "../../../hooks/user/useUserHotels"
 
 const Banner: React.FC = () => {
   const {
-    destination,
-    checkInDate,
-    checkOutDate,
-    setDestination,
-    setCheckInDate,
-    setCheckOutDate,
     handleSearch,
   } = useUserHotels()
 
@@ -27,12 +21,6 @@ const Banner: React.FC = () => {
       </div>
       <div className="">
         <SearchBoxUser
-          destination={destination}
-          setDestination={setDestination}
-          checkInDate={checkInDate}
-          setCheckInDate={setCheckInDate}
-          checkOutDate={checkOutDate}
-          setCheckOutDate={setCheckOutDate}
           handleSearch={handleSearch}
         />
       </div>

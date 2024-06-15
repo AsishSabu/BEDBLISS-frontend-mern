@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom"
 
 const Hotels: React.FC = () => {
   const { hotels } = useHotelList()
+  console.log(hotels,'hotels.........');
+  
   const navigate = useNavigate()
   const handleClick = (id: string) => {
     navigate(`/owner/hotelDetails/${id}`)

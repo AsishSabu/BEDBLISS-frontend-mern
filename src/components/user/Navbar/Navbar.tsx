@@ -72,7 +72,9 @@ const Header: React.FC = () => {
   const OwnerNavbarLinks = [
     { label: "Home", to: "/owner" },
     { label: "About", to: "/owner/about" },
-    { label: "Listings", to: "/owner/hotels" },
+    { label: "My Listings", to: "/owner/hotels" },
+    { label: "Add Hotels", to: "/owner/addHotel" },
+    { label: "Add Rooms", to: "/owner/addRooms" },
   ]
 
   const UserNavbarLinks = [

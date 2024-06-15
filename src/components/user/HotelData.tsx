@@ -6,7 +6,7 @@ interface HotelDataProps {
     name: string;
     destination: string;
     stayType: string;
-  }
+  }     
   
   const HotelData: React.FC<HotelDataProps> = ({_id,imageUrls, name, destination, stayType }) => {
   const navigate=useNavigate()

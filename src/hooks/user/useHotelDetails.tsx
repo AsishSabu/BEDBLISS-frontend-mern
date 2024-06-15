@@ -2,15 +2,15 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { USER_API } from '../../constants';
 
-const fetcher = url => axios.get(url).then(res => res.data);
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
-const useHotelDetails = (id: string) => {
-  const { data, error } = useSWR(`${USER_API}/hotelDetails/${id}`, fetcher);
+const useHotelDetails = (id: string | undefined) => {
+  const { data, error } = useSWR(id ? `${USER_API}/hotelDetails/${id}` : null, fetcher);
 
   return {
-    hotel: data ? data.Hotel : null,
+    hotel: data?.Hotel,
     loading: !error && !data,
-    error: error ? "Failed to fetch hotel details" : null
+    error: error
   };
 };
 

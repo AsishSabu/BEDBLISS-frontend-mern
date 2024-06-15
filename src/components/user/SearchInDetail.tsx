@@ -1,77 +1,108 @@
-import { useState } from "react"
-import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { DateRange } from "react-date-range"
-import { format, addDays } from "date-fns"
-import "react-date-range/dist/styles.css"
-import "react-date-range/dist/theme/default.css"
-import { useAppSelector } from "../../redux/store/store"
+import { useState } from "react";
+import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DateRange } from "react-date-range";
+import { format, addDays } from "date-fns";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import axios from "axios";
+import { USER_API } from "../../constants";
+import { setData } from "../../redux/slices/searchingSlice";
 
-const SearchBoxUser = ({ handleSearch }) => {
-  const data = useAppSelector(state => state.searchingSlice)
-  const [openDate, setOpenDate] = useState(false)
-  const [openOptions, setOpenOptions] = useState(false)
+type optionType = {
+  adult: number;
+  children: number;
+  room: number;
+};
+
+type datesTypes = {
+  startDate: Date;
+  endDate: Date;
+};
+
+const SearchBoxDetail = () => {
+  const data = useAppSelector(state => state.searchingSlice);
+  const dispatch = useAppDispatch();
+  const [openDate, setOpenDate] = useState(false);
+  const [openOptions, setOpenOptions] = useState(false);
   const [dates, setDates] = useState({
     startDate: new Date(),
     endDate: addDays(new Date(), 1),
-  })
+  });
   const [options, setOptions] = useState({
     adult: 1,
     children: 0,
     room: 1,
-  })
-  const [destination, setDestination] = useState(data.destination)
+  });
 
-  const handleOption = (name, operation) => {
+  const handleSearch = async (options: optionType, dates: datesTypes) => {
+    console.log(options, "options..........");
+    console.log(dates, "dates......");
+
+    try {
+      const { adult, children, room } = options;
+      const { startDate, endDate } = dates;
+      console.log(startDate, "startDates......");
+      console.log(endDate, "endDates......");
+
+      dispatch(setData({ options, dates: [{ startDate, endDate,}] }));
+
+    //   const { data } = await axios.get(`${USER_API}/searchedHotels`, {
+    //     params: {
+    //       adult,
+    //       children,
+    //       room,
+    //       startDate,
+    //       endDate,
+    //     },
+    //   });
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  const handleOption = (name: string, operation: string) => {
     setOptions(prev => {
       return {
         ...prev,
         [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
-      }
-    })
-  }
+      };
+    });
+  };
 
-  const handleDateChange = (item) => {
-    const { startDate, endDate } = item.selection
+  const handleDateChange = (item: { selection: { startDate: Date; endDate: Date } }) => {
+    const { startDate, endDate } = item.selection;
     // Ensure endDate is at least one day after startDate
     if (endDate <= startDate) {
       setDates({
         startDate: startDate,
         endDate: addDays(startDate, 1),
-      })
+      });
     } else {
       setDates({
         startDate: startDate,
         endDate: endDate,
-      })
+      });
     }
-  }
+  };
 
   return (
-    <div className="flex items-center space-x-4 p-4 bg-Alabaster border-varRed border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
-      <input
-        type="text"
-        placeholder="Enter your destination"
-        value={destination}
-        onChange={e => setDestination(e.target.value)}
-        className="px-2 py-1 border border-gray-300 rounded-md"
-      />
+    <div className="flex items-center space-x-4 py-1 px-3 bg-Alabaster  border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
       <div className="flex items-center space-x-2 cursor-pointer relative">
         <FontAwesomeIcon icon={faCalendarDays} className="text-gray-500" />
-        <span
-          onClick={() => setOpenDate(!openDate)}
-          className="text-gray-700"
-        >{`${format(dates.startDate, "MM/dd/yyyy")} to ${format(
-          dates.endDate,
-          "MM/dd/yyyy"
-        )}`}</span>
+        <span onClick={() => setOpenDate(!openDate)} className="text-gray-700">
+          {`${format(dates.startDate, "MM/dd/yyyy")} to ${format(dates.endDate, "MM/dd/yyyy")}`}
+        </span>
         {openDate && (
           <div className="absolute top-12 left-0 z-50 mt-2">
             <DateRange
               editableDateInputs={true}
               onChange={handleDateChange}
               moveRangeOnFirstSelection={false}
-              ranges={[{ startDate: dates.startDate, endDate: dates.endDate, key: 'selection' }]}
+              ranges={[{ startDate: dates.startDate, endDate: dates.endDate, key: "selection" }]}
               className="shadow-md rounded-lg"
               minDate={new Date()}
             />
@@ -80,10 +111,9 @@ const SearchBoxUser = ({ handleSearch }) => {
       </div>
       <div className="flex items-center space-x-2 cursor-pointer relative">
         <FontAwesomeIcon icon={faPerson} className="text-gray-500" />
-        <span
-          onClick={() => setOpenOptions(!openOptions)}
-          className="text-gray-700"
-        >{`${options.adult} adult · ${options.children} children · ${options.room} room`}</span>
+        <span onClick={() => setOpenOptions(!openOptions)} className="text-gray-700">
+          {`${options.adult} adult · ${options.children} children · ${options.room} room`}
+        </span>
         {openOptions && (
           <div className="absolute top-12 left-0 w-48 bg-white p-4 rounded-lg shadow-md z-50">
             <div className="flex justify-between items-center mb-2">
@@ -147,13 +177,13 @@ const SearchBoxUser = ({ handleSearch }) => {
         )}
       </div>
       <button
-        className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2"
-        onClick={() => handleSearch(destination, options, dates)}
+        className="bg-blue-600 text-white font-bold rounded-lg px-4 py-1"
+        onClick={() => handleSearch(options, dates)}
       >
-        Search
+        Update
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default SearchBoxUser
+export default SearchBoxDetail;

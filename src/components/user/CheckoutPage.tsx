@@ -7,6 +7,7 @@ import * as Yup from "yup"
 import axios from "axios"
 import { USER_API } from "../../constants"
 
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return date.toLocaleDateString("en-GB", {
@@ -31,24 +32,21 @@ const CheckoutPage = () => {
   const navigate = useNavigate()
   const [paymentMethod, setPaymentMethod] = useState("Online")
   const { id } = useParams<{ id: string }>()
-  const {
-    checkIn,
-    checkOut,
-    price,
-    guests,
-    name,
-    destination,
-    city,
-    district,
-    pincode,
-    country,
-    days,
-    hotelId,
-  } = useAppSelector(state => state.bookingslice)
-  const formattedCheckInDate = formatDate(checkIn)
-  const formattedCheckOutDate = formatDate(checkOut)
+  const bookingData = useAppSelector(state => state.bookingSlice)
+  console.log(bookingData, "bookingData...........")
+  const totalPrice = bookingData.rooms.reduce(
+    (acc, item) => acc + item[1].count * item[1].price,
+    0
+  )
+  console.log(totalPrice,"price");
+  
+  const formattedCheckInDate = formatDate(bookingData.checkIn)
+  const formattedCheckOutDate = formatDate(bookingData.checkOut)
+  const maxPeople = bookingData.adults + bookingData.children
 
-  const handleInputChange = (method: "Wallet" | "Online"|"pay_on_checkout") => {
+  const handleInputChange = (
+    method: "Wallet" | "Online" | "pay_on_checkout"
+  ) => {
     if (method === "Wallet") {
       //   const total = calculateTotalAmount(
       //     tableData?.capacity,
@@ -63,26 +61,40 @@ const CheckoutPage = () => {
       setPaymentMethod("Online")
     }
     if (method === "pay_on_checkout") {
-        setPaymentMethod("pay_on_checkout")
-      }
+      setPaymentMethod("pay_on_checkout")
+    }
   }
 
-  const handleSubmit = async values => {
+  const handleSubmit = async (values: any) => {
     try {
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       )
+
+      const roomDetails = bookingData.rooms.map((room) => {
+        return {
+          roomId: room[0],
+          roomNumbers: room[1].roomNumbers.map((roomNumber) => roomNumber.number)
+        };
+      });
+      
+
+      
+      
+
       const data = {
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
-        hotelId,
         phoneNumber: values.phone,
-        checkInDate: formattedCheckInDate,
-        checkOutDate: formattedCheckOutDate,
-        price,
-        maxPeople: guests,
-        totalDays: days,
+        hotelId:bookingData.hotelId,
+        checkInDate: bookingData.checkIn,
+        checkOutDate: bookingData.checkOut,
+        maxAdults:bookingData.adults,
+        maxChildren:bookingData.children,
+        rooms: roomDetails,
+        price:totalPrice,
+        totalDays: bookingData.totalDays,
         paymentMethod,
       }
       console.log(data)
@@ -92,9 +104,9 @@ const CheckoutPage = () => {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
-      console.log(response);      
+      console.log(response)
       const sessionId = response.data.id
-      console.log(sessionId);
+      console.log(sessionId)
       if (stripe) {
         const result = await stripe.redirectToCheckout({ sessionId })
         if (result.error) console.error(result.error)
@@ -121,9 +133,9 @@ const CheckoutPage = () => {
           <div className="border p-4 rounded shadow-lg  grid grid-cols-2 gap-4">
             <div className="text-sm text-gray-500 mb-4">
               <div className="border p-4 rounded mb-4">
-                <h1 className="text-2xl font-bold mb-4">{name}</h1>
+                <h1 className="text-2xl font-bold mb-4">{bookingData.name}</h1>
                 <p>
-                  {city}, {district}, {pincode}, {country}
+                  {bookingData.city}, {bookingData.district}, {bookingData.pincode}, {bookingData.country}
                 </p>
                 <p className="text-green-600">Great location — 8.8</p>
                 <div className="flex items-center space-x-2 mt-2">
@@ -142,10 +154,10 @@ const CheckoutPage = () => {
                   Check-out: <strong>{formattedCheckOutDate}</strong>
                 </p>
                 <p>
-                  Total length of stay: <strong>{days} night</strong>
+                  {/* Total length of stay: <strong>{days} night</strong> */}
                 </p>
                 <p>
-                  No of Guests: <strong>{guests} guests</strong>
+                  No of Guests: <strong>{maxPeople} guests</strong>
                 </p>
                 <div
                   onClick={() => navigate(-1)}
@@ -158,9 +170,7 @@ const CheckoutPage = () => {
               {/* Price Summary */}
               <div className="border p-4 rounded mb-4">
                 <h2 className="text-xl font-bold mb-4">Your price summary</h2>
-                <p>
-                  Total Amount: <strong>₹ {price}</strong>
-                </p>
+                <p>Total Amount: <strong>₹ {totalPrice}</strong></p>
               </div>
 
               <div className="border p-4 rounded mb-4">
@@ -281,7 +291,7 @@ const CheckoutPage = () => {
                       id="email"
                       name="email"
                       className="border p-2 rounded focus:outline-none focus:border-blue-500"
-                      placeholder="Watch out for typos"
+                      placeholder=""
                     />
                     <ErrorMessage
                       name="email"
@@ -289,7 +299,7 @@ const CheckoutPage = () => {
                       className="text-red-500 text-sm"
                     />
                     <span className="text-gray-500 text-xs">
-                      Confirmation email goes to this address
+                      {/* Confirmation email goes to this address */}
                     </span>
                   </div>
                   <div className="flex flex-col">

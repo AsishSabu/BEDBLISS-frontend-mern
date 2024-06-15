@@ -23,10 +23,10 @@ const destinationSlice = createSlice({
   name: "destinationSlice",
   initialState,
   reducers: {
-    setSearchValue: (state, action: PayloadAction<HotelInterface[]>) => {
+    setSearchResult: (state, action: PayloadAction<HotelInterface[]>) => {
       state.search = action.payload
     },
-    removeSearchValue: (state) => {
+    removeSearchResult: (state) => {
       state.search = []
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -38,5 +38,5 @@ const destinationSlice = createSlice({
   },
 })
 
-export const { removeSearchValue, setSearchValue, setLoading, setError } = destinationSlice.actions
+export const { removeSearchResult, setSearchResult, setLoading, setError } = destinationSlice.actions
 export default destinationSlice.reducer

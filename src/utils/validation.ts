@@ -71,31 +71,6 @@ export const hotelAddValidation = yup.object().shape({
       .required("Pincode is required"),
     country: yup.string().required("Country is required"),
   }),
-  room: yup
-    .number()
-    .positive("Room must be a positive number")
-    .integer("Room must be an integer")
-    .required("Room is required"),
-  bed: yup
-    .number()
-    .positive("Bed must be a positive number")
-    .integer("Bed must be an integer")
-    .required("Bed is required"),
-  bathroom: yup
-    .number()
-    .positive("Bathroom must be a positive number")
-    .integer("Bathroom must be an integer")
-    .required("Bathroom is required"),
-  guests: yup
-    .number()
-    .positive("Guests must be a positive number")
-    .integer("Guests must be an integer")
-    .required("Guests is required"),
-
-  price: yup
-    .number()
-    .positive("Price must be a positive number")
-    .required("Price is required"),
   description: yup.string().required("Description is required"),
   amenities: yup
     .array()
