@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux"
 import { setData } from "../../redux/slices/searchingSlice"
 import Image from "../Image"
 import { RoomInterface } from "./../../../../backend/src/types/RoomInterface"
-import { setCheckoutData } from "../../redux/slices/bookingSlice"
+import { setCheckoutData } from "../../redux/slices/bookingslice"
 import { useAppSelector } from "../../redux/store/store"
 import SearchBoxDetail from "./SearchInDetail"
 
@@ -40,10 +40,13 @@ const getDatesInRange = (startDate: Date, endDate: Date): string[] => {
 
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
+  console.log(id,"hotel id")
   const { hotel, loading, error } = useHotelDetails(id)
   const [err,setErr]=useState("");
   console.log(hotel,"hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
+  console.log(searchingData,"searchingData");
+  
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [showAllPhotos, setShowAllPhotos] = useState(false)

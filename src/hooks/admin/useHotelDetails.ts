@@ -12,7 +12,8 @@ const useHotelDetails = (id: string) => {
   const hotel: HotelInterface | null = data?.Hotel || null;
   const loading: boolean = !error && !data;
 
-  const verifyHotel = async () => {
+ 
+   const verifyHotel = async () => {
     try {
       const response = await axios.patch(`${ADMIN_API}/verify_hotel/${id}`);
       showToast(response.data.message, 'success');
@@ -22,7 +23,18 @@ const useHotelDetails = (id: string) => {
     }
   };
 
-  return { hotel, loading, error, verifyHotel };
+  const RejectHotel = async (reason:string) => {
+    try {
+      const response = await axios.patch(`${ADMIN_API}/reject_hotel/${id}`,{reason});
+      showToast(response.data.message, 'success');
+      mutate(); // Revalidate the data after verifying the hotel
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  return { hotel, loading, error, verifyHotel,RejectHotel };
 };
 
 export default useHotelDetails;

@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import useHotelDetails from "../../hooks/admin/useHotelDetails"
 import { useParams } from "react-router-dom"
 import { GoVerified } from "react-icons/go"
+import RejectHotalModal from "./RejectionModal"
+import axios from "axios"
 
 const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
   if (!isOpen) return null
@@ -31,10 +33,11 @@ const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
 
 const HotelDetails = () => {
   const { id } = useParams<{ id: string }>()
-  const { hotel, verifyHotel } = useHotelDetails(id)
+  const { hotel, verifyHotel,RejectHotel } = useHotelDetails(id)
   console.log(hotel)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
   const [modalImageSrc, setModalImageSrc] = useState("")
   const [modalAltText, setModalAltText] = useState("")
 
@@ -42,6 +45,10 @@ const HotelDetails = () => {
     setModalImageSrc(imageSrc)
     setModalAltText(altText)
     setIsModalOpen(true)
+  }
+
+  const handleReject=async(reason:string)=>{
+    RejectHotel(reason)
   }
 
   return (
@@ -199,11 +206,21 @@ const HotelDetails = () => {
         </div>
       </div>
 
-      {hotel?.isVerified ? (
-        <div className="flex justify-center col-span-2">
-          <GoVerified size={60} color="#15F5BA" />
-          <span className="text-green-400 pt-3 px-2 text-3xl">Verified</span>
-        </div>
+      {hotel&&hotel.isVerified!=="pending"? (
+       <>
+       {hotel.isVerified === "verified" && (
+         <div className="flex justify-center col-span-2">
+           <GoVerified size={60} color="#15F5BA" />
+           <span className="text-green-400 pt-3 px-2 text-3xl">Verified</span>
+         </div>
+       )}
+       {hotel.isVerified === "rejected" && (
+         <div className="flex justify-center col-span-2">
+           <span className="text-red-700 pt-3 px-2 text-3xl">Rejected</span>
+         </div>
+       )}
+     </>
+
       ) : (
         <div className="col-span-2 flex justify-between px-40 py-5">
           <button
@@ -214,7 +231,7 @@ const HotelDetails = () => {
               Verify
             </span>
           </button>
-          <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
+          <button onClick={() => setIsRejectModalOpen(true)} className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 dark:text-white dark:hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800">
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
               Reject
             </span>
@@ -226,6 +243,11 @@ const HotelDetails = () => {
         onClose={() => setIsModalOpen(false)}
         imageSrc={modalImageSrc}
         altText={modalAltText}
+      />
+      <RejectHotalModal
+      isOpen={isRejectModalOpen}
+      onClose={()=>setIsRejectModalOpen(false)}
+      onConfirm={handleReject}
       />
     </div>
   )

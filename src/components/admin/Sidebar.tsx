@@ -37,6 +37,9 @@ const AdminSidebar = () => {
           <Link to="/admin/users">
             <Sidebar.Item icon={HiViewBoards}>Users</Sidebar.Item>
           </Link>
+          <Link to="/admin/owners">
+            <Sidebar.Item icon={HiViewBoards}>Owners</Sidebar.Item>
+          </Link>
           <Link to="/admin/hotels">
             <Sidebar.Item icon={HiUser}>Hotels</Sidebar.Item>
           </Link>

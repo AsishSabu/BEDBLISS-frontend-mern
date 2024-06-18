@@ -1,10 +1,13 @@
 import React from "react"
 import useHotelDetails from "../../hooks/user/useHotelDetails"
-import { useParams } from "react-router-dom"
+import { useParams} from "react-router-dom"
+import axios from "axios"
+import { OWNER_API } from './../../constants/index';
 
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const { hotel, loading, error } = useHotelDetails(id)
+
+  const { hotel, loading, error,reloadHotelDetails } = useHotelDetails(id)
   console.log(hotel)
 
   if (loading) return <p>Loading...</p>
@@ -21,7 +24,20 @@ const HotelDetail: React.FC = () => {
     propertyRules,
     imageUrls,
     rooms,
+    isListed,
   } = hotel
+  const handleListUnlist = async (value: string) => {
+    try {
+      await axios.patch(`${OWNER_API}/listUnlist/${id}`, { value }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
+      await reloadHotelDetails();
+    } catch (error) {
+      console.error("Failed to update hotel listing status", error);
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto my-5 bg-white shadow-lg rounded-lg overflow-hidden">
@@ -104,7 +120,9 @@ const HotelDetail: React.FC = () => {
         </div>
 
         <div className="mb-4 col-span-2">
-          <h3 className="text-xl font-semibold text-gray-800 p-3">Room Details</h3>
+          <h3 className="text-xl font-semibold text-gray-800 p-3">
+            Room Details
+          </h3>
 
           {rooms.length > 0 ? (
             <table className="min-w-full bg-white">
@@ -131,22 +149,29 @@ const HotelDetail: React.FC = () => {
               </tbody>
             </table>
           ) : (
-            <span className="flex justify-center text-2xl text-varRed"> No rooms added</span>
+            <span className="flex justify-center text-2xl text-varRed">
+              {" "}
+              No rooms added
+            </span>
           )}
         </div>
-        <div className="text-right col-span-2 mx-16 mb-10 flex justify-between">
-          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+        <div className="text-right col-span-2 mx-16 mb-10 flex justify-center pt-10">
+          {/* <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
             Edit Hotel
-          </button>
-          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
-            List
-          </button>
-          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
-           UnList
-          </button>
-          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+          </button> */}
+          {isListed ? (
+            <button onClick={() => handleListUnlist('false')} className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+              UnList
+            </button>
+          ) : (
+            <button onClick={() => handleListUnlist('true')} className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+              List
+            </button>
+          )}
+
+          {/* <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
             Delete Hotel
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

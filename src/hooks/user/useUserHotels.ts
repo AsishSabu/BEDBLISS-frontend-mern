@@ -2,7 +2,6 @@ import axios from "axios"
 import { useState } from "react"
 import useSWR from "swr"
 import { USER_API } from "../../constants"
-import { HotelInterface } from "../../types/hotelInterface"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import {
@@ -11,6 +10,7 @@ import {
   setSearchResult,
 } from "../../redux/slices/destinationSlice"
 import { fetcher } from "../../utils/fetcher"
+import { setData } from "../../redux/slices/searchingSlice"
 
 const useUserHotels = () => {
   const dispatch = useDispatch()
@@ -32,24 +32,23 @@ const useUserHotels = () => {
     room: number
   }
 
-  type datesTypes={
-    startDate: string;
-    endDate: string;
-    
-  };
+  type datesType = {
+    startDate: Date
+    endDate: Date
+  }
 
-  const handleSearch = async (destination: string, options:optionType, dates:datesTypes) => {
+  const handleSearch = async (destination: string, options: optionType, dates: datesType) => {
     console.log(destination, "destination........")
     console.log(options, "options..........")
     console.log(dates, "dates......")
 
     dispatch(setLoading(true))
     try {
-      const { adult, children, room } = options;
-      const { startDate, endDate } = dates;
+      const { adult, children, room } = options
+      const { startDate, endDate } = dates
       console.log(startDate, "startDates......")
       console.log(endDate, "endDates......")
-  
+
       const { data } = await axios.get(`${USER_API}/searchedHotels`, {
         params: {
           destination,
@@ -59,9 +58,15 @@ const useUserHotels = () => {
           startDate,
           endDate,
         },
-      });
-      dispatch(setSearchResult(data.data));
-      console.log(data.data,'sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk');
+      })
+      const searchData = {
+        destination,
+        dates: [{ startDate, endDate }],
+        options,
+      }
+      dispatch(setSearchResult(data.data))
+      dispatch(setData(searchData))
+      console.log(data.data, 'sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk')
       navigate("/user/hotels")
     } catch (error) {
       dispatch(setError("Failed to fetch hotels"))

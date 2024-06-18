@@ -82,7 +82,7 @@ const BookingList = () => {
                     <td className="px-6 py-4 whitespace-nowrap"></td>
                     <td className="py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => navigate(`/user/profile/bookingDetails/${data._id}`)}
+                        onClick={() => navigate(`/owner/bookingDetails/${data._id}`)}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         View Details

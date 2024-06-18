@@ -1,16 +1,17 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { USER_API } from "../../constants";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 import showToast from "../../utils/toast";
 import { RegisterValidation } from "../../utils/validation";
 
-const Register: React.FC = () => {
+const Register = () => {
   const navigate = useNavigate();
   const {
     values,
+    isSubmitting,
     touched,
     handleBlur,
     errors,
@@ -20,31 +21,35 @@ const Register: React.FC = () => {
     initialValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       cpassword: "",
+      role: "",
     },
     validationSchema: RegisterValidation,
-    onSubmit: ({ name, email, password }) => {
-console.log("hloooo");
-
+    onSubmit: ({ name, email, password, phone, role }) => {
+      console.log(role);
 
       axios
         .post(USER_API + "/auth/register", {
           name,
           email,
           password,
+          phone,
+          role,
         })
         .then(({ data }) => {
           const { message, newUser } = data;
           console.log(data);
-          showToast(message, "success");
+          showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
             navigate("/auth/verifyOtp");
           }, 1000);
         })
         .catch(({ response }) => {
-          showToast(response?.data?.message, "error");
+          const { message } = response.data;
+          showToast(message, "error");
         });
     },
   });
@@ -65,7 +70,7 @@ console.log("hloooo");
                   value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 border-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300  rounded-lg w-full"
                   type="text"
                   placeholder="enter your name"
                 />
@@ -80,7 +85,7 @@ console.log("hloooo");
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 border-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300  rounded-lg w-full"
                   type="email"
                   placeholder="enter your email"
                 />
@@ -95,7 +100,7 @@ console.log("hloooo");
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 border-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300  rounded-lg w-full"
                   type="password"
                   placeholder="enter the password"
                 />
@@ -113,7 +118,7 @@ console.log("hloooo");
                   value={values.cpassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2 text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2 text-gray-300 border-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300  rounded-lg w-full"
                   type="password"
                   placeholder="re-enter the password"
                 />
@@ -121,9 +126,28 @@ console.log("hloooo");
               {errors.cpassword && touched.cpassword && (
                 <p className="text-red-600">{errors.cpassword}</p>
               )}
-             
+              <div>
+                <label className="mb-2  text-gray-400 text-lg">Role</label>
+                <select
+                title="role"
+                  id="role"
+                  name="role"
+                  value={values.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="border p-2 text-gray-300 border-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300  rounded-lg w-full"
+                >
+                  <option value="">Select</option>
+                  <option value="user">User</option>
+                  <option value="owner">Owner</option>
+                </select>
+              </div>
+              {errors.role && touched.role && (
+                <p className="text-red-500">{errors.role}</p>
+              )}
               <button
-                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2  rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                disabled={isSubmitting}
+                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN UP

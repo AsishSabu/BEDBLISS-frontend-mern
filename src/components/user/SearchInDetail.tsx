@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DateRange } from "react-date-range";
@@ -31,10 +31,13 @@ const SearchBoxDetail = () => {
     endDate: addDays(new Date(), 1),
   });
   const [options, setOptions] = useState({
-    adult: 1,
+    adult: 2,
     children: 0,
     room: 1,
   });
+
+  const dateRef = useRef(null);
+  const optionsRef = useRef(null);
 
   const handleSearch = async (options: optionType, dates: datesTypes) => {
     console.log(options, "options..........");
@@ -63,7 +66,6 @@ const SearchBoxDetail = () => {
     }
   };
 
-
   const handleOption = (name: string, operation: string) => {
     setOptions(prev => {
       return {
@@ -89,9 +91,25 @@ const SearchBoxDetail = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dateRef.current && !dateRef.current.contains(event.target)) {
+        setOpenDate(false);
+      }
+      if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+        setOpenOptions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="flex items-center space-x-4 py-1 px-3 bg-Alabaster  border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
-      <div className="flex items-center space-x-2 cursor-pointer relative">
+      <div className="flex items-center space-x-2 cursor-pointer relative" ref={dateRef}>
         <FontAwesomeIcon icon={faCalendarDays} className="text-gray-500" />
         <span onClick={() => setOpenDate(!openDate)} className="text-gray-700">
           {`${format(dates.startDate, "MM/dd/yyyy")} to ${format(dates.endDate, "MM/dd/yyyy")}`}
@@ -109,7 +127,7 @@ const SearchBoxDetail = () => {
           </div>
         )}
       </div>
-      <div className="flex items-center space-x-2 cursor-pointer relative">
+      <div className="flex items-center space-x-2 cursor-pointer relative" ref={optionsRef}>
         <FontAwesomeIcon icon={faPerson} className="text-gray-500" />
         <span onClick={() => setOpenOptions(!openOptions)} className="text-gray-700">
           {`${options.adult} adult · ${options.children} children · ${options.room} room`}

@@ -55,7 +55,7 @@ const PaymentMessage: React.FC<PaymentMessageProps> = ({ isSuccess }) => {
             </Link>
             {isSuccess && (
               <Link
-                to={`/cart/${id}`}
+                to={`/`}
                 className="bg-teal-400 hover:bg-teal-500  inline-flex gap-1 items-center
               text-white font-semibold px-8 py-3 rounded-lg 
               "

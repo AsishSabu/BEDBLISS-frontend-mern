@@ -26,7 +26,7 @@ export type HotelInterface={
   isListed: boolean;
   imageUrls: string[];
   reservationType: string;
-  isVerified: boolean;
+  isVerified: string;
   hotelDocument: string;
   ownerPhoto: string;
   unavailableDates: string[];

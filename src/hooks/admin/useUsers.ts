@@ -7,17 +7,25 @@ import { UserInterface } from '../../types/userInterface';
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const useUsers = () => {
-  // Use SWR to fetch data
-  const { data, error } = useSWR(`${ADMIN_API}/users`, fetcher);
+  // Use SWR to fetch data for users and owners
+  const { data: userData, error: userError } = useSWR(`${ADMIN_API}/users`, fetcher);
+  const { data: ownerData, error: ownerError } = useSWR(`${ADMIN_API}/owners`, fetcher);
 
-  // Extract the users array from the data
-  const users: UserInterface[] = data?.users || [];
-  const loading = !data && !error;
+  // Extract the users and owners array from the data
+  const users: UserInterface[] = userData?.users || [];
+  const owners: UserInterface[] = ownerData?.users || [];
+
+  // Determine loading states
+  const loadingUsers = !userData && !userError;
+  const loadingOwners = !ownerData && !ownerError;
 
   return {
     users,
-    loading,
-    error
+    loadingUsers,
+    userError,
+    owners,
+    loadingOwners,
+    ownerError,
   };
 };
 

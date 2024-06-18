@@ -71,7 +71,7 @@ const Header: React.FC = () => {
 
   const OwnerNavbarLinks = [
     { label: "Home", to: "/owner" },
-    { label: "About", to: "/owner/about" },
+    { label: "bookings", to: "/owner/bookings" },
     { label: "My Listings", to: "/owner/hotels" },
     { label: "Add Hotels", to: "/owner/addHotel" },
     { label: "Add Rooms", to: "/owner/addRooms" },
@@ -98,7 +98,7 @@ const Header: React.FC = () => {
       </NavbarBrand>
 
       <div className="flex md:order-2 justify-center">
-        <button
+        {/* <button
           onClick={handleRole}
           className="relative inline-flex mt-3 justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800"
         >
@@ -111,7 +111,7 @@ const Header: React.FC = () => {
               Switch To Hosting
             </span>
           )}
-        </button>
+        </button> */}
         <Dropdown
           arrowIcon={false}
           inline

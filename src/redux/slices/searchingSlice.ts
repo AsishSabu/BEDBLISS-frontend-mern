@@ -1,24 +1,30 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
+import { addDays } from "date-fns";
 interface searchingState {
   destination: string | undefined;
-  dates: { startDate: Date; endDate: Date;}[];
+  dates: { startDate: Date; endDate: Date }[];
   options: {
-    adult: number | undefined;
-    children: number | undefined;
-    room: number | undefined; // Changed to number
+    adult: number;
+    children: number;
+    room: number;
   };
 }
 
 const initialState: searchingState = {
-  destination: undefined,
-  dates: [],
+  destination: "manali",
+  dates: [
+    {
+      startDate: new Date(),
+      endDate: addDays(new Date(), 1),
+    },
+  ],
   options: {
-    adult: undefined,
-    children: undefined,
-    room: undefined, // Changed to number
+    adult: 2,
+    children: 1,
+    room: 1,
   },
 };
+
 
 const searchingSlice = createSlice({
   name: "searchingSlice",

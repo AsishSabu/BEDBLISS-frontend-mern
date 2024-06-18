@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { DateRange } from "react-date-range"
@@ -21,6 +21,9 @@ const SearchBoxUser = ({ handleSearch }) => {
     room: 1,
   })
   const [destination, setDestination] = useState(data.destination)
+
+  const dateRef = useRef(null)
+  const optionsRef = useRef(null)
 
   const handleOption = (name, operation) => {
     setOptions(prev => {
@@ -47,6 +50,22 @@ const SearchBoxUser = ({ handleSearch }) => {
     }
   }
 
+  const handleClickOutside = (event) => {
+    if (dateRef.current && !dateRef.current.contains(event.target)) {
+      setOpenDate(false)
+    }
+    if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+      setOpenOptions(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   return (
     <div className="flex items-center space-x-4 p-4 bg-Alabaster border-varRed border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
       <input
@@ -56,7 +75,7 @@ const SearchBoxUser = ({ handleSearch }) => {
         onChange={e => setDestination(e.target.value)}
         className="px-2 py-1 border border-gray-300 rounded-md"
       />
-      <div className="flex items-center space-x-2 cursor-pointer relative">
+      <div className="flex items-center space-x-2 cursor-pointer relative" ref={dateRef}>
         <FontAwesomeIcon icon={faCalendarDays} className="text-gray-500" />
         <span
           onClick={() => setOpenDate(!openDate)}
@@ -78,7 +97,7 @@ const SearchBoxUser = ({ handleSearch }) => {
           </div>
         )}
       </div>
-      <div className="flex items-center space-x-2 cursor-pointer relative">
+      <div className="flex items-center space-x-2 cursor-pointer relative" ref={optionsRef}>
         <FontAwesomeIcon icon={faPerson} className="text-gray-500" />
         <span
           onClick={() => setOpenOptions(!openOptions)}

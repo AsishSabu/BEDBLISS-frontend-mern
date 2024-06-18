@@ -1,12 +1,12 @@
 import useSWR from "swr"
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { USER_API } from "../../constants"
+import { OWNER_API, USER_API } from "../../constants"
 import { fetcher } from "../../utils/fetcher"
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface"
 import axios from "axios"
 import showToast from "../../utils/toast"
-import CancelBookingModal from "./cnacelBooking"
+import CancelBookingModal from "./cancelBookingModal"
 // Import the modal component
 
 const BookingDetails = () => {
@@ -45,7 +45,7 @@ const BookingDetails = () => {
     try {
       const response = await axios.patch(
         `${USER_API}/booking/cancel/${booking.bookingId}`,
-        { reason, status: "cancelled" }, // Pass the reason for cancellation
+        { reason, status: "rejected" }, // Pass the reason for cancellation
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -58,9 +58,35 @@ const BookingDetails = () => {
         bookingStatus:
           response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
       }))
-      showToast("Booking cancelled successfully", "success")
+      showToast("Booking Rejected successfully", "success")
     } catch (error) {
-      console.error("Error cancelling booking:", error)
+      console.error("Error rejecting booking:", error)
+      showToast("Oops! Something went wrong", "error")
+    }
+  }
+
+  const handleAccept = async () => {
+    if (!booking) return
+
+    try {
+      const response = await axios.patch(
+        `${USER_API}/booking/accept/${booking.bookingId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+
+      setBooking(prevBooking => ({
+        ...prevBooking!,
+        bookingStatus:
+          response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
+      }))
+      showToast("Booking successfully Approved", "success")
+    } catch (error) {
+      console.error("Error approving booking:", error)
       showToast("Oops! Something went wrong", "error")
     }
   }
@@ -163,15 +189,27 @@ const BookingDetails = () => {
                 Go Back
               </span>
             </button>
-            {(booking && (booking.bookingStatus === "pending" || booking.bookingStatus === "booked")) && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
-              >
-                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Cancel Booking
-                </span>
-              </button>
+
+            {booking && booking.bookingStatus === "Pending" && (
+              <>
+                {" "}
+                <button
+                  onClick={() => handleAccept()}
+                  className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Accept Booking
+                  </span>
+                </button>
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Reject Booking
+                  </span>
+                </button>
+              </>
             )}
           </div>
         </div>

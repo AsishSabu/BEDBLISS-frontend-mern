@@ -4,6 +4,7 @@ import { PublicRoutes } from "../publicRoutes";
 import { ProtectedAdminRoute } from "../protectedRoutes";
 import NotFoundPage from "../../pages/NotFoundPage";
 import HotelDetails from "../../components/admin/HotelDetails";
+import Owners from "../../components/admin/Owners";
 const Users = lazy(() => import("../../components/admin/Users"))
 const Hotels= lazy(() => import("../../components/admin/Hotels"))
 const LoginForm = lazy(() => import("../../pages/admin/Login"));
@@ -24,6 +25,7 @@ const AdminRouter: FC = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<DashBoard />} />
           <Route path="/users" element={<Users/>} />
+          <Route path="/owners" element={<Owners/>} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotel/:id" element={<HotelDetails />} />
         </Route>
