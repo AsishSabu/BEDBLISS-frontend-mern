@@ -18,6 +18,8 @@ const BookingDetails = () => {
   );
 
   useEffect(() => {
+    console.log(data,'data.......');
+    
     if (data) {
       setBooking(data.bookings);
     }

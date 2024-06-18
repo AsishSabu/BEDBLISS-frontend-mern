@@ -67,6 +67,7 @@ const HotelDetail: React.FC = () => {
   )
 
   console.log(dates, "dates...........")
+  
 
   const isRoomNumberAvailable = (roomNumber: RoomNumber): boolean => {
     return !roomNumber.unavailableDates.some((date: string) =>

@@ -139,6 +139,12 @@ const HotelDetail: React.FC = () => {
             Edit Hotel
           </button>
           <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+            List
+          </button>
+          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
+           UnList
+          </button>
+          <button className="inline-block px-6 py-2.5 bg-gradient-to-br from-pink-500 to-orange-400 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-gradient-to-bl hover:shadow-lg focus:bg-gradient-to-bl focus:shadow-lg focus:outline-none focus:ring-0 active:bg-gradient-to-bl active:shadow-lg transition duration-150 ease-in-out">
             Delete Hotel
           </button>
         </div>

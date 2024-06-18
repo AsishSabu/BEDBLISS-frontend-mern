@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../redux/store/store"
 import axios from "axios"
 import { USER_API } from "../constants"
 import { clearUser } from "../redux/slices/userSlice"
+import showToast from "../utils/toast"
 
 export const ProtectedUserRoute: FC = () => {
   const { isAuthenticated, role, id } = useAppSelector(state => state.userSlice)
@@ -21,6 +22,7 @@ export const ProtectedUserRoute: FC = () => {
   console.log(blocked, "...............................")
   if (blocked) {
     dispatch(clearUser())
+    showToast("your accont is blocked",'error')
     return <Navigate to={"/auth/login"} replace />
   }
 

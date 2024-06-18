@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAppSelector } from "../../redux/store/store"
 import { Formik, Form, Field, ErrorMessage } from "formik"
@@ -6,7 +6,9 @@ import { loadStripe } from "@stripe/stripe-js"
 import * as Yup from "yup"
 import axios from "axios"
 import { USER_API } from "../../constants"
-
+import useSWR from "swr"
+import { fetcher } from "../../utils/fetcher"
+import { UserWalletInterface } from "../../types/userInterface"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -30,16 +32,38 @@ const validationSchema = Yup.object().shape({
 
 const CheckoutPage = () => {
   const navigate = useNavigate()
+  const [wallet, setWallet] = useState<UserWalletInterface | null>(null)
+  const [Error, setError] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState("Online")
   const { id } = useParams<{ id: string }>()
   const bookingData = useAppSelector(state => state.bookingSlice)
   console.log(bookingData, "bookingData...........")
-  const totalPrice = bookingData.rooms.reduce(
-    (acc, item) => acc + item[1].count * item[1].price,
-    0
+  const { data, error } = useSWR(USER_API + "/profile", fetcher)
+
+  useEffect(() => {
+    if (data) {
+      console.log(data.user.wallet, "wallet")
+      setWallet(data.user.wallet)
+    }
+  }, [data])
+
+  const checkInDate = new Date(bookingData.checkIn)
+  const checkOutDate = new Date(bookingData.checkOut)
+
+  // Calculate total days
+  const totalDays = Math.ceil(
+    (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
   )
-  console.log(totalPrice,"price");
-  
+  console.log(totalDays)
+
+  const totalPrice =
+    totalDays *
+    bookingData.rooms.reduce(
+      (acc, item) => acc + item[1].count * item[1].price,
+      0
+    )
+  console.log(totalPrice, "price")
+
   const formattedCheckInDate = formatDate(bookingData.checkIn)
   const formattedCheckOutDate = formatDate(bookingData.checkOut)
   const maxPeople = bookingData.adults + bookingData.children
@@ -47,58 +71,63 @@ const CheckoutPage = () => {
   const handleInputChange = (
     method: "Wallet" | "Online" | "pay_on_checkout"
   ) => {
+    console.log(method, "argument")
+
     if (method === "Wallet") {
-      //   const total = calculateTotalAmount(
-      //     tableData?.capacity,
-      //     tableData?.restaurantId.tableRatePerPerson
-      //   );
-      //   if (total > (wallet?.balance ?? 0))
-      //     return setError("Insufficient balance");
-      //   else setError(null);
+      if (totalPrice > (wallet?.balance ?? 0)) {
+        return setError("Insufficient balance")
+      }
+      setError(null)
+
       console.log("wallet")
+      setPaymentMethod("Wallet")
     }
     if (method === "Online") {
+      setError(null)
       setPaymentMethod("Online")
     }
     if (method === "pay_on_checkout") {
+      setError(null)
       setPaymentMethod("pay_on_checkout")
     }
+
+    
+    console.log(paymentMethod, "method")
   }
 
   const handleSubmit = async (values: any) => {
     try {
+      if (Error !== null) {
+        return
+      }
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       )
 
-      const roomDetails = bookingData.rooms.map((room) => {
+      const roomDetails = bookingData.rooms.map((room: any) => {
         return {
           roomId: room[0],
-          roomNumbers: room[1].roomNumbers.map((roomNumber) => roomNumber.number)
-        };
-      });
-      
-
-      
-      
-
+          roomNumbers: room[1].roomNumbers.map(
+            (roomNumber: any) => roomNumber.number
+          ),
+        }
+      })
       const data = {
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         phoneNumber: values.phone,
-        hotelId:bookingData.hotelId,
+        hotelId: bookingData.hotelId,
         checkInDate: bookingData.checkIn,
         checkOutDate: bookingData.checkOut,
-        maxAdults:bookingData.adults,
-        maxChildren:bookingData.children,
+        maxAdults: bookingData.adults,
+        maxChildren: bookingData.children,
         rooms: roomDetails,
-        price:totalPrice,
+        price: totalPrice,
         totalDays: bookingData.totalDays,
         paymentMethod,
       }
       console.log(data)
-
       const response = await axios.post(`${USER_API}/bookNow`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -106,11 +135,14 @@ const CheckoutPage = () => {
       })
       console.log(response)
       const sessionId = response.data.id
-      console.log(sessionId)
-      if (stripe) {
-        const result = await stripe.redirectToCheckout({ sessionId })
-        if (result.error) console.error(result.error)
+      if (sessionId) {
+        const result = await stripe?.redirectToCheckout({ sessionId })
+        if (result?.error) console.error(result.error)
       }
+      const bookingId = response.data.booking.bookingId
+      console.log(bookingId, "booking id")
+
+      navigate(`/user/payment_status/${bookingId}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)
     }
@@ -128,14 +160,15 @@ const CheckoutPage = () => {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ errors, touched }) => (
+      {({}) => (
         <Form className="container mx-auto p-4">
           <div className="border p-4 rounded shadow-lg  grid grid-cols-2 gap-4">
             <div className="text-sm text-gray-500 mb-4">
               <div className="border p-4 rounded mb-4">
                 <h1 className="text-2xl font-bold mb-4">{bookingData.name}</h1>
                 <p>
-                  {bookingData.city}, {bookingData.district}, {bookingData.pincode}, {bookingData.country}
+                  {bookingData.city}, {bookingData.district},{" "}
+                  {bookingData.pincode}, {bookingData.country}
                 </p>
                 <p className="text-green-600">Great location — 8.8</p>
                 <div className="flex items-center space-x-2 mt-2">
@@ -170,7 +203,15 @@ const CheckoutPage = () => {
               {/* Price Summary */}
               <div className="border p-4 rounded mb-4">
                 <h2 className="text-xl font-bold mb-4">Your price summary</h2>
-                <p>Total Amount: <strong>₹ {totalPrice}</strong></p>
+                <p>
+                  Total Amount: <strong>₹ {totalPrice}</strong>
+                </p>
+              </div>
+              <div className="border p-4 rounded mb-4">
+                <h2 className="text-xl font-bold mb-4">Wallet</h2>
+                <p>
+                  Balance : <strong>₹ {wallet?.balance}</strong>
+                </p>
               </div>
 
               <div className="border p-4 rounded mb-4">
@@ -223,7 +264,7 @@ const CheckoutPage = () => {
                         type="radio"
                         name="paymentMethod"
                         id="inlineRadio1"
-                        value="Wallet"
+                        value="pay_on_checkout"
                         onChange={() => handleInputChange("pay_on_checkout")}
                       />
                       <label
@@ -233,6 +274,7 @@ const CheckoutPage = () => {
                         Pay At CheckOut
                       </label>
                     </div>
+                    {Error && <p className="text-red-500 ml-2">{Error}</p>}
                     <div className="text-right">
                       <button
                         type="submit"

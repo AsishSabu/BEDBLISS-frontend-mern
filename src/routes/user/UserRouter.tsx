@@ -6,6 +6,7 @@ import CheckoutPage from "../../components/user/CheckoutPage"
 import PaymentCompleted from "../../pages/user/PaymentCompleted"
 import BookingHistoryList from "../../pages/user/BookingHistory"
 import BookingDetails from "../../pages/user/BookingDetails"
+import Wallet from "../../pages/user/Wallet"
 
 const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"))
 const HotelDetails = lazy(() => import("../../pages/user/HotelDetails"))
@@ -33,7 +34,7 @@ const UserRouter: FC = () => {
             <Route index element={<UserProfile />} />
             <Route path="/profile/Mybookings" element={<BookingHistoryList />} />
             <Route path="/profile/bookingDetails/:id" element={<BookingDetails />} />
-            <Route path="/profile/MyWallet" element={<UserProfile />} />
+            <Route path="/profile/MyWallet" element={<Wallet />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFoundPage />} />

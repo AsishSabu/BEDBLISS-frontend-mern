@@ -61,7 +61,7 @@ const useUserHotels = () => {
         },
       });
       dispatch(setSearchResult(data.data));
-      console.log(data.data);
+      console.log(data.data,'sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk');
       navigate("/user/hotels")
     } catch (error) {
       dispatch(setError("Failed to fetch hotels"))

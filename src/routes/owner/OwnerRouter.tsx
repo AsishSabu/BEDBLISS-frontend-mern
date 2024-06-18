@@ -3,6 +3,7 @@ import { FC, lazy } from "react"
 import { ProtectedOwnerRoute } from "../protectedRoutes"
 import Layout from "../../pages/Layout"
 import AddRoom from "../../components/owner/AddRoom"
+import BookingList from "../../pages/owner/BookingList"
 const AddHotel = lazy(() => import("../../pages/owner/AddHotel"))
 const OwnerProfile = lazy(() => import("../../pages/owner/Home"))
 const HotelList = lazy(() => import("../../pages/owner/HotelList"))
@@ -24,6 +25,7 @@ const OwnerRouter: FC = () => {
           <Route path="/hotels" element={<HotelList />} />
           <Route path="/hotelDetails/:id" element={<HotelDetails />} />
           <Route path="/editHotel/:id" element={<HotelDetails />} />
+          <Route path="/bookings" element={<BookingList />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

@@ -1,14 +1,14 @@
 import useSWR from 'swr';
 import React, { useEffect, useState } from "react";
-import { USER_API } from "../../constants";
+import { OWNER_API, USER_API } from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { fetcher } from '../../utils/fetcher';
 import { BookingInterface } from "../../types/hotelInterface";
 
-const BookingHistoryList = () => {
+const BookingList = () => {
   const [bookings, setBookings] = useState([]);
   const navigate = useNavigate();
-  const { data, error } = useSWR(USER_API + "/bookings", fetcher);
+  const { data, error } = useSWR(OWNER_API + "/bookings", fetcher);
 
   useEffect(() => {
     if (data) {
@@ -27,9 +27,9 @@ const BookingHistoryList = () => {
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden ml-64">
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-semibold mb-6">Booking history</h1>
+    <div className=" flex justify-center">
+      <div className="bg-white shadow-md rounded-lg min-h-screen p-6 px-4 py-7 w-2/3 md:px-10 ">
+        <h1 className="text-2xl font-semibold mb-6">Bookings</h1>
         <div className="overflow-x-auto">
           {bookings.length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
@@ -101,4 +101,4 @@ const BookingHistoryList = () => {
   );
 };
 
-export default BookingHistoryList;
+export default BookingList;

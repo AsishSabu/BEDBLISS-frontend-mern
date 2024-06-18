@@ -44,7 +44,7 @@ const PaymentMessage: React.FC<PaymentMessageProps> = ({ isSuccess }) => {
           </p>
           <div className="flex items-center gap-2">
             <Link
-              to={isSuccess ? "/booking_history" : "/"}
+              to={isSuccess ? "/user/profile/Mybookings" : "/"}
               className={`inline-block px-8 py-3 ${
                 isSuccess
                   ? "bg-indigo-600 hover:bg-indigo-500"
