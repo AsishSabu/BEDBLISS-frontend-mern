@@ -1,6 +1,17 @@
-import logo from "./logo.png"
-import paymentFailed from "./credit-card.png"
+import logo from "./images/logo.png"
+import paymentFailed from "./images/credit-card.png"
+import noProfile from "./images/blank-profile-picture.png"
+import hotelImage from "./images/hotel.svg"
+import userImg from "./images/user.svg"
+import bookingImg from "./images/appointment.svg"
+
 export {
     logo,
-    paymentFailed
+    paymentFailed,
+    noProfile,
+    hotelImage,
+    userImg,
+    bookingImg
+   
+
 }

@@ -7,8 +7,8 @@ import * as Yup from "yup"
 import axios from "axios"
 import { USER_API } from "../../constants"
 import useSWR from "swr"
-import { fetcher } from "../../utils/fetcher"
 import { UserWalletInterface } from "../../types/userInterface"
+import { useFetchData } from "../../utils/fetcher"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -38,7 +38,7 @@ const CheckoutPage = () => {
   const { id } = useParams<{ id: string }>()
   const bookingData = useAppSelector(state => state.bookingSlice)
   console.log(bookingData, "bookingData...........")
-  const { data, error } = useSWR(USER_API + "/profile", fetcher)
+  const { data, isError:error } = useFetchData<any>(USER_API + "/profile")
 
   useEffect(() => {
     if (data) {
@@ -91,7 +91,6 @@ const CheckoutPage = () => {
       setPaymentMethod("pay_on_checkout")
     }
 
-    
     console.log(paymentMethod, "method")
   }
 
@@ -386,9 +385,26 @@ const CheckoutPage = () => {
                       component="div"
                       className="text-red-500 text-sm"
                     />
-                    <span className="p-5 text-center text-gray-500 text-xs">
-                      thanks for your booking
+                    <span className="p-5 text-center  text-xs text-red-800 font-bold">
+                      Read the cancellation policy before booking
                     </span>
+                  </div>
+                  <div className="border border-spacing-2 rounded-lg">
+                    <span className="text-gray-700 text-sm font-bold flex justify-center">Cancellation Policy</span>
+                    {bookingData.cancellationPolicies.map((policy, index) => (
+                      <div className="p-1" key={index}>
+                        <div className="text-sm ">
+                          {policy.name}
+                        </div>
+                        <ul>
+                          {Object.entries(policy.terms).map(([key, value]) => (
+                            <li className="text-gray-500 text-xs" key={key}>
+                              <div className="text-varGreen">{key}:</div> {value}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

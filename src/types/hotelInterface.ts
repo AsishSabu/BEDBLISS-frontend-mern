@@ -1,5 +1,6 @@
-// import mongoose from "mongoose"
-export interface Address {
+import mongoose from 'mongoose';
+
+interface Address {
   streetAddress: string;
   landMark: string;
   district: string;
@@ -8,34 +9,41 @@ export interface Address {
   country: string;
 }
 
-export type HotelInterface={
-  _id: string;
+export interface RoomInterface {
+  _id: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  price: number;
+  maxAdults: number;
+  maxChildren: number;
+  desc: string;
+  roomNumbers: { number: number; unavailableDates: Date[] }[];
+}
+
+// Hotel interface
+export interface HotelInterface {
+  _id: mongoose.Types.ObjectId;
   name: string;
-  ownerId: string;
+  ownerId: mongoose.Types.ObjectId;
   destination: string;
-  address: Address;
-  stayType: string;
   description: string;
   propertyRules: string[];
-  room: number;
-  bed: number;
-  bathroom: number;
-  guests: number;
+  reservationType: string;
+  stayType: string;
   amenities: string[];
   isBlocked: boolean;
   isListed: boolean;
+  createdAt: Date;
+  updatedAt: Date;
   imageUrls: string[];
-  reservationType: string;
-  isVerified: string;
+  address: Address;
+  ownerDocument: string;
   hotelDocument: string;
   ownerPhoto: string;
-  unavailableDates: string[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-  price: string;
+  unavailbleDates: Date[];
+  rooms: RoomInterface[];
 }
-
 export type UserInterface ={
   _id: string;
   name: string;

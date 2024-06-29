@@ -4,9 +4,9 @@ import { PublicRoutes } from "../publicRoutes";
 import { ProtectedAdminRoute } from "../protectedRoutes";
 import NotFoundPage from "../../pages/NotFoundPage";
 import HotelDetails from "../../components/admin/HotelDetails";
-import Owners from "../../components/admin/Owners";
-const Users = lazy(() => import("../../components/admin/Users"))
-const Hotels= lazy(() => import("../../components/admin/Hotels"))
+import Owners from "../../pages/admin/Owners";
+const Users = lazy(() => import("../../pages/admin/Users"))
+const Hotels= lazy(() => import("../../pages/admin/Hotels"))
 const LoginForm = lazy(() => import("../../pages/admin/Login"));
 const Layout = lazy(() => import("../../pages/admin/Layout"));
 const DashBoard = lazy(() => import("../../components/admin/DashBoard"));

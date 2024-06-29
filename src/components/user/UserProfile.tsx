@@ -1,3 +1,4 @@
+import { noProfile } from "../../assets/images";
 import useProfile from "../../hooks/user/UserProfile";
 
 const UserProfile = () => {
@@ -16,7 +17,7 @@ const UserProfile = () => {
         <img src={
                   imagePreview
                     ? imagePreview
-                    : profile?.profilePic ?? "https://picsum.photos/200"
+                    : profile?.profilePic ??noProfile
                 } 
           alt="Profile"
           className=" rounded-full w-1/5"

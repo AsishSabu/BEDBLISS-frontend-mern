@@ -2,11 +2,11 @@ import useSWR from "swr"
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { OWNER_API, USER_API } from "../../constants"
-import { fetcher } from "../../utils/fetcher"
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface"
 import axios from "axios"
 import showToast from "../../utils/toast"
-import CancelBookingModal from "./cancelBookingModal"
+import CancelBookingModal from "../../components/owner/cancelBookingModal"
+import { useFetchData } from "../../utils/fetcher"
 // Import the modal component
 
 const BookingDetails = () => {
@@ -17,10 +17,8 @@ const BookingDetails = () => {
 
   const navigate = useNavigate()
 
-  const { data, error } = useSWR<BookingResponse>(
-    `${USER_API}/bookingDetails/${id}`,
-    fetcher
-  )
+  const { data,isError:error } = useFetchData<BookingResponse>( `${USER_API}/bookingDetails/${id}`);
+
 
   useEffect(() => {
     console.log(data, "data.......")
@@ -39,7 +37,7 @@ const BookingDetails = () => {
     return <div>Loading...</div>
   }
 
-  const handleCancellation = async (reason: string) => {
+  const handleRejection = async (reason: string) => {
     if (!booking) return
 
     try {
@@ -65,13 +63,39 @@ const BookingDetails = () => {
     }
   }
 
+
+  const handleCancellation = async () => {
+    if (!booking) return
+
+    try {
+      const response = await axios.patch(
+        `${USER_API}/booking/cancel/${booking.bookingId}`,
+        {  status: "cancelled" }, 
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      setBooking(prevBooking => ({
+        ...prevBooking!,
+        bookingStatus:
+          response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
+      }))
+      showToast("Booking cancellation accepted successfully", "success")
+    } catch (error) {
+      console.error("Error in accept cancellation of booking:", error)
+      showToast("Oops! Something went wrong", "error")
+    }
+  }
+
   const handleAccept = async () => {
     if (!booking) return
 
     try {
       const response = await axios.patch(
-        `${USER_API}/booking/accept/${booking.bookingId}`,
-        {},
+        `${USER_API}/booking/update/${booking.bookingId}`,
+        {status:"booked"},
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -190,7 +214,7 @@ const BookingDetails = () => {
               </span>
             </button>
 
-            {booking && booking.bookingStatus === "Pending" && (
+            {booking && booking.bookingStatus === "pending" && (
               <>
                 {" "}
                 <button
@@ -211,13 +235,27 @@ const BookingDetails = () => {
                 </button>
               </>
             )}
+
+{booking && booking.bookingStatus === "cancel requested" && (
+              <>
+                {" "}
+                <button
+                  onClick={() => handleCancellation()}
+                  className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Approve cancel
+                  </span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
       <CancelBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onConfirm={handleCancellation}
+        onConfirm={handleRejection}
       />
     </div>
   )

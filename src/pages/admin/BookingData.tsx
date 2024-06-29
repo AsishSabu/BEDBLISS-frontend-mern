@@ -11,12 +11,12 @@ interface UserDataProps {
   type: "user" | "hotel";
 }
 
-const UserData: React.FC<UserDataProps> = ({ _id, name, email, isBlocked, type }) => {
+const BookingData: React.FC<UserDataProps> = ({ bookingId, hotelId, firstName, bookingStatus, price }) => {
   const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
-    const endpoint = `/block_user/${_id}`;
+    const endpoint = type === "user" ? `/block_user/${_id}` : `/block_hotel/${_id}`;
     axiosJWT
       .patch(ADMIN_API + endpoint)
       .catch(err => console.log(err));
@@ -53,4 +53,4 @@ const UserData: React.FC<UserDataProps> = ({ _id, name, email, isBlocked, type }
   );
 };
 
-export default UserData;
+export default BookingData;

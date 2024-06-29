@@ -1,10 +1,10 @@
 import useSWR from 'swr';
 import React, { useEffect } from 'react';
 import { USER_API } from '../../constants';
-import { fetcher } from '../../utils/fetcher';
+import { useFetchData } from '../../utils/fetcher';
 
 const Wallet = () => {
-  const { data, error } = useSWR(USER_API + '/wallet', fetcher);
+  const { data,isError:error } = useFetchData<any>(USER_API + '/wallet');
 
   useEffect(() => {
     if (data) {

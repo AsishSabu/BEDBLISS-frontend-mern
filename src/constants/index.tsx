@@ -1,4 +1,5 @@
-export const BASE_URL="http://localhost:5000/api/"
+export const SERVER_URL="http://localhost:5000"
+export const BASE_URL=SERVER_URL+"/api/"
 export const USER_API=BASE_URL+"user";
 export const OWNER_API=BASE_URL+"owners";
 export const ADMIN_API=BASE_URL+"admin";

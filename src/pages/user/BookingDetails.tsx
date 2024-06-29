@@ -1,27 +1,25 @@
-import useSWR from "swr"
-import React, { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { USER_API } from "../../constants"
-import { fetcher } from "../../utils/fetcher"
-import { BookingInterface, BookingResponse } from "../../types/hotelInterface"
-import axios from "axios"
-import showToast from "../../utils/toast"
-import CancelBookingModal from "./cnacelBooking"
-// Import the modal component
+import useSWR from "swr";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { USER_API } from "../../constants";
+import { useFetchData} from "../../utils/fetcher"
+import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
+import axios from "axios";
+import showToast from "../../utils/toast";
+import CancelBookingModal from "../../components/user/cancelBooking"; // Ensure this path is correct
 
 const BookingDetails = () => {
-  const [booking, setBooking] = useState<BookingInterface | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const { id } = useParams<{ id: string }>()
-  console.log(id, "hotel id")
+  const [booking, setBooking] = useState<BookingInterface | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  console.log(id, "hotel id");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const { data, error } = useSWR<BookingResponse>(
-    `${USER_API}/bookingDetails/${id}`,
-    fetcher
-  )
-
+  const { data, isError } = useFetchData<BookingResponse>(
+  `${USER_API}/bookingDetails/${id}`  
+  );
+  
   useEffect(() => {
     console.log(data, "data.......")
 
@@ -29,41 +27,42 @@ const BookingDetails = () => {
       setBooking(data.bookings)
     }
   }, [data])
-
-  if (error) {
-    console.error("Error fetching booking:", error)
-    return <div>Error fetching booking details.</div>
+  console.log(data,"booking data");
+  
+  if (isError) {
+    console.error("Error fetching booking:", isError);
+    return <div>Error fetching booking details.</div>;
   }
 
   if (!data) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   const handleCancellation = async (reason: string) => {
-    if (!booking) return
+    if (!booking) return;
 
     try {
       const response = await axios.patch(
-        `${USER_API}/booking/cancel/${booking.bookingId}`,
-        { reason, status: "cancelled" }, // Pass the reason for cancellation
+        `${USER_API}/booking/update/${booking.bookingId}`,
+        { reason, status:"cancel requested" },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
-      )
+      );
 
-      setBooking(prevBooking => ({
+      setBooking((prevBooking) => ({
         ...prevBooking!,
         bookingStatus:
           response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
-      }))
-      showToast("Booking cancelled successfully", "success")
+      }));
+      showToast("Booking cancelled successfully", "success");
     } catch (error) {
-      console.error("Error cancelling booking:", error)
-      showToast("Oops! Something went wrong", "error")
+      console.error("Error cancelling booking:", error);
+      showToast("Oops! Something went wrong", "error");
     }
-  }
+  };
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -163,7 +162,9 @@ const BookingDetails = () => {
                 Go Back
               </span>
             </button>
-            {(booking && (booking.bookingStatus === "pending" || booking.bookingStatus === "booked")) && (
+            {(booking &&
+              (booking.bookingStatus === "pending" ||
+                booking.bookingStatus === "booked")) && (
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
@@ -182,7 +183,7 @@ const BookingDetails = () => {
         onConfirm={handleCancellation}
       />
     </div>
-  )
-}
+  );
+};
 
-export default BookingDetails
+export default BookingDetails;

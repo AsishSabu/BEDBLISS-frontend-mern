@@ -3,7 +3,7 @@ import axiosJWT from "../../utils/axiosService";
 import { ADMIN_API } from "../../constants";
 import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
-import useHotels from '../../hooks/admin/useHotels';
+
 
 interface UserDataProps {
   _id: string;
@@ -17,7 +17,7 @@ const Hoteldata:React.FC<UserDataProps> = ({ _id, name, isBlocked, type }) => {
   
     const handleCheckboxChange = () => {
       setIsChecked(!isChecked);
-      const endpoint = type === "user" ? `/block_user/${_id}` : `/block_hotel/${_id}`;
+      const endpoint =`/block_hotel/${_id}`;
       axiosJWT
         .patch(ADMIN_API + endpoint)
         .catch(err => console.log(err));

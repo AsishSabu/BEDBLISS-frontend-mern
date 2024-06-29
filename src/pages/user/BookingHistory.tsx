@@ -1,14 +1,13 @@
-import useSWR from 'swr';
 import React, { useEffect, useState } from "react";
 import { USER_API } from "../../constants";
-import { useNavigate } from "react-router-dom";
-import { fetcher } from '../../utils/fetcher';
+import { useNavigate } from "react-router-dom"
 import { BookingInterface } from "../../types/hotelInterface";
+import { useFetchData } from '../../utils/fetcher';
 
 const BookingHistoryList = () => {
   const [bookings, setBookings] = useState([]);
   const navigate = useNavigate();
-  const { data, error } = useSWR(USER_API + "/bookings", fetcher);
+  const { data, isError:error } = useFetchData<any>(USER_API + "/bookings");
 
   useEffect(() => {
     if (data) {

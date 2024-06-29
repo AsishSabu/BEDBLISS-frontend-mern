@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import useSWR from "swr"
 import { USER_API } from "../../constants"
 import { useNavigate } from "react-router-dom"
@@ -9,8 +9,9 @@ import {
   setError,
   setSearchResult,
 } from "../../redux/slices/destinationSlice"
-import { fetcher } from "../../utils/fetcher"
+import { fetcher, useFetchData } from "../../utils/fetcher"
 import { setData } from "../../redux/slices/searchingSlice"
+import { HotelInterface } from "../../types/hotelInterface"
 
 const useUserHotels = () => {
   const dispatch = useDispatch()
@@ -23,8 +24,30 @@ const useUserHotels = () => {
   const [children, setChildren] = useState(0)
   const [rooms, setRooms] = useState(1)
   const navigate = useNavigate()
+  const [loading, setLoadingState] = useState(true)
 
-  const { data: hotelsData, error } = useSWR(`${USER_API}/hotels`, fetcher)
+  const { data: hotelsData, isLoading, isError:error } = useFetchData<HotelInterface[]>(`${USER_API}/hotels`, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    onSuccess: () => {
+      setLoadingState(false);
+    },
+    onError: () => {
+      setLoadingState(false);
+    },
+  });
+
+  useEffect(() => {
+    if (hotelsData) {
+      setLoadingState(false)
+    }
+    if (error) {
+      dispatch(setError("Failed to fetch hotels"))
+      console.error(error)
+      setLoadingState(false)
+    }
+  }, [hotelsData, error, dispatch])
+  console.log(hotelsData, "hotels....")
 
   type optionType = {
     adult: number
@@ -37,12 +60,17 @@ const useUserHotels = () => {
     endDate: Date
   }
 
-  const handleSearch = async (destination: string, options: optionType, dates: datesType) => {
+  const handleSearch = async (
+    destination: string,
+    options: optionType,
+    dates: datesType
+  ) => {
     console.log(destination, "destination........")
     console.log(options, "options..........")
     console.log(dates, "dates......")
 
     dispatch(setLoading(true))
+    setLoadingState(true)
     try {
       const { adult, children, room } = options
       const { startDate, endDate } = dates
@@ -66,13 +94,17 @@ const useUserHotels = () => {
       }
       dispatch(setSearchResult(data.data))
       dispatch(setData(searchData))
-      console.log(data.data, 'sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk')
+      console.log(
+        data.data,
+        "sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk"
+      )
       navigate("/user/hotels")
     } catch (error) {
       dispatch(setError("Failed to fetch hotels"))
       console.error(error)
     } finally {
       dispatch(setLoading(false))
+      setLoadingState(false)
     }
   }
 
@@ -100,6 +132,7 @@ const useUserHotels = () => {
     rooms,
     setRooms,
     handleSearch,
+    loading,
   }
 }
 
