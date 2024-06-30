@@ -1,19 +1,19 @@
-import { FC, lazy } from "react"
-import { Route, Routes } from "react-router-dom"
-import { ProtectedAllUserRoute, ProtectedUserRoute } from "../protectedRoutes"
-import Layout from "../../pages/Layout"
-import CheckoutPage from "../../pages/user/CheckoutPage"
-import PaymentCompleted from "../../pages/user/PaymentCompleted"
-import BookingHistoryList from "../../pages/user/BookingHistory"
-import BookingDetails from "../../pages/user/BookingDetails"
-import Wallet from "../../pages/user/Wallet"
+import { FC, lazy } from "react";
+import { Route, Routes } from "react-router-dom";
+import { ProtectedAllUserRoute, ProtectedUserRoute } from "../protectedRoutes";
 
-const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"))
-const HotelDetails = lazy(() => import("../../pages/user/HotelDetails"))
-const Hotels = lazy(() => import("../../pages/user/Hotels"))
-const UserProfile = lazy(() => import("../../components/user/UserProfile"))
-const Home = lazy(() => import("../../pages/user/Home"))
-const Profile = lazy(() => import("../../pages/user/Profile"))
+const Layout = lazy(() => import("../../pages/Layout"));
+const CheckoutPage = lazy(() => import("../../pages/user/CheckoutPage"));
+const PaymentCompleted = lazy(() => import("../../pages/user/PaymentCompleted"));
+const BookingHistoryList = lazy(() => import("../../pages/user/BookingHistory"));
+const BookingDetails = lazy(() => import("../../pages/user/BookingDetails"));
+const Wallet = lazy(() => import("../../pages/user/Wallet"));
+const NotFoundPage = lazy(() => import("../../pages/NotFoundPage"));
+const HotelDetails = lazy(() => import("../../pages/user/HotelDetails"));
+const Hotels = lazy(() => import("../../pages/user/Hotels"));
+const UserProfile = lazy(() => import("../../components/user/UserProfile"));
+const Home = lazy(() => import("../../pages/user/Home"));
+const Profile = lazy(() => import("../../pages/user/Profile"));
 
 const UserRouter: FC = () => {
   return (
@@ -21,16 +21,16 @@ const UserRouter: FC = () => {
       <Route path="" element={<Layout />}>
         <Route path="" element={<ProtectedAllUserRoute />}>
           <Route index element={<Home />} />
-          <Route path="/hotels" element={<Hotels />} />
-          <Route path="/hotelDetails/:id" element={<HotelDetails />} />
+          <Route path="hotels" element={<Hotels />} />
+          <Route path="hotelDetails/:id" element={<HotelDetails />} />
         </Route>
 
-        {/*user private routes*/}
+        {/* user private routes */}
 
         <Route path="" element={<ProtectedUserRoute />}>
-          <Route path="/checkout/:id" element={<CheckoutPage />} />
-          <Route path="/payment_status/:id" element={<PaymentCompleted/>}/>
-          <Route path="/profile" element={<Profile />}>
+          <Route path="checkout/:id" element={<CheckoutPage />} />
+          <Route path="payment_status/:id" element={<PaymentCompleted />} />
+          <Route path="profile" element={<Profile />}>
             <Route index element={<UserProfile />} />
             <Route path="/profile/Mybookings" element={<BookingHistoryList />} />
             <Route path="/profile/bookingDetails/:id" element={<BookingDetails />} />
@@ -40,7 +40,7 @@ const UserRouter: FC = () => {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
-  )
-}
+  );
+};
 
-export default UserRouter
+export default UserRouter;

@@ -82,6 +82,8 @@ const ChatComponent = () => {
 
   useEffect(() => {
     if (conversationData) {
+      console.log(conversations,"................................................");
+      
       setConversations(conversationData)
     }
   }, [conversationData])

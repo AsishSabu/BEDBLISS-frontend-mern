@@ -1,13 +1,14 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import UserRouter from "./user/UserRouter";
-import OwnerRouter from "./owner/OwnerRouter";
-import AdminRouter from "./admin/AdminRouter";
-import AuthRouter from "./auth/AuthRouter";
 import Loader from "../components/Loader";
-import NotFoundPage from "../pages/NotFoundPage";
 
-const MainRouter:React.FC = () => {
+const UserRouter = lazy(() => import("./user/UserRouter"));
+const OwnerRouter = lazy(() => import("./owner/OwnerRouter"));
+const AdminRouter = lazy(() => import("./admin/AdminRouter"));
+const AuthRouter = lazy(() => import("./auth/AuthRouter"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+
+const MainRouter: React.FC = () => {
   return (
     <Suspense fallback={<Loader />}>
       <Routes>
@@ -15,7 +16,7 @@ const MainRouter:React.FC = () => {
         <Route path="/auth/*" element={<AuthRouter />} />
         <Route path="/user/*" element={<UserRouter />} />
         <Route path="/admin/*" element={<AdminRouter />} />
-        <Route path="/owner/*" element={<OwnerRouter />} />       
+        <Route path="/owner/*" element={<OwnerRouter />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>

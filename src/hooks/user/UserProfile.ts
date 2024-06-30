@@ -6,12 +6,12 @@ import { USER_API, nameRegex, phoneRegex } from "../../constants";
 import showToast from "../../utils/toast";
 import axiosJWT from "../../utils/axiosService";
 import uploadImagesToCloudinary from "../../api/imageUpload";
-import { fetcher } from "../../utils/fetcher";
+import { useFetchData } from "../../utils/fetcher";
 axios.defaults.withCredentials = true;
 
 
 const useProfile = () => {
-  const { data, error } = useSWR(USER_API + "/profile", fetcher);
+  const { data, isError:error } = useFetchData<any>(USER_API + "/profile");
   const [nameError, setNameError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [formData, setFormData] = useState<{

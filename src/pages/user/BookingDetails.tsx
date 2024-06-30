@@ -1,25 +1,29 @@
-import useSWR from "swr";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { USER_API } from "../../constants";
-import { useFetchData} from "../../utils/fetcher"
-import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
-import axios from "axios";
-import showToast from "../../utils/toast";
-import CancelBookingModal from "../../components/user/cancelBooking"; // Ensure this path is correct
+import useSWR from "swr"
+import React, { useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { USER_API } from "../../constants"
+import { useFetchData } from "../../utils/fetcher"
+import { BookingInterface, BookingResponse } from "../../types/hotelInterface"
+import axios from "axios"
+import showToast from "../../utils/toast"
+import CancelBookingModal from "../../components/user/cancelBooking" // Ensure this path is correct
+import UserChat from "./UserChat"
+import { chatImg } from "../../assets/images"
 
 const BookingDetails = () => {
-  const [booking, setBooking] = useState<BookingInterface | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { id } = useParams<{ id: string }>();
-  console.log(id, "hotel id");
+  const [booking, setBooking] = useState<BookingInterface | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showChatModal, setShowChatModal] = useState(false)
+  const { id } = useParams<{ id: string }>()
+  console.log(id, "hotel id")
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const { data, isError } = useFetchData<BookingResponse>(
-  `${USER_API}/bookingDetails/${id}`  
-  );
-  
+    `${USER_API}/bookingDetails/${id}`
+  )
+
+
   useEffect(() => {
     console.log(data, "data.......")
 
@@ -27,42 +31,49 @@ const BookingDetails = () => {
       setBooking(data.bookings)
     }
   }, [data])
-  console.log(data,"booking data");
-  
+  console.log(data, "booking data")
+
   if (isError) {
-    console.error("Error fetching booking:", isError);
-    return <div>Error fetching booking details.</div>;
+    console.error("Error fetching booking:", isError)
+    return <div>Error fetching booking details.</div>
   }
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   const handleCancellation = async (reason: string) => {
-    if (!booking) return;
+    if (!booking) return
 
     try {
       const response = await axios.patch(
         `${USER_API}/booking/update/${booking.bookingId}`,
-        { reason, status:"cancel requested" },
+        { reason, status: "cancel requested" },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
-      );
+      )
 
-      setBooking((prevBooking) => ({
+      setBooking(prevBooking => ({
         ...prevBooking!,
         bookingStatus:
           response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
-      }));
-      showToast("Booking cancelled successfully", "success");
+      }))
+      showToast("Booking cancelled successfully", "success")
     } catch (error) {
-      console.error("Error cancelling booking:", error);
-      showToast("Oops! Something went wrong", "error");
+      console.error("Error cancelling booking:", error)
+      showToast("Oops! Something went wrong", "error")
     }
+  }
+
+  const showChat = () => {
+    setShowChatModal(true);
   };
+
+  console.log(showChatModal,"//////////////");
+  
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -151,6 +162,7 @@ const BookingDetails = () => {
                   </div>
                 </div>
               </div>
+              <UserChat isOpen={showChatModal} onClose={() => setShowChatModal(false)} ownerId={booking.hotelId.ownerId} />
             </div>
           )}
           <div className="flex justify-between mx-40">
@@ -162,18 +174,25 @@ const BookingDetails = () => {
                 Go Back
               </span>
             </button>
-            {(booking &&
+            {booking &&
               (booking.bookingStatus === "pending" ||
-                booking.bookingStatus === "booked")) && (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
-              >
-                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Cancel Booking
-                </span>
-              </button>
-            )}
+                booking.bookingStatus === "booked") && (
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+                >
+                  <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                    Cancel Booking
+                  </span>
+                </button>
+              )}
+          </div>
+          <div
+            onClick={showChat}
+            className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+          >
+         <img src={chatImg} className="h-10" alt="user" />
+         <span>Chat With Owner</span>
           </div>
         </div>
       </div>
@@ -182,8 +201,9 @@ const BookingDetails = () => {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleCancellation}
       />
+   
     </div>
-  );
-};
+  )
+}
 
-export default BookingDetails;
+export default BookingDetails
