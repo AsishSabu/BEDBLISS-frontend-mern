@@ -149,7 +149,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed bottom-10 right-10 flex flex-col items-end w-full z-50">
+    <div className="fixed bottom-10 right-10 flex flex-col items-end w-full z-50 ">
       {/* Chat Modal */}
       <div
         className={`chat-modal bg-white shadow-lg rounded-lg p-4 ${
@@ -196,7 +196,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
           </div>
         </div>
         {/* Chats */}
-        <div className="flex flex-col bg-gray-200 p-2 overflow-y-auto max-h-96 min-h-96">
+        <div className="flex flex-col bg-gray-200 p-2 overflow-y-auto max-h-96 min-h-96 no-scrollbar">
           {messages.map((m: any) => (
             <div key={m._id} ref={scrollRef}>
               <Messages message={m} own={m.senderId === senderId} />

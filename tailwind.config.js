@@ -20,6 +20,8 @@ export default  withMT({
         varGray:"#e9ecef",
         varCream2:"#FEFAF6",
         varGrey:"#EEEEEE",
+        varBlueGray:"#DAEAF1",
+        varLight:"#F9F9F9",
         Marine_blue: "hsl(213, 96%, 18%)",
         Purplish_blue: "hsl(243, 100%, 62%)",
         Pastel_blue: "hsl(228, 100%, 84%)",

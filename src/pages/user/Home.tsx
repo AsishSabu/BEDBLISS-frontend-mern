@@ -3,7 +3,7 @@ import HomePage from "../../components/user/HomePage"
 
 const Home = () => {
   return (
-    <div className="overflow-hidden ">
+    <div className="overflow-hidden no-scrollbar">
       <Banner />
       <HomePage />
     </div>

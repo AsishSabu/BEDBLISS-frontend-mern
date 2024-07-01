@@ -10,7 +10,7 @@ const Bookings: React.FC = () => {
 //   if (userError) return <div>Error loading users.</div>;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto no-scrollbar">
       <Table>
         <Table.Head>
           <Table.HeadCell>Name</Table.HeadCell>

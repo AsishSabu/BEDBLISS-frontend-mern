@@ -13,8 +13,7 @@ const BookingDetails = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { id } = useParams<{ id: string }>()
-  console.log(id, "hotel id")
-
+  
   const navigate = useNavigate()
 
   const { data,isError:error } = useFetchData<BookingResponse>( `${USER_API}/bookingDetails/${id}`);

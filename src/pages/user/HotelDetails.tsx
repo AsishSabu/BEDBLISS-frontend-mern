@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import useHotelDetails from "../../hooks/user/useHotelDetails"
 import { useNavigate, useParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
@@ -8,7 +8,12 @@ import { setCheckoutData } from "../../redux/slices/bookingslice"
 import { useAppSelector } from "../../redux/store/store"
 import Image from "../../components/Image"
 import SearchBoxDetail from "../../components/user/SearchInDetail"
-
+import ReviewCard from "../../components/user/Review/ReviewCard"
+import { useFetchData } from "../../utils/fetcher"
+import { USER_API } from "../../constants"
+import { noProfile } from "../../assets/images"
+import { Review } from "../../types/reviewInterface"
+import StarComponent from "../../components/user/Review/StarComponent"
 
 interface RoomNumber {
   number: number
@@ -25,36 +30,55 @@ interface Room {
 }
 
 const getDatesInRange = (startDate: Date, endDate: Date): string[] => {
-  const currentDate = new Date(startDate);
-  const end = new Date(endDate);
-  const datesArray: string[] = [];
+  const currentDate = new Date(startDate)
+  const end = new Date(endDate)
+  const datesArray: string[] = []
 
   while (currentDate <= end) {
-    const formattedDate = new Date(currentDate);
-    formattedDate.setUTCHours(0, 0, 0, 0);
-    datesArray.push(formattedDate.toISOString().split("T")[0]);
-    currentDate.setDate(currentDate.getDate() + 1);
+    const formattedDate = new Date(currentDate)
+    formattedDate.setUTCHours(0, 0, 0, 0)
+    datesArray.push(formattedDate.toISOString().split("T")[0])
+    currentDate.setDate(currentDate.getDate() + 1)
   }
 
-  return datesArray;
-};
+  return datesArray
+}
 
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  console.log(id,"hotel id")
+  console.log(id, "hotel id")
   const { hotel, loading, error } = useHotelDetails(id)
-  const [err,setErr]=useState("");
-  console.log(hotel,"hotel in hotel details")
+  const [err, setErr] = useState("")
+  console.log(hotel, "hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
-  console.log(searchingData,"searchingData");
-  
+  console.log(searchingData, "searchingData")
+  const [review, setReview] = useState<Review[] | null>(null)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [showAllPhotos, setShowAllPhotos] = useState(false)
   const [roomSelections, setRoomSelections] = useState<{
     [key: string]: { count: number; price: number; roomNumbers: RoomNumber[] }
   }>({})
-  
+
+  const { data, isError } = useFetchData<any>(`${USER_API}/getRating/${id}`)
+
+  useEffect(() => {
+    console.log(data, "review.......")
+
+    if (data) {
+      setReview(data.result)
+    }
+  }, [data])
+  const sumOfRatings = review
+    ? review.reduce((acc, curr) => acc + curr.rating, 0)
+    : 0
+  const avgRatings = sumOfRatings && review ? sumOfRatings / review.length : 0
+
+  console.log(sumOfRatings, "sum of ratings.........")
+  console.log(avgRatings)
+
+  console.log(review, "😆")
+
   if (loading) {
     return <div>Loading...</div>
   }
@@ -64,14 +88,13 @@ const HotelDetail: React.FC = () => {
   if (!hotel) {
     return <div>No hotel data available</div>
   }
-  console.log(searchingData.dates,"'''''''''''''''''''''''''''")
+  console.log(searchingData.dates, "'''''''''''''''''''''''''''")
   const dates = getDatesInRange(
     searchingData.dates[0].startDate,
     searchingData.dates[0].endDate
   )
 
   console.log(dates, "dates...........")
-  
 
   const isRoomNumberAvailable = (roomNumber: RoomNumber): boolean => {
     return !roomNumber.unavailableDates.some((date: string) =>
@@ -105,46 +128,41 @@ const HotelDetail: React.FC = () => {
     rooms,
   } = hotel
 
-
-
   const handleSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
     roomId: string,
     price: number,
     roomNumbers: RoomNumber[]
   ) => {
-    const { value } = e.target;
+    const { value } = e.target
     setErr("")
-    const count = parseInt(value, 10);
-  
+    const count = parseInt(value, 10)
+
     if (count === 0) {
       // Remove the room from the roomSelections state
       setRoomSelections(prevSelections => {
-        const { [roomId]: removedRoom, ...rest } = prevSelections;
-        return rest;
-      });
+        const { [roomId]: removedRoom, ...rest } = prevSelections
+        return rest
+      })
     } else {
       // Create an array of room numbers based on the selected count
-      const selectedRoomNumbers = roomNumbers.slice(0, count);
-  
+      const selectedRoomNumbers = roomNumbers.slice(0, count)
+
       setRoomSelections(prevSelections => ({
         ...prevSelections,
         [roomId]: { count, price, roomNumbers: selectedRoomNumbers },
-      }));
+      }))
     }
-  };
-  
+  }
 
   const handleReserve = () => {
     const selectedRooms = Object.entries(roomSelections)
-    if(selectedRooms.length<=0){
+    if (selectedRooms.length <= 0) {
       setErr("please select atleast one room")
       return
     }
-    console.log("hloooo");
-    
-  
-   
+    console.log("hloooo")
+
     const data = {
       name: hotel?.name ?? "",
       destination: hotel?.destination ?? "",
@@ -240,17 +258,23 @@ const HotelDetail: React.FC = () => {
         <div>
           {" "}
           <h1 className="text-3xl font-bold mb-2">{name}</h1>
+          {review ? (
+            <div className="flex items-center mb-2 gap-2">
+              <StarComponent stars={avgRatings} />
+              <span className="text-gray-600">
+                {review.length
+                  ? `(${review.length} reviews)`
+                  : `(not yet rated )`}
+              </span>
+            </div>
+          ) : (
+            ""
+          )}
           <p className="text-gray-700 mb-2">{stayType}</p>
           <p className="text-gray-600 mb-2">{destination}</p>
         </div>
         <div className="grid grid-cols-4 gap-2">
           <div className="col-span-2">
-            <div className="flex items-center mb-2">
-              <span className="inline-block bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-semibold mr-2">
-                4.97
-              </span>
-              <span className="text-gray-600">(79 reviews)</span>
-            </div>
             <div className="mb-4">
               <p className="text-gray-800 mb-1">Hosted by Kirby</p>
               <p className="text-gray-600 mb-1">Dedicated workspace</p>
@@ -391,6 +415,78 @@ const HotelDetail: React.FC = () => {
           <span className="text-varRed flex justify-center">{err}</span>
         </div>
       </div>
+
+      {review.length && (
+        <div className="pt-5 m-2 border ">
+          <p className="flex justify-center text-2xl py-10">
+            Customer Review & Ratings
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="">
+              <div className="w-full border mx-2 p-4 rounded-lg   shadow-lg">
+              <ReviewCard review={review} />
+              </div>
+              
+            </div>
+            <div className="col-span-2">
+              {review &&
+                review.map(r => (
+                  <div
+                    key={r._id}
+                    className="flex flex-col border rounded-lg shadow-md p-4 space-y-4 w-full"
+                  >
+                    <StarComponent stars={r.rating} />
+                    <div className="flex items-center space-x-4">
+                      <img
+                        className="rounded-full w-6 h-6"
+                        src={
+                          r.userId.profilePic ? r.userId.profilePic : noProfile
+                        }
+                        alt={`${r.userId.name}'s Avatar`}
+                      />
+                      <div className="flex justify-between w-full">
+                        <div className=" text-blue-800 text-xl font-bold">
+                          {r.userId.name}
+                        </div>
+                        <div className="text-gray-400">
+                          {" "}
+                          {r.createdAt && (
+                            <>
+                              {new Date(r.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex mt-2 space-x-2">
+                      {r.imageUrls.map((image, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={image}
+                            alt={`Preview ${index}`}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </div>
+                      ))}
+                    </div>
+
+                    <p className="text-gray-500 text-xl font-thin">
+                      {r.description}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

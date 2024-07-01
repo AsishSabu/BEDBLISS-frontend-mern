@@ -9,7 +9,7 @@ import Hoteldata from './Hoteldata';
 const Hotels:React.FC = () => {
   const {hotels}=useHotels()
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-auto no-scrollbar">
     <Table>
       <Table.Head>
         <Table.HeadCell>Name</Table.HeadCell>

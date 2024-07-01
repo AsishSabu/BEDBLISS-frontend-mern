@@ -9,20 +9,20 @@ import showToast from "../../utils/toast"
 import CancelBookingModal from "../../components/user/cancelBooking" // Ensure this path is correct
 import UserChat from "./UserChat"
 import { chatImg } from "../../assets/images"
+import AddReview from "../../components/AddReview"
 
-const BookingDetails = () => {
+const BookingDetails:React.FC= () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showChatModal, setShowChatModal] = useState(false)
+  const [showReviewModal, setShowReviewModal] = useState(false)
   const { id } = useParams<{ id: string }>()
-  console.log(id, "hotel id")
 
   const navigate = useNavigate()
 
   const { data, isError } = useFetchData<BookingResponse>(
     `${USER_API}/bookingDetails/${id}`
   )
-
 
   useEffect(() => {
     console.log(data, "data.......")
@@ -69,11 +69,13 @@ const BookingDetails = () => {
   }
 
   const showChat = () => {
-    setShowChatModal(true);
-  };
+    setShowChatModal(true)
+  }
+  const showReview = () => {
+    setShowReviewModal(true)
+  }
 
-  console.log(showChatModal,"//////////////");
-  
+  console.log(showChatModal, "//////////////")
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -162,7 +164,17 @@ const BookingDetails = () => {
                   </div>
                 </div>
               </div>
-              <UserChat isOpen={showChatModal} onClose={() => setShowChatModal(false)} ownerId={booking.hotelId.ownerId} />
+              <UserChat
+                isOpen={showChatModal}
+                onClose={() => setShowChatModal(false)}
+                ownerId={booking.hotelId.ownerId}
+              />
+                
+              <AddReview
+                isOpen={showReviewModal}
+                onClose={() => setShowReviewModal(false)}
+                id={booking.hotelId._id}
+              />
             </div>
           )}
           <div className="flex justify-between mx-40">
@@ -191,8 +203,15 @@ const BookingDetails = () => {
             onClick={showChat}
             className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
           >
-         <img src={chatImg} className="h-10" alt="user" />
-         <span>Chat With Owner</span>
+            <img src={chatImg} className="h-10" alt="user" />
+            <span>Chat With Owner</span>
+          </div>
+          <div
+            onClick={showReview}
+            className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+          >
+            <img src={chatImg} className="h-10" alt="user" />
+            <span>Add your REview</span>
           </div>
         </div>
       </div>
@@ -201,7 +220,6 @@ const BookingDetails = () => {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleCancellation}
       />
-   
     </div>
   )
 }
