@@ -55,6 +55,7 @@ const CheckoutPage = () => {
     (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
   )
   console.log(totalDays)
+  
 
   const totalPrice =
     totalDays *
@@ -62,7 +63,13 @@ const CheckoutPage = () => {
       (acc, item) => acc + item[1].count * item[1].price,
       0
     )
+  const platformFee=totalPrice * 0.05
+  console.log(platformFee,"feeeee");
+  
   console.log(totalPrice, "price")
+  const amountToPay=platformFee+totalPrice
+  console.log(amountToPay,"fdsfsd");
+  
 
   const formattedCheckInDate = formatDate(bookingData.checkIn)
   const formattedCheckOutDate = formatDate(bookingData.checkOut)
@@ -74,7 +81,7 @@ const CheckoutPage = () => {
     console.log(method, "argument")
 
     if (method === "Wallet") {
-      if (totalPrice > (wallet?.balance ?? 0)) {
+      if (amountToPay > (wallet?.balance ?? 0)) {
         return setError("Insufficient balance")
       }
       setError(null)
@@ -122,7 +129,7 @@ const CheckoutPage = () => {
         maxAdults: bookingData.adults,
         maxChildren: bookingData.children,
         rooms: roomDetails,
-        price: totalPrice,
+        price: amountToPay,
         totalDays: bookingData.totalDays,
         paymentMethod,
       }
@@ -139,8 +146,7 @@ const CheckoutPage = () => {
         if (result?.error) console.error(result.error)
       }
       const bookingId = response.data.booking.bookingId
-      console.log(bookingId, "booking id")
-
+      
       navigate(`/user/payment_status/${bookingId}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)
@@ -203,7 +209,13 @@ const CheckoutPage = () => {
               <div className="border p-4 rounded mb-4">
                 <h2 className="text-xl font-bold mb-4">Your price summary</h2>
                 <p>
-                  Total Amount: <strong>₹ {totalPrice}</strong>
+                  Total Hotel Amount: <strong>₹ {totalPrice}</strong>
+                </p>
+                <p>
+                  platform fee: <strong>₹ {platformFee}</strong>
+                </p>
+                <p>
+                  Total Amount: <strong>₹ {amountToPay}</strong>
                 </p>
               </div>
               <div className="border p-4 rounded mb-4">
@@ -391,7 +403,7 @@ const CheckoutPage = () => {
                   </div>
                   <div className="border border-spacing-2 rounded-lg">
                     <span className="text-gray-700 text-sm font-bold flex justify-center">Cancellation Policy</span>
-                    {bookingData.cancellationPolicies.map((policy, index) => (
+                    {bookingData.cancellationPolicies&&bookingData?.cancellationPolicies.map((policy, index) => (
                       <div className="p-1" key={index}>
                         <div className="text-sm ">
                           {policy.name}

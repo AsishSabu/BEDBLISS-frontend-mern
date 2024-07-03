@@ -94,10 +94,6 @@ const useUserHotels = () => {
       }
       dispatch(setSearchResult(data.data))
       dispatch(setData(searchData))
-      console.log(
-        data.data,
-        "sdkghklsdfhgkdfhkjghjkdfhjgkfkdgjkldjkflgjkfdjkghjk"
-      )
       navigate("/user/hotels")
     } catch (error) {
       dispatch(setError("Failed to fetch hotels"))

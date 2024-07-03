@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom"
 import { GoVerified } from "react-icons/go"
 import RejectHotalModal from "./RejectionModal"
 import axios from "axios"
+import { rejectedImg } from "../../assets/images"
 
 const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
   if (!isOpen) return null
@@ -216,7 +217,7 @@ const HotelDetails = () => {
        )}
        {hotel.isVerified === "rejected" && (
          <div className="flex justify-center col-span-2">
-           <span className="text-red-700 pt-3 px-2 text-3xl">Rejected</span>
+          <img src={rejectedImg} className="h-20" alt="" />
          </div>
        )}
      </>

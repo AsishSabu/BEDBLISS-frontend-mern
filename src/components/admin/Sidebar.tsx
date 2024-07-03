@@ -13,6 +13,7 @@ import {
   HiUser,
   HiViewBoards,
   HiOutlineLogout,
+  HiFlag
 } from "react-icons/hi";
 
 const AdminSidebar = () => {
@@ -45,6 +46,9 @@ const AdminSidebar = () => {
           </Link>
           <Link to="/admin/bookings">
             <Sidebar.Item icon={HiShoppingBag}>Bookings</Sidebar.Item>
+          </Link>
+          <Link to="/admin/reports">
+            <Sidebar.Item icon={HiFlag}>Reports</Sidebar.Item>
           </Link>
           <div onClick={handleLogout}>
             <Sidebar.Item icon={HiOutlineLogout}>Log Out</Sidebar.Item>

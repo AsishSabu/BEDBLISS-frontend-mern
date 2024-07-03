@@ -8,6 +8,7 @@ import { RootState } from "../../redux/reducer/reducer"
 import Messages from "../../components/chat/Messages"
 import axios from "axios"
 import { useSocket } from "../../redux/contexts/SocketContext"
+import { noProfile } from "../../assets/images"
 
 interface Message {
   _id: string;
@@ -56,11 +57,29 @@ const ChatComponent = () => {
   }, [])
 
   useEffect(() => {
-    arrivalMessage &&
-      currentChat?.members.includes(arrivalMessage.senderId) &&
-      setMessages(prev => [...prev, arrivalMessage])
-    setArrivalMessage(null)
-  }, [arrivalMessage, currentChat])
+    if (arrivalMessage) {
+      const conversationIndex = conversations.findIndex(conversation =>
+        conversation.members.includes(arrivalMessage.senderId)
+      );
+  
+      if (conversationIndex !== -1) {
+        const updatedConversations = [...conversations];
+        const [conversation] = updatedConversations.splice(conversationIndex, 1);
+        updatedConversations.unshift(conversation);
+        setConversations(updatedConversations);
+  
+        if (currentChat?._id === conversation._id) {
+          setMessages(prev => [...prev, arrivalMessage]);
+        }
+      } else {
+        setConversations(prev => [{ members: [user.id, arrivalMessage.senderId], _id: "new_conversation" }, ...prev]);
+      }
+  
+      // Reset the arrivalMessage state after processing it
+      setArrivalMessage(null);
+    }
+  }, [arrivalMessage, currentChat, conversations, user.id]);
+  
 
   useEffect(() => {
     if (socket) {
@@ -150,22 +169,22 @@ const ChatComponent = () => {
     <div>
       <div className="container mx-auto">
         <div
-          className="flex pt-20 md:flex-row border border-gray-400 rounded shadow-lg"
+          className="flex  md:flex-row border border-gray-400 rounded shadow-lg"
           style={{ height: "calc(100vh - 10rem)" }}
         >
           {/* Left */}
           <div className="w-full md:w-1/3 border flex flex-col">
             {/* Header */}
-            <div className="py-2 px-3 bg-Pastel_blue flex flex-row justify-between items-center">
+            <div className="py-2 px-3 bg-varBlueGray flex flex-row justify-between items-center">
               <div>
                 <img
                   className="w-10 h-10 rounded-full"
-                  src="http://andressantibanez.com/res/avatar.png"
+                  src={noProfile}
                   alt="Avatar"
                 />
               </div>
 
-              <div className="flex">
+              {/* <div className="flex">
                 <div>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -207,7 +226,7 @@ const ChatComponent = () => {
                     ></path>
                   </svg>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Search */}
@@ -220,7 +239,7 @@ const ChatComponent = () => {
             </div>
 
             {/* Contacts */}
-            <div className="bg-gray-200 flex-1 overflow-auto hide-scrollbar">
+            <div className=" flex-1 overflow-auto no-scrollbar">
               {conversations.map(c => (
                 <div key={c._id} onClick={() => handleConversationClick(c)}>
                   <Conversation
@@ -241,12 +260,12 @@ const ChatComponent = () => {
                 <div>
                   <img
                     className="w-10 h-10 rounded-full"
-                    src="http://andressantibanez.com/res/avatar.png"
+                    src={noProfile}
                     alt="Avatar"
                   />
                 </div>
                 <div className="ml-4">
-                  <p className="text-gray-800">Person's name</p>
+                  <p className="text-gray-800">{}</p>
                   <p className="text-xs text-gray-800">
                     {isTyping && currentChat?.members.includes(typingId)
                       ? "Typing"
@@ -298,11 +317,11 @@ const ChatComponent = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-auto" id="chat">
+            <div className="flex-1 overflow-auto no-scrollbar" id="chat">
               <div className="py-2 px-3">
                 <div className="flex justify-center mb-2">
                   <div className="rounded py-2 px-4 bg-gray-200">
-                    <p className="text-sm uppercase">February 20, 2021</p>
+                    {/* <p className="text-sm uppercase">February 20, 2021</p> */}
                   </div>
                 </div>
                 <div className="flex justify-center mb-4">

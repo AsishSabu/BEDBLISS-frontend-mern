@@ -12,6 +12,8 @@ axios.defaults.withCredentials = true;
 
 const useProfile = () => {
   const { data, isError:error } = useFetchData<any>(USER_API + "/profile");
+  console.log(data,"profile");
+  
   const [nameError, setNameError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [formData, setFormData] = useState<{

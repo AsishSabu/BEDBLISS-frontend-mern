@@ -1,7 +1,7 @@
 import axios from 'axios';
-import useSWR, { SWRConfiguration } from 'swr';
+import useSWR, { SWRConfiguration, mutate } from 'swr';
 
- const fetcher = async (url:string) => {
+const fetcher = async (url: string) => {
   try {
     const response = await axios.get(url, {
       headers: {
@@ -22,5 +22,6 @@ export const useFetchData = <T,>(url: string, options?: SWRConfiguration) => {
     data,
     isLoading: !error && !data,
     isError: error,
+    mutate: () => mutate(url)  // Export the mutate function
   };
 };

@@ -9,6 +9,7 @@ interface Address {
   country: string
 }
 interface OwnerInterface {
+  _id:mongoose.Types.ObjectId
   name: string
   email: string
 }

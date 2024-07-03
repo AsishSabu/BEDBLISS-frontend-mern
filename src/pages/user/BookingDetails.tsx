@@ -8,14 +8,29 @@ import axios from "axios"
 import showToast from "../../utils/toast"
 import CancelBookingModal from "../../components/user/cancelBooking" // Ensure this path is correct
 import UserChat from "./UserChat"
-import { chatImg } from "../../assets/images"
+import { chatImg, reportImg, starImg } from "../../assets/images"
 import AddReview from "../../components/AddReview"
+import ReportModal from "../../components/user/ReportingModal"
+import { useSocket } from "../../redux/contexts/SocketContext"
 
-const BookingDetails:React.FC= () => {
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+}
+
+const BookingDetails: React.FC = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showChatModal, setShowChatModal] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const socket = useSocket()
   const { id } = useParams<{ id: string }>()
 
   const navigate = useNavigate()
@@ -74,8 +89,9 @@ const BookingDetails:React.FC= () => {
   const showReview = () => {
     setShowReviewModal(true)
   }
-
-  console.log(showChatModal, "//////////////")
+  const showReport = () => {
+    setShowReportModal(true)
+  }
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -104,7 +120,7 @@ const BookingDetails:React.FC= () => {
                         Check-in-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkInDate}
+                        {formatDate(booking.checkInDate)}
                       </p>
                     </div>
                     <div>
@@ -112,7 +128,7 @@ const BookingDetails:React.FC= () => {
                         Check-out-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkOutDate}
+                        {formatDate(booking.checkOutDate)}
                       </p>
                     </div>
                   </div>
@@ -169,11 +185,19 @@ const BookingDetails:React.FC= () => {
                 onClose={() => setShowChatModal(false)}
                 ownerId={booking.hotelId.ownerId}
               />
-                
+
               <AddReview
                 isOpen={showReviewModal}
                 onClose={() => setShowReviewModal(false)}
                 id={booking.hotelId._id}
+              />
+
+              <ReportModal
+                isOpen={showReportModal}
+                onClose={() => setShowReportModal(false)}
+                hotelId={booking.hotelId._id}
+                bookingId={id}
+                userId={booking.userId._id}
               />
             </div>
           )}
@@ -199,19 +223,39 @@ const BookingDetails:React.FC= () => {
                 </button>
               )}
           </div>
-          <div
-            onClick={showChat}
-            className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
-          >
-            <img src={chatImg} className="h-10" alt="user" />
-            <span>Chat With Owner</span>
-          </div>
-          <div
-            onClick={showReview}
-            className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
-          >
-            <img src={chatImg} className="h-10" alt="user" />
-            <span>Add your REview</span>
+          <div  className="flex justify-center mt-5">
+            {" "}
+            <div
+              onClick={showChat}
+              className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+            >
+              <img src={chatImg} className="h-10" alt="user" />
+              <span>Chat With Owner</span>
+            </div>
+            {booking &&
+            new Date(booking.checkOutDate).getTime() < Date.now() ? (
+              <div
+                onClick={showReview}
+                className="show-chat mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+              >
+                <img src={starImg} className="h-10" alt="user" />
+                <span>Rate & Review</span>
+              </div>
+            ) : (
+              ""
+            )}
+            {booking &&
+            new Date(booking.checkOutDate).getTime() < Date.now() ? (
+              <div
+                onClick={showReport}
+                className="show-chat  mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+              >
+                <img src={reportImg} className="h-10" alt="user" />
+                <span>Report Hotel</span>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>

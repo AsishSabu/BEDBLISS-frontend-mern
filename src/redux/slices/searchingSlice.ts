@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addDays } from "date-fns";
 interface searchingState {
   destination: string | undefined;
-  dates: { startDate: Date; endDate: Date }[];
+  dates: { startDate: any; endDate: any }[];
   options: {
     adult: number;
     children: number;

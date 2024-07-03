@@ -1,5 +1,5 @@
-import { noProfile } from "../../assets/images";
-import useProfile from "../../hooks/user/UserProfile";
+import { noProfile } from "../../assets/images"
+import useProfile from "../../hooks/user/UserProfile"
 
 const UserProfile = () => {
   const {
@@ -10,33 +10,35 @@ const UserProfile = () => {
     imagePreview,
     handleInputChange,
     handleSubmit,
-  } = useProfile();
+  } = useProfile()
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden ml-64">
       <div className="flex flex-col justify-center items-center">
-        <img src={
-                  imagePreview
-                    ? imagePreview
-                    : profile?.profilePic ??noProfile
-                } 
+        <img
+          src={
+            imagePreview
+              ? imagePreview
+              : profile?.profilePic
+              ? profile?.profilePic
+              : noProfile
+          }
           alt="Profile"
           className=" rounded-full w-1/5"
         />
         <label
           htmlFor="profile-image"
-          className=" flex items-center justify-center bg-gray-200 text-black font-semibold  cursor-pointer border-4 border-white w-1/5 h-10"
+          className="  flex items-center justify-center  text-white bg-Marine_blue  font-semibold rounded-md cursor-pointer mt-3  w-1/5 h-10"
         >
-          Change Pic
+          {profile?.profilePic ? "Change Profile " : "Add Picture"}
           <input
             type="file"
             id="profile-image"
             name="imageFile"
             className="hidden"
             accept="image/*"
-            onChange={handleInputChange} 
+            onChange={handleInputChange}
           />
         </label>
-        
       </div>
 
       <div className="bg-white w-4/4 p-6 mb-3 rounded-lg shadow-lg">
@@ -64,7 +66,6 @@ const UserProfile = () => {
             className="border text-gray-700 border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-500"
             value={formData?.email ?? ""}
             name="email"
-          
           />
         </div>
         <div className="mb-4">
@@ -86,12 +87,15 @@ const UserProfile = () => {
         {phoneError && <p className="text-red-500">{phoneError}</p>}
 
         {/* Update Profile Button */}
-        <button  onClick={handleSubmit}  className="bg-blue-900 text-white py-2 px-4 mt-3 rounded-md hover:bg-blue-800 focus:outline-none focus:ring focus:border-blue-500">
+        <button
+          onClick={handleSubmit}
+          className="bg-blue-900 text-white py-2 px-4 mt-3 rounded-md hover:bg-blue-800 focus:outline-none focus:ring focus:border-blue-500"
+        >
           Update Profile
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserProfile;
+export default UserProfile

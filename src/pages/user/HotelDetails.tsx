@@ -29,21 +29,6 @@ interface Room {
   roomNumbers: RoomNumber[]
 }
 
-const getDatesInRange = (startDate: Date, endDate: Date): string[] => {
-  const currentDate = new Date(startDate)
-  const end = new Date(endDate)
-  const datesArray: string[] = []
-
-  while (currentDate <= end) {
-    const formattedDate = new Date(currentDate)
-    formattedDate.setUTCHours(0, 0, 0, 0)
-    datesArray.push(formattedDate.toISOString().split("T")[0])
-    currentDate.setDate(currentDate.getDate() + 1)
-  }
-
-  return datesArray
-}
-
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   console.log(id, "hotel id")
@@ -89,32 +74,8 @@ const HotelDetail: React.FC = () => {
     return <div>No hotel data available</div>
   }
   console.log(searchingData.dates, "'''''''''''''''''''''''''''")
-  const dates = getDatesInRange(
-    searchingData.dates[0].startDate,
-    searchingData.dates[0].endDate
-  )
 
-  console.log(dates, "dates...........")
-
-  const isRoomNumberAvailable = (roomNumber: RoomNumber): boolean => {
-    return !roomNumber.unavailableDates.some((date: string) =>
-      dates.includes(new Date(date).toISOString().split("T")[0])
-    )
-  }
-
-  const availableRooms = hotel.rooms
-    .filter((room: Room) => {
-      const availableRoomNumbers = room.roomNumbers.filter(
-        isRoomNumberAvailable
-      )
-      return availableRoomNumbers.length > 0
-    })
-    .map((room: Room) => ({
-      ...room,
-      roomNumbers: room.roomNumbers.filter(isRoomNumberAvailable),
-    }))
-
-  console.log(availableRooms, "availableRooms...............")
+  const availableRooms = hotel?.rooms
 
   const {
     name,
@@ -326,7 +287,7 @@ const HotelDetail: React.FC = () => {
           </div>
         </div>
         <div className=" pt-16">
-          <SearchBoxDetail />
+          <SearchBoxDetail id={id} />
         </div>
         <div className="p-4">
           <table className="min-w-full bg-white border border-gray-200">
@@ -415,8 +376,7 @@ const HotelDetail: React.FC = () => {
           <span className="text-varRed flex justify-center">{err}</span>
         </div>
       </div>
-
-      {review.length && (
+      {review && review.length && (
         <div className="pt-5 m-2 border ">
           <p className="flex justify-center text-2xl py-10">
             Customer Review & Ratings
@@ -424,9 +384,8 @@ const HotelDetail: React.FC = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="">
               <div className="w-full border mx-2 p-4 rounded-lg   shadow-lg">
-              <ReviewCard review={review} />
+                <ReviewCard review={review} />
               </div>
-              
             </div>
             <div className="col-span-2">
               {review &&
@@ -465,7 +424,6 @@ const HotelDetail: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
                     <div className="flex mt-2 space-x-2">
                       {r.imageUrls.map((image, index) => (
                         <div key={index} className="relative">

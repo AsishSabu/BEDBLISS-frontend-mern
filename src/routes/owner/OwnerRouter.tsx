@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { FC, lazy } from "react";
 import { ProtectedOwnerRoute } from "../protectedRoutes";
+import EditHotelForm from "../../pages/owner/EditHotel";
 
 const Layout = lazy(() => import("../../pages/Layout"));
 const AddRoom = lazy(() => import("../../pages/owner/AddRoom"));
@@ -26,7 +27,7 @@ const OwnerRouter: FC = () => {
           <Route path="*" element={<Layout2 />}>
             <Route index element={<Home />} />
             <Route path="addHotel" element={<AddHotel />} />
-            {/* <Route path="editHotel/:id" element={<EditHotelForm />} /> */}
+            <Route path="editHotel/:id" element={<EditHotelForm/>} />
             <Route path="addRooms" element={<AddRoom />} />
             <Route path="hotels" element={<HotelList />} />
             <Route path="hotelDetails/:id" element={<HotelDetails />} />

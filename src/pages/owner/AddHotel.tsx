@@ -1,7 +1,7 @@
-import { FC, useState, useCallback } from "react"
+import { FC, useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { hotelAddValidation } from "../../utils/validation"
-import { useDropzone } from "react-dropzone"
+import { Button } from "@material-tailwind/react"
 import { FaTrashAlt } from "react-icons/fa"
 import axios from "axios"
 import { HotelInterface } from "../../types/hotelInterface"
@@ -9,6 +9,7 @@ import showToast from "../../utils/toast"
 import { useNavigate } from "react-router-dom"
 import PhotoUploadModal from "../../components/owner/photoUploadModal"
 import { OWNER_API } from "../../constants"
+import UploadButton from "../../components/UploadButton"
 
 const AddHotelForm: FC = () => {
   const amenitiesList = [
@@ -37,6 +38,7 @@ const AddHotelForm: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isHotelModalOpen, setIsHotelModalOpen] = useState(false)
   const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
+  const [loading,setLoading]=useState(false)
   const navigate = useNavigate()
 
   const addPropertyRule = () => {
@@ -82,7 +84,7 @@ const AddHotelForm: FC = () => {
     setOwnerId([])
   }
   const handleSubmit = async (values: HotelInterface) => {
-    console.log("hlooooo")
+    setLoading(true)
 
     const response = await axios
       .post(
@@ -114,10 +116,12 @@ const AddHotelForm: FC = () => {
         }
       )
       .then(({ data }) => {
+        setLoading(false)
         showToast(data.message)
         navigate("/owner/hotels")
       })
       .catch(({ response }) => {
+        setLoading(false)
         showToast(response?.data?.message, "error")
       })
   }
@@ -325,111 +329,90 @@ const AddHotelForm: FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2 grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 px-5">
 
-                    <div className="col-span-2 ">
-                      <div>
+                  <div className="col-span-2">
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Amenities:
+                    </label>
+                    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {amenitiesList.map((amenity, index) => (
                         <label
-                          htmlFor="amenities"
-                          className="text-gray-700 text-lg font-bold mb-2 "
+                          key={index}
+                          className="flex items-center text-gray-700"
                         >
-                          Amenities :
+                          <Field
+                            type="checkbox"
+                            name="amenities"
+                            value={amenity}
+                            checked={values.amenities.includes(amenity)}
+                            className="form-checkbox h-5 w-5 text-black"
+                          />
+                          <span className="ml-2">{amenity}</span>
                         </label>
-                        {amenitiesList.map((amenity, index) => (
-                          <label
-                            key={index}
-                            className="inline-flex items-center"
-                          >
-                            <Field
-                              type="checkbox"
-                              className="form-checkbox h-5 w-5 text-blue-600"
-                              name="amenities"
-                              value={amenity}
-                              onChange={e => {
-                                if (e.target.checked) {
-                                  setFieldValue("amenities", [
-                                    ...values.amenities,
-                                    amenity,
-                                  ])
-                                } else {
-                                  setFieldValue(
-                                    "amenities",
-                                    values.amenities.filter(
-                                      item => item !== amenity
-                                    )
-                                  )
-                                }
-                              }}
-                            />
-                            <span className="mr-5 ml-2 text-gray-700">
-                              {amenity}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                      <span className="text-Strawberry_red text-sm">
-                        <ErrorMessage name="amenities" />
-                      </span>
+                      ))}
                     </div>
-                    <div>
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="amenities" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 px-5">
+                    <div className="col-span-2">
                       <label className="text-gray-700 text-lg font-bold mb-2">
                         Description:
                       </label>
                       <Field
-                        type="text"
+                        as="textarea"
                         name="description"
+                        rows={5}
                         className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                        placeholder="Enter the price"
+                        placeholder="Description"
                       />
-                      <span className="text-Strawberry_red text-sm">
+                      <span className="text-red-500 text-sm">
                         <ErrorMessage name="description" />
                       </span>
                     </div>
-                    <div className="col-span-2">
-                      <label
-                        htmlFor="propertyrules"
-                        className="text-gray-700 text-lg font-bold mb-2"
-                      >
-                        Property Rules
+
+                    <div className="col-span-2 ">
+                      <label className="text-gray-700 text-lg font-bold">
+                        Property Rules:
                       </label>
-                      <div className="flex items-center">
-                        <Field
-                          type="text"
-                          className=""
-                          value={newRule}
-                          onChange={e => setNewRule(e.target.value)}
-                        />
-                        <button
-                          type="button"
-                          className="bg-gray-200 px-2 ml-2"
-                          onClick={addPropertyRule}
-                        >
-                          Add Rule
-                        </button>
-                      </div>
-                      <ul>
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 py-3">
                         {propertyRules.map((rule, index) => (
-                          <li key={index} className="flex items-center">
-                            <span className="block w-3/4 px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring">
-                              {rule}
-                            </span>
+                          <div key={index} className="flex items-center">
+                            <p className="text-gray-700">{rule}</p>
                             <button
                               type="button"
-                              className="bg-gray-200 px-2 ml-2"
                               onClick={() => removePropertyRule(index)}
+                              className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
                             >
-                              Remove
+                              <FaTrashAlt />
                             </button>
-                          </li>
+                          </div>
                         ))}
-                      </ul>
-                      {/* Use ErrorMessage component with the correct name prop */}
-                      <ErrorMessage
-                        name="propertyRules"
-                        component="span"
-                        className="text-Strawberry_red text-sm"
-                      />
+                      </div>
+                      <div className="flex items-center mt-2">
+                        <input
+                          type="text"
+                          value={newRule}
+                          onChange={e => setNewRule(e.target.value)}
+                          placeholder="Add new rule"
+                          className="block w-full px-4   text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                        />
+
+                        <Button
+                          onClick={addPropertyRule}
+                          variant="outlined"
+                          className="mx-2"
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      <span className="text-red-500 text-sm">
+                        <ErrorMessage name="propertyRules" />
+                      </span>
                     </div>
+
                     <div className="col-span-2">
                       <label
                         htmlFor="reservationType "
@@ -462,13 +445,10 @@ const AddHotelForm: FC = () => {
                         Hotel Images
                       </label>
                       <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
-                        <button
-                          type="button"
-                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                          onClick={() => setIsModalOpen(true)}
-                        >
-                          Add Photos
-                        </button>
+                        <UploadButton
+                          text={"Upload Photos"}
+                          onclick={() => setIsModalOpen(true)}
+                        />
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         {images.map((image, index) => (
@@ -502,13 +482,10 @@ const AddHotelForm: FC = () => {
                         Add Hotel Document
                       </label>
                       <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
-                        <button
-                          type="button"
-                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                          onClick={() => setIsHotelModalOpen(true)}
-                        >
-                          Add Photos
-                        </button>
+                        <UploadButton
+                          text={"Upload Hotel Document"}
+                          onclick={() => setIsHotelModalOpen(true)}
+                        />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mt-4">
@@ -544,13 +521,10 @@ const AddHotelForm: FC = () => {
                         Add owner Id
                       </label>
                       <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer">
-                        <button
-                          type="button"
-                          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                          onClick={() => setIsOwnerModalOpen(true)}
-                        >
-                          Add Photos
-                        </button>
+                        <UploadButton
+                          text={"Upload Owner Document"}
+                          onclick={() => setIsOwnerModalOpen(true)}
+                        />
                       </div>
                       <ErrorMessage
                         name="images"
@@ -586,12 +560,9 @@ const AddHotelForm: FC = () => {
                     </span>
                   </div>
                   <div className="flex justify-center col-span-2 p-4">
-                    <button
-                      type="submit"
-                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    >
+                    <Button type="submit" variant="outlined" loading={loading}>
                       Submit
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </Form>

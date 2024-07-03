@@ -181,13 +181,13 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
                   Description cannot be empty
                 </span>
               )}
-              <input
+              {/* <input
                 type="text"
                 className="w-full mt-2 p-2 border border-gray-300 rounded"
                 placeholder="Title (optional)"
                 value={title}
                 onChange={handleTitleChange}
-              />
+              /> */}
               <div className="mt-2">
                 <label className="block mb-1 text-sm text-gray-600">
                   Add images

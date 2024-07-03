@@ -1,31 +1,46 @@
-import React from "react";
-// import useUsers from "../../hooks/admin/useUsers";
-import UserData from "../../components/admin/UserData";
-import { Table } from "flowbite-react";
+import React, { useEffect, useState } from "react"
+import { Table } from "flowbite-react"
+import axios from "axios"
+import useSWR from "swr"
+import { ADMIN_API } from "../../constants"
+import BookingData from "../../components/admin/BookingData"
+import { BookingInterface } from "../../types/hotelInterface"
+
+const fetcher = url => axios.get(url).then(res => res.data)
 
 const Bookings: React.FC = () => {
-//   const { users, loadingBookings, userError } = useBookings();
+  const { data, error: userError } = useSWR(`${ADMIN_API}/bookings`, fetcher)
+  const [bookings, setBookings] = useState(null)
 
-//   if (loadingBookings) return <div>Loading...</div>;
-//   if (userError) return <div>Error loading users.</div>;
+  useEffect(() => {
+    if (data) {
+      setBookings(data.result)
+    }
+  }, [data])
+
+  console.log(bookings, "..................")
 
   return (
     <div className="overflow-x-auto">
       <Table>
         <Table.Head>
+          <Table.HeadCell>Booking Id</Table.HeadCell>
           <Table.HeadCell>Name</Table.HeadCell>
-          <Table.HeadCell>Email</Table.HeadCell>
-          <Table.HeadCell>Status</Table.HeadCell>
-          <Table.HeadCell>Action</Table.HeadCell>
+          <Table.HeadCell>Hotel</Table.HeadCell>
+          <Table.HeadCell>Check-In</Table.HeadCell>
+          <Table.HeadCell>Check-Out</Table.HeadCell>
+          <Table.HeadCell>Booking status</Table.HeadCell>
+          <Table.HeadCell>Payment status</Table.HeadCell>
+          <Table.HeadCell>Price</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {/* {users.map((user) => {
-            return <UserData {...user} type="user" key={user._id} />;
-          })} */}
+          {bookings?.map((booking: BookingInterface) => (
+            <BookingData key={booking.bookingId} {...booking} />
+          ))}
         </Table.Body>
       </Table>
     </div>
-  );
-};
+  )
+}
 
-export default Bookings;
+export default Bookings
