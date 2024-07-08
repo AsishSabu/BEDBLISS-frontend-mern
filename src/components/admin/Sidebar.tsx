@@ -19,11 +19,7 @@ import {
 const AdminSidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const handleLogout = () => {
-    dispatch(clearUser());
-    showToast("Logout success", "success");
-    navigate("/admin/login");
-  };
+
 
   return (
     <Sidebar aria-label="Default sidebar example">
@@ -44,15 +40,15 @@ const AdminSidebar = () => {
           <Link to="/admin/hotels">
             <Sidebar.Item icon={HiUser}>Hotels</Sidebar.Item>
           </Link>
+          <Link to="/admin/categories">
+            <Sidebar.Item icon={HiInbox}>Categories</Sidebar.Item>
+          </Link>
           <Link to="/admin/bookings">
             <Sidebar.Item icon={HiShoppingBag}>Bookings</Sidebar.Item>
           </Link>
           <Link to="/admin/reports">
             <Sidebar.Item icon={HiFlag}>Reports</Sidebar.Item>
           </Link>
-          <div onClick={handleLogout}>
-            <Sidebar.Item icon={HiOutlineLogout}>Log Out</Sidebar.Item>
-          </div>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

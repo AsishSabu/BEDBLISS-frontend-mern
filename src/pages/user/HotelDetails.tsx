@@ -36,6 +36,7 @@ const HotelDetail: React.FC = () => {
   const [err, setErr] = useState("")
   console.log(hotel, "hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
+  const user = useAppSelector(state => state.userSlice)
   console.log(searchingData, "searchingData")
   const [review, setReview] = useState<Review[] | null>(null)
   const dispatch = useDispatch()
@@ -394,6 +395,8 @@ const HotelDetail: React.FC = () => {
                     key={r._id}
                     className="flex flex-col border rounded-lg shadow-md p-4 space-y-4 w-full"
                   >
+                    { r.userId._id===user.id?(<>
+                    edit</>):("")}
                     <StarComponent stars={r.rating} />
                     <div className="flex items-center space-x-4">
                       <img

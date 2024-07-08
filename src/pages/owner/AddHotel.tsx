@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { hotelAddValidation } from "../../utils/validation"
 import { Button } from "@material-tailwind/react"
@@ -8,10 +8,16 @@ import { HotelInterface } from "../../types/hotelInterface"
 import showToast from "../../utils/toast"
 import { useNavigate } from "react-router-dom"
 import PhotoUploadModal from "../../components/owner/photoUploadModal"
-import { OWNER_API } from "../../constants"
+import { ADMIN_API, OWNER_API } from "../../constants"
 import UploadButton from "../../components/UploadButton"
+import AddLocation from "../../components/addLocation/AddLocation"
+import { useAppSelector } from "../../redux/store/store"
+import useSWR from "swr"
+const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 const AddHotelForm: FC = () => {
+  const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
+  const { location } = useAppSelector(state => state.locationSlice)
   const amenitiesList = [
     "Swimming Pool",
     "Gym",
@@ -27,7 +33,7 @@ const AddHotelForm: FC = () => {
     "Beach Access",
   ]
   const reservationTypes = ["instant", "approveDecline"]
-  const StayTypes = ["Flat/Appartment", "Hotel", "Villa"]
+  const [stayTypes,setStayTypes]=useState([])
   const [images, setImages] = useState<(string | ArrayBuffer | null)[]>([])
   const [hotelDocument, setHotelDocument] = useState<
     (string | ArrayBuffer | null)[]
@@ -38,8 +44,16 @@ const AddHotelForm: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isHotelModalOpen, setIsHotelModalOpen] = useState(false)
   const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  useEffect(()=>{
+      if(data){
+        setStayTypes(data.data)
+      }
+  },[data])
+
+  console.log(stayTypes,"types");
+  
 
   const addPropertyRule = () => {
     if (newRule.trim() !== "") {
@@ -68,9 +82,6 @@ const AddHotelForm: FC = () => {
     setIsHotelModalOpen(false)
   }
   const handleOwnerIdUpload = imageUrls => {
-    console.log("/////////")
-    console.log(imageUrls)
-
     setOwnerId(imageUrls)
     setIsOwnerModalOpen(false)
   }
@@ -84,37 +95,35 @@ const AddHotelForm: FC = () => {
     setOwnerId([])
   }
   const handleSubmit = async (values: HotelInterface) => {
-    setLoading(true)
+    // setLoading(true)
+    const hotelData = {
+      name: values.name,
+      destination: values.destination,
+      address: {
+        streetAddress: values.address.streetAddress,
+        landMark: values.address.landMark,
+        district: values.address.district,
+        city: values.address.city,
+        pincode: values.address.pincode,
+        country: values.address.country,
+      },
+      stayType: values.stayType,
+      description: values.description,
+      amenities: values.amenities,
+      coordinates: { latitude: location.lat, longitude: location.lng },
+      propertyRules,
+      imageUrls: images,
+      hotelDocument: hotelDocument[0],
+      ownerPhoto: ownerId[0],
+    }
+    console.log(hotelData, "valuesssss")
 
     const response = await axios
-      .post(
-        `${OWNER_API}/addhotel`,
-        {
-          name: values.name,
-          destination: values.destination,
-          address: {
-            streetAddress: values.address.streetAddress,
-            landMark: values.address.landMark,
-            district: values.address.district,
-            city: values.address.city,
-            pincode: values.address.pincode,
-            country: values.address.country,
-          },
-          stayType: values.stayType,
-          description: values.description,
-          amenities: values.amenities,
-          reservationType: values.reservationType,
-          propertyRules,
-          imageUrls: images,
-          hotelDocument: hotelDocument[0],
-          ownerPhoto: ownerId[0],
+      .post(`${OWNER_API}/addhotel`, hotelData, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-        {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
+      })
       .then(({ data }) => {
         setLoading(false)
         showToast(data.message)
@@ -157,26 +166,23 @@ const AddHotelForm: FC = () => {
 
           // Validate propertyrules
           if (propertyRules.length < 2) {
-            console.log("hiaiii")
-
             errors.propertyRules = "At least two rules are required"
           }
-
-          // Validate images
           if (images.length < 3) {
             errors.images = "At least 3 images are required"
           } else if (images.length > 5) {
             errors.images = "No more than 5 images are allowed"
           }
-
           if (hotelDocument.length < 1) {
             errors.hotelDocument = "hotel documetation is required"
           }
           if (ownerId.length < 1) {
             errors.ownerId = "ownerId is required"
           }
+          if (!location.lng || !location.lat) {
+            errors.location = "location is required"
+          }
           console.log(errors)
-
           return errors
         }}
         onSubmit={handleSubmit}
@@ -229,9 +235,9 @@ const AddHotelForm: FC = () => {
                       className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                     >
                       <option value="" label="Select stay type" />
-                      {StayTypes.map((type, index) => (
-                        <option key={index} value={type}>
-                          {type}
+                      {stayTypes.map((type, index) => (
+                        <option key={index} value={type?._id}>
+                          {type.name}
                         </option>
                       ))}
                     </Field>
@@ -414,13 +420,14 @@ const AddHotelForm: FC = () => {
                     </div>
 
                     <div className="col-span-2">
-                      <label
+                      {/* <label
                         htmlFor="reservationType "
                         className="text-gray-700 text-lg font-bold mb-2"
                       >
                         Reservation Type
-                      </label>
-                      <div className="py-3">
+                      </label> */}
+                      <AddLocation />
+                      {/* <div className="py-3">
                         {reservationTypes.map((type, index) => (
                           <label
                             key={index}
@@ -438,7 +445,7 @@ const AddHotelForm: FC = () => {
                       </div>
                       <span className="text-Strawberry_red text-sm">
                         <ErrorMessage name="reservationType" />
-                      </span>
+                      </span> */}
                     </div>
                     <div className="flex flex-col mt-4 col-span-2">
                       <label className="block text-sm font-medium text-gray-700">

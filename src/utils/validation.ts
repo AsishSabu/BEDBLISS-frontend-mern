@@ -76,6 +76,4 @@ export const hotelAddValidation = yup.object().shape({
     .array()
     .of(yup.string().required("Amenity is required"))
     .min(1, "At least one amenity is required"),
-
-  reservationType: yup.string().required("Reservation type is required"),
 })

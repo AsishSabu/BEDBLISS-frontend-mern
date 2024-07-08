@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useSelector } from "react-redux"
 import { RootState } from "../../redux/reducer/reducer"
 import { Range } from "react-range"
-import HotelData from "./HotelData"
 import { useNavigate } from "react-router-dom"
 
 const STEP = 100
@@ -62,6 +61,7 @@ const HotelCards: React.FC = () => {
                     type="checkbox"
                     className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
                   />
+                
                   <span className="ml-2 text-gray-700">Hotels</span>
                 </label>
               </li>

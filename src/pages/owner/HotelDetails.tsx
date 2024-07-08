@@ -44,7 +44,7 @@ const HotelDetails: React.FC = () => {
     imageUrls,
     isListed,
     isVerified,
-    Reason
+    Reason,
   } = hotel?.Hotel
 
   const handleListUnlist = async (value: string) => {
@@ -104,7 +104,11 @@ const HotelDetails: React.FC = () => {
       <h1 className="flex justify-center font-bold text-4xl text-varBlue mb-4">
         Hotel Details
       </h1>
-      <span className="flex justify-center text-lg bg-red-500 rounded-md">"Your hotel is rejected"---{Reason}</span>
+      {isVerified === "rejected" && (
+        <span className="flex justify-center text-lg bg-red-500 rounded-md">
+          "Your hotel is rejected"---{Reason}
+        </span>
+      )}
       <div className="grid grid-cols-2 md:grid-rows-1">
         <div className="p-6 bg-blue-gray-50 w-full">
           <div className="mb-4 grid grid-flow-col  align-middle">

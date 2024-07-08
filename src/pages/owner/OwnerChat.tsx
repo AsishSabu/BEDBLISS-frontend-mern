@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
-import { OWNER_API } from "../../constants"
-import {  useFetchData } from "../../utils/fetcher"
+import { OWNER_API, USER_API } from "../../constants"
+import { useFetchData } from "../../utils/fetcher"
 import { ChatInterface } from "./../../types/chatInterface"
 import Conversation from "../../components/chat/Conversation"
 import { useSelector } from "react-redux"
@@ -9,13 +9,15 @@ import Messages from "../../components/chat/Messages"
 import axios from "axios"
 import { useSocket } from "../../redux/contexts/SocketContext"
 import { noProfile } from "../../assets/images"
+import { useAppDispatch } from "../../redux/store/store"
+import { setChat } from "../../redux/slices/chatSlice"
 
 interface Message {
-  _id: string;
-  senderId: string;
-  text: string;
-  createdAt: string;
-}  
+  _id: string
+  senderId: string
+  text: string
+  createdAt: string
+}
 
 const ChatComponent = () => {
   const [conversations, setConversations] = useState<ChatInterface[]>([])
@@ -30,15 +32,15 @@ const ChatComponent = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [typingId, setTypingId] = useState("")
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
+  const [senderInfo, setSenderInfo] = useState(null)
+  const dispatch = useAppDispatch()
+  const { data: conversationData, isError: conversationError } = useFetchData<
+    ChatInterface[]
+  >(`${OWNER_API}/conversations`)
 
-
-  const { data: conversationData, isError: conversationError } = useFetchData<ChatInterface[]>(
-    `${OWNER_API}/conversations`
-  );
-
-  const { data: messageData, isError: messageError } = useFetchData<{ message: Message[] }>(
-    currentChat ? `${OWNER_API}/messages/${currentChat._id}` : ""
-  );
+  const { data: messageData, isError: messageError } = useFetchData<{
+    message: Message[]
+  }>(currentChat ? `${OWNER_API}/messages/${currentChat._id}` : "")
 
   useEffect(() => {
     socket?.on("getMessage", (data: any) => {
@@ -60,26 +62,31 @@ const ChatComponent = () => {
     if (arrivalMessage) {
       const conversationIndex = conversations.findIndex(conversation =>
         conversation.members.includes(arrivalMessage.senderId)
-      );
-  
+      )
+
       if (conversationIndex !== -1) {
-        const updatedConversations = [...conversations];
-        const [conversation] = updatedConversations.splice(conversationIndex, 1);
-        updatedConversations.unshift(conversation);
-        setConversations(updatedConversations);
-  
+        const updatedConversations = [...conversations]
+        const [conversation] = updatedConversations.splice(conversationIndex, 1)
+        updatedConversations.unshift(conversation)
+        setConversations(updatedConversations)
+
         if (currentChat?._id === conversation._id) {
-          setMessages(prev => [...prev, arrivalMessage]);
+          setMessages(prev => [...prev, arrivalMessage])
         }
       } else {
-        setConversations(prev => [{ members: [user.id, arrivalMessage.senderId], _id: "new_conversation" }, ...prev]);
+        setConversations(prev => [
+          {
+            members: [user.id, arrivalMessage.senderId],
+            _id: "new_conversation",
+          },
+          ...prev,
+        ])
       }
-  
-      // Reset the arrivalMessage state after processing it
-      setArrivalMessage(null);
+
+      //Reset the arrivalMessage state after processing it
+      setArrivalMessage(null)
     }
-  }, [arrivalMessage, currentChat, conversations, user.id]);
-  
+  }, [arrivalMessage, currentChat, conversations, user.id])
 
   useEffect(() => {
     if (socket) {
@@ -101,8 +108,11 @@ const ChatComponent = () => {
 
   useEffect(() => {
     if (conversationData) {
-      console.log(conversations,"................................................");
-      
+      console.log(
+        conversations,
+        "................................................"
+      )
+
       setConversations(conversationData)
     }
   }, [conversationData])
@@ -112,6 +122,8 @@ const ChatComponent = () => {
       setMessages(messageData?.message)
     }
   }, [messageData])
+
+  console.log(messages)
 
   const receiverId = useMemo(() => {
     return currentChat?.members.find(member => member !== user.id)
@@ -155,240 +167,318 @@ const ChatComponent = () => {
   }
 
   useEffect(() => {
+    const fetchSenderInfo = async () => {
+      try {
+        console.log(currentChat, "current chat")
+        const senderId = currentChat?.members.find(member => member !== user.id)
+        if (senderId) {
+          const response = await axios.get(USER_API + "/user/" + senderId)
+          setSenderInfo(response.data.user)
+          console.log(response, "response")
+        }
+      } catch (error) {
+        console.error("Error fetching sender info:", error)
+      }
+    }
+
+    if (currentChat) {
+      fetchSenderInfo()
+    }
+  }, [currentChat, user.id])
+
+  console.log(senderInfo, "sender iNfooo")
+
+  useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
 
-  const handleConversationClick = (conversation:any)=> {
+  const handleConversationClick = (conversation: any) => {
     setCurrentChat(conversation)
+    dispatch(setChat(conversation))
     setIsChatOpen(true)
   }
 
   console.log(currentChat, "current chat 😃")
 
   return (
-    <div>
-      <div className="container mx-auto">
-        <div
-          className="flex  md:flex-row border border-gray-400 rounded shadow-lg"
-          style={{ height: "calc(100vh - 10rem)" }}
-        >
-          {/* Left */}
-          <div className="w-full md:w-1/3 border flex flex-col">
-            {/* Header */}
-            <div className="py-2 px-3 bg-varBlueGray flex flex-row justify-between items-center">
-              <div>
-                <img
-                  className="w-10 h-10 rounded-full"
-                  src={noProfile}
-                  alt="Avatar"
-                />
-              </div>
+    // <div>
+    //   <div className="container mx-auto">
+    //     <div
+    //       className="flex  md:flex-row border border-gray-400 rounded shadow-lg"
+    //       style={{ height: "calc(100vh - 10rem)" }}
+    //     >
+    //       {/* Left */}
+    //       <div className="w-full md:w-1/3 border flex flex-col">
+    //         {/* Header */}
+    //         <div className="py-2 px-3 bg-varBlueGray flex flex-row justify-between items-center">
+ 
 
-              {/* <div className="flex">
-                <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      fill="#727A7E"
-                      d="M12 20.664a9.163 9.163 0 0 1-6.521-2.702.977.977 0 0 1 1.381-1.381 7.269 7.269 0 0 0 10.024.244.977.977 0 0 1 1.313 1.445A9.192 9.192 0 0 1 12 20.664zm7.965-6.112a.977.977 0 0 1-.944-1.229 7.26 7.26 0 0 0-4.8-8.804.977.977 0 0 1 .594-1.86 9.212 9.212 0 0 1 6.092 11.169.976.976 0 0 1-.942.724zm-16.025-.39a.977.977 0 0 1-.953-.769 9.21 9.21 0 0 1 6.626-10.86.975.975 0 1 1 .52 1.882l-.015.004a7.259 7.259 0 0 0-5.223 8.558.978.978 0 0 1-.955 1.185z"
-                    ></path>
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      opacity=".55"
-                      fill="#263238"
-                      d="M19.005 3.175H4.674C3.642 3.175 3 3.789 3 4.821V21.02l3.544-3.514h12.461c1.033 0 2.064-1.06 2.064-2.093V4.821c-.001-1.032-1.032-1.646-2.064-1.646zm-4.989 9.869H7.041V11.1h6.975v1.944zm3-4H7.041V7.1h9.975v1.944z"
-                    ></path>
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      fill="#263238"
-                      fillOpacity=".6"
-                      d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z"
-                    ></path>
-                  </svg>
-                </div>
-              </div> */}
-            </div>
 
-            {/* Search */}
-            <div className="py-2 px-2 bg-gray-100">
-              <input
-                type="text"
-                className="w-full px-2 py-2 text-sm"
-                placeholder="Search or start new chat"
+    //           <>
+    //             <div className=" top-[30%] text-center w-full">
+    //               <h1 className="text-4xl text-gray-400 cursor-default mb-4">
+    //                 Start a Conversation!
+    //               </h1>
+    //               <p className="text-lg text-gray-600">
+    //                 Click on a conversation to start chatting.
+    //               </p>
+    //             </div>
+    //           </>
+
+
+    <div className=" pt-2">
+      <div className="flex bg-white dark:bg-gray-900">
+        <div className="w-20  text-gray-500 h-screen flex flex-col items-center justify-between py-5">
+          <div className="">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
               />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <div className="py-4 hover:text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
             </div>
+            <div className="py-4 hover:text-gray-700 flex flex-col items-center justify-center text-blue-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+              <div className="w-2 h-2 bg-blue-800 rounded-full"></div>
+            </div>
+            <div className="py-4 hover:text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+              </svg>
+            </div>
+          </div>
+          <div className="">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div className="w-80 h-screen dark:bg-gray-800 bg-gray-100 p-2 hidden md:block">
+          <div className="h-full  overflow-y-auto">
+        
 
-            {/* Contacts */}
-            <div className=" flex-1 overflow-auto no-scrollbar">
-              {conversations.map(c => (
-                <div key={c._id} onClick={() => handleConversationClick(c)}>
-                  <Conversation
-                    conversation={c}
-                    currentChat={currentChat}
-                    currentUser={user}
+         
+            <div className="text-xl font-extrabold flex gap-3 text-gray-600 dark:text-gray-200 p-3">
+            <img
+             className="w-10 h-10  rounded-full"
+             src={noProfile}
+             alt="Avatar"
+           />
+              Chikaa
+            </div>
+            <div className="search-chat flex p-3">
+              <input
+                className="input text-gray-700 dark:text-gray-200 text-sm p-3 focus:outline-none bg-gray-200 dark:bg-gray-700  w-full rounded-l-md"
+                type="text"
+                placeholder="Search Messages"
+              />
+              <div className="bg-gray-200 dark:bg-gray-700 flex justify-center items-center pr-3 text-gray-400 rounded-r-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
+                </svg>
+              </div>
+            </div>
+            <div className="text-lg font-semibol text-gray-600 dark:text-gray-200 p-3">
+              Recent
+            </div>
+            <Conversation
+              chats={conversations}
+              // showChatsidebar={showChatsidebar}
+              // setShowChatSidebar={setShowChatSidebar}
+              currentChat={currentChat}
+              handleCurrentChatClick={handleConversationClick}
+            />
+          </div>
+        </div>
+        <div className="flex-grow  h-screen p-2 rounded -md">
+          <div className="flex-grow h-full flex flex-col">
+            <div className="w-full h-15 p-1 bg-purple-600 dark:bg-gray-800 shadow-md rounded-xl rounded-bl-none rounded-br-none">
+              <div className="flex p-2 align-middle items-center">
+                <div  className="p-2 md:hidden rounded-full mr-1 hover:bg-purple-500 text-white">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
+                </div>
+                <div className="border rounded-full border-white p-1/2">
+                  <img
+                    className="w-14 h-14 rounded-full"
+                    src={senderInfo?.profilePic || noProfile}
+                    alt="avatar"
+                  />
+                </div>
+                <div className="flex-grow p-2">
+                  <div className="text-md text-gray-50 font-semibold">
+                    {senderInfo && senderInfo?.name}
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-2 h-2 bg-green-300 rounded-full"></div>
+                    <div className="text-xs text-gray-50 ml-1">
+                      {isTyping && currentChat?.members.includes(typingId)
+                        ? "Typing"
+                        : ""}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-2 text-white cursor-pointer hover:bg-purple-500 rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div className="w-full flex-grow bg-gray-100 dark:bg-gray-900 my-2 p-2 overflow-y-auto">
+              {messages.map((m: any) => (
+                <div key={m._id} ref={scrollRef}>
+                  <Messages message={m} own={m.senderId === user.id} />
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Right */}
-          <div className="w-2/3 border flex flex-col">
-            {/* Header */}
-            <div className="py-2 px-3 bg-gray-200 flex flex-row justify-between items-center">
+            <div className="h-15  p-3 rounded-xl rounded-tr-none rounded-tl-none bg-gray-100 dark:bg-gray-800">
               <div className="flex items-center">
-                <div>
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={noProfile}
-                    alt="Avatar"
+                <div className="p-2 text-gray-600 dark:text-gray-200 ">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="search-chat flex flex-grow p-2">
+                  <input
+                    className="input text-gray-700 dark:text-gray-200 text-sm p-5 focus:outline-none bg-gray-100 dark:bg-gray-800  flex-grow rounded-l-md"
+                    type="text"
+                    placeholder="Type your message ..."
+                    onChange={e => setNewMessage(e.target.value)}
+                    value={newMessage}
+                    onBlur={() => handleTypingStatus("blur")}
+                    onFocus={() => handleTypingStatus("focus")}
                   />
-                </div>
-                <div className="ml-4">
-                  <p className="text-gray-800">{}</p>
-                  <p className="text-xs text-gray-800">
-                    {isTyping && currentChat?.members.includes(typingId)
-                      ? "Typing"
-                      : ""}
-                  </p>
-                </div>
-              </div>
-              <div className="flex">
-                {/* <div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      fill="#727A7E"
-                      d="M15.873 12l3.524-3.524c.625-.625.625-1.632 0-2.256a1.59 1.59 0 0 0-2.256 0L12 9.873 8.476 6.348a1.59 1.59 0 0 0-2.256 0c-.625.625-.625 1.632 0 2.256L9.873 12l-3.525 3.524a1.59 1.59 0 0 0 0 2.256c.625.625 1.632.625 2.256 0L12 14.127l3.524 3.524c.625.625 1.632.625 2.256 0 .625-.625.625-1.632 0-2.256L14.127 12z"
-                    ></path>
-                  </svg>
-                </div> */}
-                <div className="ml-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      fill="#727A7E"
-                      d="M12 20.664a9.163 9.163 0 0 1-6.521-2.702.977.977 0 0 1 1.381-1.381 7.269 7.269 0 0 0 10.024.244.977.977 0 0 1 1.313 1.445A9.192 9.192 0 0 1 12 20.664zm7.965-6.112a.977.977 0 0 1-.944-1.229 7.26 7.26 0 0 0-4.8-8.804.977.977 0 0 1 .594-1.86 9.212 9.212 0 0 1 6.092 11.169.976.976 0 0 1-.942.724zm-16.025-.39a.977.977 0 0 1-.953-.769 9.21 9.21 0 0 1 6.626-10.86.975.975 0 1 1 .52 1.882l-.015.004a7.259 7.259 0 0 0-5.223 8.558.978.978 0 0 1-.955 1.185z"
-                    ></path>
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    height="24"
-                  >
-                    <path
-                      fill="#727A7E"
-                      d="M12 20.664a9.163 9.163 0 0 1-6.521-2.702.977.977 0 0 1 1.381-1.381 7.269 7.269 0 0 0 10.024.244.977.977 0 0 1 1.313 1.445A9.192 9.192 0 0 1 12 20.664zm7.965-6.112a.977.977 0 0 1-.944-1.229 7.26 7.26 0 0 0-4.8-8.804.977.977 0 0 1 .594-1.86 9.212 9.212 0 0 1 6.092 11.169.976.976 0 0 1-.942.724zm-16.025-.39a.977.977 0 0 1-.953-.769 9.21 9.21 0 0 1 6.626-10.86.975.975 0 1 1 .52 1.882l-.015.004a7.259 7.259 0 0 0-5.223 8.558.978.978 0 0 1-.955 1.185z"
-                    ></path>
-                  </svg>
+                  {newMessage ? (
+                    <div
+                      onClick={handleSubmit}
+                      className="bg-gray-100 dark:bg-gray-800 dark:text-gray-200  flex justify-center items-center pr-3 text-gray-400 rounded-r-md"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 overflow-auto no-scrollbar" id="chat">
-              <div className="py-2 px-3">
-                <div className="flex justify-center mb-2">
-                  <div className="rounded py-2 px-4 bg-gray-200">
-                    {/* <p className="text-sm uppercase">February 20, 2021</p> */}
-                  </div>
-                </div>
-                <div className="flex justify-center mb-4">
-                  <div className="rounded py-2 px-4 bg-gray-200">
-                    <p className="text-xs">
-                      Messages to this chat and calls are now secured with
-                      end-to-end encryption. Tap for more info.
-                    </p>
-                  </div>
-                </div>
-                {messages.map((m: any) => (
-                  <div key={m._id} ref={scrollRef}>
-                    <Messages message={m} own={m.senderId === user.id} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Input */}
-            <div className="bg-Marine_blue px-4 py-4 flex items-center">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                >
-                  <path
-                    fill="#263238"
-                    fillOpacity=".45"
-                    d="M1.72 2.705L1 2 0 2.665l.72.705zM1.72 2.705l.774.765 10.42 10.31L6.22 12.59 1.72 2.705z"
-                  ></path>
-                  <path
-                    fill="#263238"
-                    fillOpacity=".45"
-                    d="M6.22 12.59L12.93 22 15 19.9l-8.78-8.565z"
-                  ></path>
-                  <path
-                    fill="#263238"
-                    fillOpacity=".55"
-                    d="M22 2H7c-1.1 0-2 .9-2 2v4.02l2 1.96V4h13v16h-6l-2 2h9c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-                  ></path>
-                </svg>
-              </div>
-              <div className="flex-1 mx-4">
-                <input
-                  type="text"
-                  className="w-full border rounded py-2 px-4"
-                  placeholder="Type a message"
-                  onChange={e => setNewMessage(e.target.value)}
-                  value={newMessage}
-                  onBlur={() => handleTypingStatus("blur")}
-                  onFocus={() => handleTypingStatus("focus")}
-                />
-              </div>
-              {newMessage ? (
-                <div>
-                  <button
-                    onClick={handleSubmit}
-                    className="px-2 py-1 bg-varRed text-white rounded"
-                  >
-                    Send
-                  </button>
-                </div>
-              ) : (
-                ""
-              )}
             </div>
           </div>
         </div>

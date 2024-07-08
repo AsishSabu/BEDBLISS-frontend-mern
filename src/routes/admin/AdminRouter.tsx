@@ -7,6 +7,7 @@ import HotelDetails from "../../components/admin/HotelDetails";
 import Owners from "../../pages/admin/Owners";
 import AdminReports from "../../pages/admin/Reportings";
 import Bookings from "../../pages/admin/Bookings";
+import Categories from "../../pages/admin/Categories";
 const Users = lazy(() => import("../../pages/admin/Users"))
 const Hotels= lazy(() => import("../../pages/admin/Hotels"))
 const LoginForm = lazy(() => import("../../pages/admin/Login"));
@@ -32,6 +33,7 @@ const AdminRouter: FC = () => {
           <Route path="/hotel/:id" element={<HotelDetails />} />
           <Route path="/reports" element={<AdminReports />} />
           <Route path="/bookings" element={<Bookings />} />
+          <Route path="/categories" element={<Categories />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

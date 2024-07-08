@@ -45,7 +45,7 @@ const ResetPassword:React.FC = () => {
         <div className="grid gap-8">
           <div className="border-[10px] border-transparent rounded-[20px] bg-gray-100 shadow-lg xl:p-5 2xl:p-5 lg:p-5 md:p-5 sm:p-2 ">
             <h1 className="pt-8 pb-6 font-bold text-blue-800 text-4xl text-center cursor-default">
-              Please enter your email address
+              Please enter your new password
             </h1>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -86,7 +86,7 @@ const ResetPassword:React.FC = () => {
                 className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
-                SIGN UP
+                Confirm
               </button>
             </form>
           </div>

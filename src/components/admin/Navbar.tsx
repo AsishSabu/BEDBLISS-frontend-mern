@@ -1,37 +1,17 @@
-// import React from 'react'
-// import {Menu} from "@headlessui/react"
-
-// const Navbar:React.FC= () => {
-//   return (
-//     <div className=' relative z-10 h-20 w-full  ps-8 py-2 bg-adminDash sm:bg-blue-500 md:bg-red-500 lg:bg-green-400 2xl:bg-orange-500 px-4 xl:bg-yellow-200 flex justify-between items-center border-b border-black  '>
-//       <div className='text-white'>ADMIN PANEL</div>
-//       <div className='flex item-center gap-2 mr-2'>
-//         {/* <Popover>
-//             <Popover.Button>
-                
-//             </Popover.Button>
-//         </Popover> */}
-//          <Menu as="div" className="relative inline-block text-left">
-//         <div>
-//           <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
-//             Options
-          
-//           </Menu.Button>
-//         </div>
-//         </Menu>
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default Navbar
-
-
-"use client";
-
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { useAppDispatch } from "../../redux/store/store";
+import { useNavigate } from "react-router-dom";
+import { clearUser } from "../../redux/slices/userSlice";
+import showToast from "../../utils/toast";
 
 const Header=()=> {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    dispatch(clearUser());
+    showToast("Logout success", "success");
+    navigate("/admin/login");
+  };
   return (
     <Navbar fluid rounded>
       <Navbar.Brand href="/admin">
@@ -54,7 +34,7 @@ const Header=()=> {
           <Dropdown.Item>Settings</Dropdown.Item>
           <Dropdown.Item>Earnings</Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
+          <Dropdown.Item onClick={handleLogout}>Sign out</Dropdown.Item>
         </Dropdown>
         <Navbar.Toggle />
       </div>
