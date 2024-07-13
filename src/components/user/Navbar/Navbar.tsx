@@ -1,12 +1,11 @@
-import React from "react"
-import { Link, useNavigate } from "react-router-dom"
+import React, { useEffect, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../redux/reducer/reducer"
 import { useAppDispatch } from "../../../redux/store/store"
 import { clearUser, setUser } from "../../../redux/slices/userSlice"
-import { logo } from "../../../assets/images"
+import { logo, noProfile } from "../../../assets/images"
 import {
-  Avatar,
   Dropdown,
   DropdownDivider,
   DropdownItem,
@@ -18,33 +17,70 @@ import {
 } from "flowbite-react"
 import axios from "axios"
 import { USER_API } from "../../../constants"
+import NotificationComponent from "../../NotificationComponent"
+import { useSocket } from "../../../redux/contexts/SocketContext"
+import { useFetchData } from "../../../utils/fetcher"
 
 const Header: React.FC = () => {
   const user = useSelector((state: RootState) => state.userSlice)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
 
-  const handleRole = async () => {
-    const role = user.role === "user" ? { role: "owner" } : { role: "user" }
-    try {
-      const response = await axios.post(USER_API + "/changeRole", role, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      const newUser = response.data.user
+  const socket = useSocket()
+  const [newMessageCount, setNewMessageCount] = useState<number>(0)
+  const { data, isError } = useFetchData<any>(`${USER_API}/user/${user.id}`)
+
+  useEffect(() => {
+    if (data && data.user) {
+      const unreadCount = data.user.notifications.filter(
+        (notification: any) => !notification.read
+      ).length
+      setNewMessageCount(unreadCount)
+      const profilePic = data.user.profilePic || ""
       dispatch(
         setUser({
-          isAuthenticated: true,
-          name: newUser.name,
-          role: newUser.role,
-          id: newUser._id,
+          ...user,
+          image: profilePic,
         })
       )
-    } catch (error) {
-      console.error(error)
     }
-  }
+  }, [data])
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("connected to socket")
+      })
+
+      socket.emit("addUser", user.id)
+
+      socket.on("getUsers", users => {
+        console.log(users)
+      })
+
+      return () => {
+        socket.off("getUsers")
+      }
+    }
+  }, [socket, user.id])
+
+  useEffect(() => {
+    const handleNotification = ({ count }: { count: number }) => {
+      if (
+        location.pathname !== "/owner/notifications" &&
+        location.pathname !== "/user/notifications"
+      ) {
+        setNewMessageCount(prev => prev + count)
+      }
+    }
+
+    socket?.on("notificationCount", handleNotification)
+
+    return () => {
+      socket?.off("notificationCount", handleNotification)
+    }
+  }, [socket, location.pathname])
 
   const handleLogOut = () => {
     dispatch(clearUser())
@@ -64,6 +100,7 @@ const Header: React.FC = () => {
     { label: "Personal Info", to: "/owner/profile" },
     { label: "Account", to: "/owner/account" },
     { label: "Listings", to: "/owner/hotels" },
+    { label: "Notifications", to: "/owner/notifications" },
     ...(user.isAuthenticated
       ? [{ label: "Profile", to: "/owner/profile" }]
       : []),
@@ -71,11 +108,12 @@ const Header: React.FC = () => {
 
   const OwnerNavbarLinks = [
     { label: "Home", to: "/owner" },
-    { label: "bookings", to: "/owner/bookings" },
+    { label: "Bookings", to: "/owner/bookings" },
     { label: "My Listings", to: "/owner/hotels" },
     { label: "Add Hotels", to: "/owner/addHotel" },
     { label: "Add Rooms", to: "/owner/addRooms" },
-    { label: "Converstions", to: "/owner/chat" },
+    { label: "Add Offers", to: "/owner/addOffer" },
+    { label: "Conversations", to: "/owner/chat" },
   ]
 
   const UserNavbarLinks = [
@@ -85,6 +123,13 @@ const Header: React.FC = () => {
     { label: "Pricing", to: "/user/pricing" },
     { label: "Contact", to: "/user/contact" },
   ]
+
+  const handleClick = () => {
+    setNewMessageCount(0)
+    user.role === "owner"
+      ? navigate("/owner/notifications")
+      : navigate("/user/notifications")
+  }
 
   return (
     <Navbar fluid rounded className="bg-Marine_blue text-varWhite">
@@ -99,38 +144,20 @@ const Header: React.FC = () => {
       </NavbarBrand>
 
       <div className="flex md:order-2 justify-center">
-        {/* <button
-          onClick={handleRole}
-          className="relative inline-flex mt-3 justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-pink-500 to-orange-400 group-hover:from-pink-500 group-hover:to-orange-400 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800"
-        >
-          {user.role === "owner" ? (
-            <span className="relative px-3 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Switch To Traveling
-            </span>
-          ) : (
-            <span className="relative px-3 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Switch To Hosting
-            </span>
-          )}
-        </button> */}
+        <div onClick={handleClick}>
+          <NotificationComponent count={newMessageCount} />
+        </div>
         <Dropdown
           arrowIcon={false}
           inline
           label={
             <>
-              <div className="bg-gray-500 text-white rounded-full border border-gray-500 overflow-hidden">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-6 h-6 relative top-1"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <div className="text-white rounded-full border border-gray-500 overflow-hidden">
+                <img
+                  src={user.image !== "" ? user.image : noProfile}
+                  alt="Author Name"
+                  className="w-10 h-10 cursor-pointer"
+                />
               </div>
               <div className="px-2">{user && <div>{user.name}</div>}</div>
             </>
@@ -159,11 +186,15 @@ const Header: React.FC = () => {
         </Dropdown>
         <NavbarToggle />
       </div>
-      <NavbarCollapse>
+      <NavbarCollapse className=" ">
         {(user.role === "owner" ? OwnerNavbarLinks : UserNavbarLinks).map(
           (navbar, index) => (
             <Link key={index} to={navbar.to}>
-              <NavbarLink className="text-varWhite text-lg">
+              <NavbarLink
+                className="text-varWhite text-lg"
+                active={location.pathname === navbar.to}
+                as={"div"}
+              >
                 {navbar.label}
               </NavbarLink>
             </Link>

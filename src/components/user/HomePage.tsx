@@ -170,7 +170,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <div className="flex justify-center mt-5">
+      {/* <div className="flex justify-center mt-5">
         <Box
           sx={{
             height: 400,
@@ -294,9 +294,9 @@ const HomePage: React.FC = () => {
             <p>Loading user location...</p>
           )}
         </Box>
-      </div>
+      </div> */}
 
-      <div className="py-10 px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 rounded-2xl">
+      <div className="py-10 md:px-20 sm:px-10 px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 rounded-2xl">
         {loading ? (
           Array(8)
             .fill(0)

@@ -169,7 +169,7 @@ const HotelDetail: React.FC = () => {
           </button>
           <h2 className="text-2xl mb-4">Photos</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {imageUrls.map((url, index) => (
+            {imageUrls.map((url: string, index: number) => (
               <div key={index} className="flex justify-center items-center">
                 <Image
                   src={url}
@@ -198,7 +198,7 @@ const HotelDetail: React.FC = () => {
             />
           </div>
           <div className="col-span-4 grid grid-cols-2 gap-2 relative">
-            {imageUrls.slice(1, 5).map((url, index) => (
+            {imageUrls.slice(1, 5).map((url: string, index: number) => (
               <div key={index} className="">
                 <img
                   src={url}
@@ -215,8 +215,6 @@ const HotelDetail: React.FC = () => {
             </button>
           </div>
         </div>
-
-        {/* Details below */}
         <div>
           {" "}
           <h1 className="text-3xl font-bold mb-2">{name}</h1>
@@ -254,7 +252,7 @@ const HotelDetail: React.FC = () => {
                 What this place offers
               </h2>
               <ul className="list-disc list-inside text-gray-600">
-                {amenities.map((amenity, index) => (
+                {amenities.map((amenity: string, index: number) => (
                   <li key={index}>{amenity}</li>
                 ))}
               </ul>
@@ -280,7 +278,7 @@ const HotelDetail: React.FC = () => {
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Property Rules</h2>
               <ul className="list-disc list-inside text-gray-600">
-                {propertyRules.map((rule, index) => (
+                {propertyRules.map((rule: string, index: number) => (
                   <li key={index}>{rule}</li>
                 ))}
               </ul>
@@ -344,7 +342,7 @@ const HotelDetail: React.FC = () => {
                           e,
                           item._id,
                           item.price,
-                          item.roomNumbers
+                          item?.roomNumbers
                         )
                       }
                     >
@@ -392,27 +390,28 @@ const HotelDetail: React.FC = () => {
               {review &&
                 review.map(r => (
                   <div
-                    key={r._id}
+                    key={r?._id}
                     className="flex flex-col border rounded-lg shadow-md p-4 space-y-4 w-full"
                   >
-                    { r.userId._id===user.id?(<>
-                    edit</>):("")}
+                    {r?.userId?._id === user.id ? <>edit</> : ""}
                     <StarComponent stars={r.rating} />
                     <div className="flex items-center space-x-4">
                       <img
                         className="rounded-full w-6 h-6"
                         src={
-                          r.userId.profilePic ? r.userId.profilePic : noProfile
+                          r?.userId?.profilePic
+                            ? r?.userId?.profilePic
+                            : noProfile
                         }
-                        alt={`${r.userId.name}'s Avatar`}
+                        alt={`${r?.userId?.name}'s Avatar`}
                       />
                       <div className="flex justify-between w-full">
                         <div className=" text-blue-800 text-xl font-bold">
-                          {r.userId.name}
+                          {r?.userId?.name}
                         </div>
                         <div className="text-gray-400">
                           {" "}
-                          {r.createdAt && (
+                          {r?.createdAt && (
                             <>
                               {new Date(r.createdAt).toLocaleDateString(
                                 "en-US",
@@ -428,7 +427,7 @@ const HotelDetail: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex mt-2 space-x-2">
-                      {r.imageUrls.map((image, index) => (
+                      {r?.imageUrls.map((image, index) => (
                         <div key={index} className="relative">
                           <img
                             src={image}
@@ -440,7 +439,7 @@ const HotelDetail: React.FC = () => {
                     </div>
 
                     <p className="text-gray-500 text-xl font-thin">
-                      {r.description}
+                      {r?.description}
                     </p>
                   </div>
                 ))}

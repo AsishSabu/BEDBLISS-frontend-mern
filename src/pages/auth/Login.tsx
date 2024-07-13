@@ -1,24 +1,24 @@
-import axios from "axios";
-import { signInWithPopup } from "firebase/auth";
-import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { USER_API } from "../../constants";
-import { auth, facebookProvider, googleProvider } from "../../firebase/config";
-import { setUser } from "../../redux/slices/userSlice";
-import { useAppDispatch } from "../../redux/store/store";
-import { setItemToLocalStorage } from "../../utils/localStorage";
-import showToast from "../../utils/toast";
-import { LoginValidation } from "../../utils/validation";
-import Modal from "./Modal";
+import axios from "axios"
+import { signInWithPopup } from "firebase/auth"
+import { useFormik } from "formik"
+import React, { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { USER_API } from "../../constants"
+import { auth, facebookProvider, googleProvider } from "../../firebase/config"
+import { setUser } from "../../redux/slices/userSlice"
+import { useAppDispatch } from "../../redux/store/store"
+import { setItemToLocalStorage } from "../../utils/localStorage"
+import showToast from "../../utils/toast"
+import { LoginValidation } from "../../utils/validation"
+import Modal from "./Modal"
 
-type Provider = "google" | "facebook";
-type Role="user"|"owner"
+type Provider = "google" | "facebook"
+type Role = "user" | "owner"
 const Login: React.FC = () => {
-  const [open, setOpen] = useState(false);
-  const [provider, setProvider] = useState<Provider | null>(null);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false)
+  const [provider, setProvider] = useState<Provider | null>(null)
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
     useFormik({
       initialValues: {
@@ -30,81 +30,77 @@ const Login: React.FC = () => {
         axios
           .post(USER_API + "/auth/login", { email, password })
           .then(({ data }) => {
-            const access_token = data.accessToken;
-            const { name, role, _id } = data.user;
+            const access_token = data.accessToken
+            const { name, role, _id,notifications} = data.user
+            const unreadCount = notifications.filter((notification:any) => !notification.read).length;
             if (role === "user") {
-              localStorage.setItem("access_token", access_token);
-              showToast(data.message, "success");
-              dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+              localStorage.setItem("access_token", access_token)
+              showToast(data.message, "success")
+              dispatch(setUser({ isAuthenticated: true, name, role, id: _id,notification:unreadCount }))
               navigate("/user");
             } else {
-              localStorage.setItem("access_token", access_token);
-              showToast(data.message, "success");
-              dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
+              localStorage.setItem("access_token", access_token)
+              showToast(data.message, "success")
+              dispatch(setUser({ isAuthenticated: true, name, role, id: _id,notification:unreadCount}))
               navigate("/owner");
             }
           })
           .catch(({ response }) => {
-            console.log(response);
-            showToast(response?.data?.message, "error");
-          });
+            console.log(response)
+            showToast(response?.data?.message, "error")
+          })
       },
-    });
+    })
 
-  const handleSignIn = (roles:Role) => {
-    const selectedProvider=provider
-    console.log(selectedProvider,"selectedProvider");
-    console.log(roles,"role");
-    
-    
+  const handleSignIn = (roles: Role) => {
+    const selectedProvider = provider
+    console.log(selectedProvider, "selectedProvider")
+    console.log(roles, "role")
+
     signInWithPopup(
       auth,
       selectedProvider === "google" ? googleProvider : facebookProvider
     )
-      .then((data) => {
+      .then(data => {
         const userData = {
           name: data.user.displayName,
           email: data.user.email,
           picture: data.user.photoURL,
           email_verified: data.user.emailVerified,
           role: roles,
-        };
+        }
 
         axios
           .post(USER_API + "/auth/googleAndFacebookSignIn", userData)
           .then(({ data }) => {
-            const { message, accessToken } = data;
-            const { name, role, _id } = data.user;
-            setItemToLocalStorage("access_token", accessToken);
-            showToast(message, "success");
-            dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-            navigate(role === "user" ? "/user" : "/owner");
+            const { message, accessToken } = data
+            const { name, role, _id } = data.user
+            setItemToLocalStorage("access_token", accessToken)
+            showToast(message, "success")
+            dispatch(setUser({ isAuthenticated: true, name, role, id: _id }))
+            navigate(role === "user" ? "/user" : "/owner")
           })
           .catch(({ response }) => {
-            console.log(response);
-            showToast(response?.data?.message, "error");
-          });
+            console.log(response)
+            showToast(response?.data?.message, "error")
+          })
       })
       .catch(({ response }) => {
-        console.log(response);
-        showToast(response?.data?.message, "error");
-      });
-  };
-
-  const handleProvider = (selectedProvider: Provider) => {    
-    setProvider(selectedProvider);
-    setOpen(true);
-    
-  };
-  const handleRole=(selectedRole:Role)=>{
-    console.log(selectedRole,"esfsdfsdsdsdfds");
-    setOpen(false)
-   handleSignIn(selectedRole)
-    
+        console.log(response)
+        showToast(response?.data?.message, "error")
+      })
   }
-  const handleClose=()=>setOpen(false)
 
-
+  const handleProvider = (selectedProvider: Provider) => {
+    setProvider(selectedProvider)
+    setOpen(true)
+  }
+  const handleRole = (selectedRole: Role) => {
+    console.log(selectedRole, "esfsdfsdsdsdfds")
+    setOpen(false)
+    handleSignIn(selectedRole)
+  }
+  const handleClose = () => setOpen(false)
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -145,8 +141,10 @@ const Login: React.FC = () => {
               {errors.password && touched.password && (
                 <p className="text-red-600">{errors.password}</p>
               )}
-              {open && <Modal onSelectRole={handleRole} onClose={handleClose} />}
-             
+              {open && (
+                <Modal onSelectRole={handleRole} onClose={handleClose} />
+              )}
+
               <Link
                 to="/auth/forgotPassword"
                 className="group text-blue-700 transition-all duration-100 ease-in-out"
@@ -223,7 +221,7 @@ const Login: React.FC = () => {
         </div>
       </div>
     </body>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

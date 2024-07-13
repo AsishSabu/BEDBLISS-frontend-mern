@@ -38,9 +38,9 @@ const ConversationItem: React.FC<ConversationProps> = ({
         setNewMessageCount(prev => prev + count)
       }
     }
-    socket?.on("notification", handleNotification)
+    socket?.on("msgCount", handleNotification)
     return () => {
-      socket?.off("notification", handleNotification)
+      socket?.off("msgCount", handleNotification)
     }
   }, [])
 

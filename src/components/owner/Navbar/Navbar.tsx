@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../redux/reducer/reducer"
@@ -16,11 +16,49 @@ import {
   NavbarLink,
   NavbarToggle,
 } from "flowbite-react"
+import { useSocket } from "../../../redux/contexts/SocketContext"
+
 
 const Header: React.FC = () => {
   const user = useSelector((state: RootState) => state.userSlice)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const socket=useSocket()
+  const [newMessageCount, setNewMessageCount] = useState<number>(0)
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("connected to socket")
+      })
+
+      socket.emit("addUser", user.id)
+
+      socket.on("getUsers", users => {
+        console.log(users)
+      })
+
+      return () => {
+        socket.off("getUsers")
+      }
+    }
+  }, [socket])
+
+
+  useEffect(() => {
+    const handleNotification = ({
+      count,
+    }: {
+      count: number
+    }) => {
+        setNewMessageCount(prev => prev + count)
+    }
+    socket?.on("msgCount", handleNotification)
+    return () => {
+      socket?.off("msgCount", handleNotification)
+    }
+  }, [])
+
 
   const handleLogOut = () => {
     dispatch(clearUser())

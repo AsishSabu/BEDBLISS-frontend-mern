@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { FC, lazy } from "react";
 import { ProtectedOwnerRoute } from "../protectedRoutes";
 import EditHotelForm from "../../pages/owner/EditHotel";
+import AddOffer from "../../pages/owner/AddOffer";
+import Notifications from "../../components/owner/Notifications";
 
 const Layout = lazy(() => import("../../pages/Layout"));
 const AddRoom = lazy(() => import("../../pages/owner/AddRoom"));
@@ -33,6 +35,8 @@ const OwnerRouter: FC = () => {
             <Route path="hotelDetails/:id" element={<HotelDetails />} />
             <Route path="bookings" element={<BookingList />} />
             <Route path="bookingDetails/:id" element={<BookingDetails />} />
+            <Route path="addOffer" element={<AddOffer />} />
+            <Route path="notifications" element={<Notifications />} />
           </Route>
           <Route path="chat" element={<ChatComponent />} />
         </Route>

@@ -5,12 +5,15 @@ interface UserState{
     isAuthenticated:boolean|null;
     role:string|null;
     id?:string|null;
+    notification?:number|null;
+    image?:string|null;
 }
 const initialState:UserState={
     name:null,
     isAuthenticated:null,
     role:null,
-    id:null
+    id:null,
+    image: null,
 };
 
 const UserSlice=createSlice({

@@ -18,11 +18,12 @@ const PaymentCompleted = () => {
   const isSuccess = status === "true"
 
   useEffect(() => {
-    if (status) {
+    let isMounted = true
+    if (status && isMounted) {
       const paymentStatus = isSuccess ? "Paid" : "Failed"
       axios
         .patch(
-          USER_API + `/payment/status/${id}`,
+          `${USER_API}/payment/status/${id}`,
           { paymentStatus },
           {
             headers: {
@@ -31,32 +32,76 @@ const PaymentCompleted = () => {
           }
         )
         .then(({ data }) => {
-          console.log(data, "?////////////////////////////////////////")
+          console.log(data, "..................")
+
+          if (isMounted) {
+            const notification = {
+              type: "1",
+              message: `${data.result.hotelId.name} booked by ${user.name}`,
+              data: {
+                senderId: user.id,
+                name: user.name,
+                image: user.image,
+                onClickPath: `/owner/bookingDetails/${data.result._id}`,
+              },
+            }
+
+            const socketNotification = {
+              type: "1",
+              message: `${data.result.hotelId.name} booked by ${user.name}`,
+              data: {
+                senderId: user.id,
+                name: user.name,
+                image: user.image,
+                onClickPath: `/owner/bookingDetails/${data.result._id}`,
+              },
+              createdAt: new Date(Date.now()),
+            }
+
+            socket?.emit(
+              "noti",
+              socketNotification,
+              data.result.hotelId.ownerId._id
+            )
+            axios.patch(
+              `${USER_API}/addNotification/${data.result.hotelId.ownerId._id}`,
+              notification,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(
+                    "access_token"
+                  )}`,
+                },
+              }
+            )
+          }
         })
         .catch(err => console.log(err))
     }
-  }, [status, id, isSuccess])
+    return () => {
+      isMounted = false
+    }
+  }, [status, id, isSuccess, user.id])
 
   const { data, isError } = useFetchData<BookingResponse>(
     `${USER_API}/bookingDetailsByBookingId/${id}`
   )
 
-  useEffect(() => {
-    console.log(data, "/////////////////////////")
-    if (socket) {
-      socket.emit("noti", {
-        bookingId: data?.bookings.hotelId.ownerId._id,
-        userId: user.id,
-        status:data?.bookings.bookingStatus
-      })
-    }
+  // useEffect(() => {
+  //   if (socket && data) {
+  //     socket.emit("noti", {
+  //       bookingId: data?.bookings.hotelId.ownerId._id,
+  //       userId: user.id,
+  //       status: data?.bookings.bookingStatus,
+  //     });
 
-    return () => {
-      if (socket) {
-        socket.off("noti")
-      }
-    }
-  }, [data, socket, id, user.id])
+  //     return () => {
+  //       if (socket) {
+  //         socket.off("noti");
+  //       }
+  //     };
+  //   }
+  // }, [data, socket, user.id]);
 
   return (
     <div>

@@ -14,6 +14,7 @@ import AddLocation from "../../components/addLocation/AddLocation"
 import { useAppSelector } from "../../redux/store/store"
 import useSWR from "swr"
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
+const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
 
 const AddHotelForm: FC = () => {
   const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)

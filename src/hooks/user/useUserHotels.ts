@@ -76,6 +76,7 @@ const useUserHotels = () => {
       const { startDate, endDate } = dates
       console.log(startDate, "startDates......")
       console.log(endDate, "endDates......")
+      
 
       const { data } = await axios.get(`${USER_API}/searchedHotels`, {
         params: {
