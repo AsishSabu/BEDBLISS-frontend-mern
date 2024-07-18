@@ -5,6 +5,9 @@ import axios from "axios"
 import { OWNER_API, USER_API } from "./../../constants/index"
 import OutlinedButton from "../../components/OutlinedButton"
 import { useFetchData } from "../../utils/fetcher"
+import { addButton } from "../../assets/images"
+import { offer } from "./../../../../backend/src/app/use-cases/Owner/hotel"
+import showToast from "../../utils/toast"
 
 const HotelDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>()
@@ -45,12 +48,16 @@ const HotelDetails: React.FC = () => {
     isListed,
     isVerified,
     Reason,
+    offer,
   } = hotel?.Hotel
 
-  const handleListUnlist = async (value: string) => {
+  const handleListUnlist = async (value: string, roomId?: string) => {
     try {
-      await axios.patch(
-        `${OWNER_API}/listUnlist/${id}`,
+      const url = roomId
+        ? `${OWNER_API}/roomListUnlist/${roomId}`
+        : `${OWNER_API}/hotelListUnlist/${id}`
+      const response = await axios.patch(
+        url,
         { value },
         {
           headers: {
@@ -58,7 +65,28 @@ const HotelDetails: React.FC = () => {
           },
         }
       )
+      showToast(response.data.message, "success")
       await reloadHotelDetails()
+    } catch (error) {
+      console.error("Failed to update listing status", error)
+    }
+  }
+
+  const handleRemoveOffer = async () => {
+    try {
+      console.log("hooo")
+
+      const response = await axios.patch(
+        `${OWNER_API}/removeOffer/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      await reloadHotelDetails()
+      showToast(response.data.message, "success")
     } catch (error) {
       console.error("Failed to update hotel listing status", error)
     }
@@ -81,10 +109,47 @@ const HotelDetails: React.FC = () => {
     }
   }
 
+  const validateRoomData = (roomData: any) => {
+    if (!roomData.title || roomData.title.trim() === "") {
+      showToast("Room title is required", "error")
+      return false
+    }
+    if (!roomData.price || isNaN(roomData.price) || roomData.price <= 0) {
+      showToast("Valid Price  is required", "error")
+      return false
+    }
+    if (!roomData.desc || roomData.desc.trim() === "") {
+      showToast("Description is required", "error")
+      return false
+    }
+    if (
+      !roomData.maxAdults ||
+      isNaN(roomData.maxAdults) ||
+      roomData.maxAdults <= 0
+    ) {
+      showToast("Valid number is required", "error")
+      return false
+    }
+    if (
+      !roomData.maxChildren ||
+      isNaN(roomData.maxChildren) ||
+      roomData.maxChildren <= 0
+    ) {
+      showToast("Valid number is required", "error")
+      return false
+    }
+    return true
+  }
+
   const saveRoomChanges = async (roomId: string, updatedRoom: any) => {
     try {
-      await axios.patch(
-        `${OWNER_API}/updateRoom/${id}/${roomId}`,
+      console.log(roomId)
+      console.log(updatedRoom)
+      if (!validateRoomData(updatedRoom)) {
+        return
+      }
+      const response = await axios.patch(
+        `${OWNER_API}/editRoom/${roomId}`,
         updatedRoom,
         {
           headers: {
@@ -94,9 +159,14 @@ const HotelDetails: React.FC = () => {
       )
       setEditingRoomIndex(null)
       await reloadHotelDetails()
+      showToast(response.data.message, "success")
     } catch (error) {
       console.error("Failed to update room", error)
     }
+  }
+
+  const handleAddRoom = () => {
+    navigate("/owner/addrooms")
   }
 
   return (
@@ -184,20 +254,107 @@ const HotelDetails: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-4 col-span-2">
-          <h3 className="text-xl font-semibold text-gray-800 p-3">
-            Room Details
-          </h3>
+        <div className=" col-span-2 border mb-5 shadow-md">
+          {offer && (
+            <h3 className="text-xl font-semibold text-gray-800 p-3">
+              Added Offer
+            </h3>
+          )}
+          {offer && (
+            <div>
+              <table className="min-w-full bg-white">
+                <thead className="bg-gray-200">
+                  <tr>
+                    <th className="text-left py-3 px-2">Offer Type</th>
+                    <th className="text-left py-3 px-2">Description</th>
+                    <th className="text-left py-3 px-2">Amount</th>
+                    {offer && offer.type === "flat" && (
+                      <th className="text-left py-3 px-2">Min Amount</th>
+                    )}
+                    {offer && offer.type === "flat" && (
+                      <th className="text-left py-3 px-2">Max Amount</th>
+                    )}
 
+                    <th className="text-left py-3 px-2">Start Date</th>
+                    <th className="text-left py-3 px-2">End Date</th>
+                    <th className="text-left py-3 px-2">Remove</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="py-3 px-2">{offer.type}</td>
+                    <td className="py-3 px-2">{offer.desc}</td>
+                    <td className="py-3 px-2">{offer.amount}</td>
+                    {offer && offer.type === "flat" && (
+                      <td className="py-3 px-2">{offer.minAmount}</td>
+                    )}
+                    {offer && offer.type === "flat" && (
+                      <td className="py-3 px-2">{offer.maxAmount}</td>
+                    )}{" "}
+                    <td className="py-3 px-2">
+                      {offer.startDate
+                        ? new Date(offer.startDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )
+                        : ""}
+                    </td>
+                    <td className="py-3 px-2">
+                      {offer.endDate
+                        ? new Date(offer.endDate).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })
+                        : ""}
+                    </td>
+                    <td className="py-3 px-2 flex justify-center">
+                      {" "}
+                      <button title="none" onClick={() => handleRemoveOffer()}>
+                        <svg
+                          className="w-[30px] h-[30px] fill-[#8f2424]"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          {/*! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
+                          <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"></path>
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="mb-4 col-span-2 border border-spacing-2 shadow-md p-2 pb-5">
+          <div className="flex justify-between">
+            <h3 className="text-2xl font-semibold text-gray-800 p-3">Rooms</h3>
+            <div className="p-2">
+              <button
+                className="text-sm bg-varGreen p-2 flex gap-1 rounded-md hover:bg-varRed hover:scale-105 transition-transform duration-300 ease-in-out"
+                onClick={handleAddRoom}
+              >
+                <img src={addButton} alt="" className="h-4" />
+                <span className="font-semibold">Add Room</span>
+              </button>
+            </div>
+          </div>
           {rooms.length > 0 ? (
             <table className="min-w-full bg-white">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="text-left py-3 px-2">Room Type</th>
-                  <th className="text-left py-3 px-2">Description</th>
-                  <th className="text-left py-3 px-2">MaxPeoples</th>
-                  <th className="text-left py-3 px-2">Price</th>
-                  <th className="text-left py-3 px-2">Actions</th>
+                  <th className="text-left py-3 px-2 w-1/6">Room Type</th>
+                  <th className="text-left py-3 px-2 w-2/6">Description</th>
+                  <th className="text-left py-3 px-2 w-1/6">MaxAdults</th>
+                  <th className="text-left py-3 px-2 w-1/6">MaxChildrens</th>
+                  <th className="text-left py-3 px-2 w-1/6">Price</th>
+                  <th className="text-left py-3 px-2 w-1/6">Actions</th>
                 </tr>
               </thead>
 
@@ -206,9 +363,10 @@ const HotelDetails: React.FC = () => {
                   <tr key={index} className="border-b">
                     {editingRoomIndex === index ? (
                       <>
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2 w-1/6">
                           <input
                             title="none"
+                            className="w-full"
                             type="text"
                             defaultValue={room.title}
                             onChange={e =>
@@ -216,29 +374,41 @@ const HotelDetails: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2 w-2/6">
                           <input
+                            className="w-full"
                             title="none"
                             type="text"
                             defaultValue={room.desc}
                             onChange={e => (rooms[index].desc = e.target.value)}
                           />
                         </td>
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2 w-1/6">
                           <input
+                            className="w-full"
                             title="none"
-                            type="text"
-                            defaultValue={`adults-${room.maxAdults} children-${room.maxChildren}`}
-                            onChange={e => {
-                              const [adults, children] =
-                                e.target.value.split(" ")
-                              rooms[index].maxAdults = adults.split("-")[1]
-                              rooms[index].maxChildren = children.split("-")[1]
-                            }}
+                            type="number"
+                            min={1}
+                            defaultValue={room.maxAdults}
+                            onChange={e =>
+                              (rooms[index].maxAdults = e.target.value)
+                            }
                           />
                         </td>
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2 w-1/6">
                           <input
+                            className="w-full"
+                            title="none"
+                            type="text"
+                            defaultValue={room.maxChildren}
+                            onChange={e =>
+                              (rooms[index].maxChildren = e.target.value)
+                            }
+                          />
+                        </td>
+                        <td className="py-3 px-2 w-1/6">
+                          <input
+                            className="w-full"
                             title="none"
                             type="text"
                             defaultValue={room.price}
@@ -247,7 +417,7 @@ const HotelDetails: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="py-3 px-2">
+                        <td className="py-3 px-2 w-1/6 flex">
                           <button
                             className="text-sm text-white bg-green-500 px-4 py-2 rounded-md mr-2"
                             onClick={() =>
@@ -268,9 +438,8 @@ const HotelDetails: React.FC = () => {
                       <>
                         <td className="py-3 px-2">{room.title}</td>
                         <td className="py-3 px-2">{room.desc}</td>
-                        <td className="py-3 px-2">
-                          adults-{room.maxAdults} children-{room.maxChildren}
-                        </td>
+                        <td className="py-3 px-2">{room.maxAdults}</td>
+                        <td className="py-3 px-2">{room.maxChildren}</td>
                         <td className="py-3 px-2">{room.price}</td>
                         <td className="py-3 px-2">
                           <button
@@ -286,33 +455,38 @@ const HotelDetails: React.FC = () => {
                               <path d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"></path>
                             </svg>
                           </button>
-                          <button
-                            title="none"
-                            onClick={() => handleListUnlist("true")}
-                          >
-                            <svg
-                              className="w-[30px] h-[30px] fill-[#2a8d43]"
-                              viewBox="0 0 448 512"
-                              xmlns="http://www.w3.org/2000/svg"
+                          {room.listed && (
+                            <button
+                              title="none"
+                              onClick={() =>
+                                handleListUnlist("false", room._id)
+                              }
                             >
-                              {/*! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
-                              <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path>
-                            </svg>
-                          </button>
-
-                          <button
-                            title="none"
-                            onClick={() => handleListUnlist("true")}
-                          >
-                            <svg
-                              className="w-[30px] h-[30px] fill-[#8f2424]"
-                              viewBox="0 0 448 512"
-                              xmlns="http://www.w3.org/2000/svg"
+                              <svg
+                                className="w-[30px] h-[30px] fill-[#8f2424]"
+                                viewBox="0 0 448 512"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                {/*! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
+                                <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"></path>
+                              </svg>
+                            </button>
+                          )}
+                          {!room.listed && (
+                            <button
+                              title="none"
+                              onClick={() => handleListUnlist("true", room._id)}
                             >
-                              {/*! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
-                              <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm79 143c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"></path>
-                            </svg>
-                          </button>
+                              <svg
+                                className="w-[30px] h-[30px] fill-[#2a8d43]"
+                                viewBox="0 0 448 512"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                {/*! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. */}
+                                <path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path>
+                              </svg>
+                            </button>
+                          )}
                         </td>
                       </>
                     )}

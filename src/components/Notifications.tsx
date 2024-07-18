@@ -5,14 +5,14 @@ import TabContext from "@mui/lab/TabContext"
 import TabList from "@mui/lab/TabList"
 import TabPanel from "@mui/lab/TabPanel"
 import { useSelector } from "react-redux"
-import { RootState } from "../../redux/reducer/reducer" // Adjust the path as per your project structure
-import { useFetchData } from "../../utils/fetcher"
-import { USER_API } from "../../constants"
+import { RootState } from "../redux/reducer/reducer" // Adjust the path as per your project structure
+import { useFetchData } from "../utils/fetcher"
+import { USER_API } from "../constants"
 import { format } from "date-fns"
 import axios from "axios"
-import { useSocket } from "../../redux/contexts/SocketContext"
+import { useSocket } from "../redux/contexts/SocketContext"
 import { useNavigate } from "react-router-dom"
-import { noProfile } from "../../assets/images"
+import { noProfile } from "../assets/images"
 
 interface Notification {
   _id: string

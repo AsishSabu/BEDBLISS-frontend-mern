@@ -8,69 +8,72 @@ import showToast from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 
 const AddRoom: React.FC = () => {
-    const { hotels } = useHotelList();
-    const [roomNumbers, setRoomNumbers] = useState<number[]>([]);
-    const [roomNumberError, setRoomNumberError] = useState<string | null>(null);
-    const navigate=useNavigate()
-  
-    const handleSubmit = async (values: any) => {
+  const { hotels } = useHotelList();
+  const [roomNumbers, setRoomNumbers] = useState<number[]>([]);
+  const [roomNumberError, setRoomNumberError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-      const data={
-        title: values.name,
-        maxAdults: values.maxAdults,
-        maxChildren: values.maxChildren,
-        price: values.price,
-        desc: values.description,
-        roomNumbers: roomNumbers,
-      }
-  console.log(data);
+  const handleSubmit = async (values: any) => {
+    const data = {
+      title: values.name,
+      maxAdults: values.maxAdults,
+      maxChildren: values.maxChildren,
+      price: values.price,
+      desc: values.description,
+      roomNumbers: roomNumbers,
+    };
+    console.log(data);
 
-
-  const response = await axios
-      .post(
-        `${OWNER_API}/addRoom/${values.hotelId}`,
-        data,
-        {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
+    const response = await axios
+      .post(`${OWNER_API}/addRoom/${values.hotelId}`, data, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then(({ data }) => {
-        showToast(data.message)
-        navigate("/owner/hotels")
+        showToast(data.message);
+        navigate("/owner/hotelDetails/"+values.hotelId);
       })
       .catch(({ response }) => {
-        showToast(response?.data?.message, "error")
-      })
-    };
-  
-    const handleAddRoomNumber = (roomNumber: string) => {
-        const number = parseInt(roomNumber, 10);
-        if (!isNaN(number) && number > 0 && number <= 9999) {
-          if (!roomNumbers.includes(number)) {
-            setRoomNumbers([...roomNumbers, number]);
-            setRoomNumberError(null); // Clear error when valid number is added
-          } else {
-            setRoomNumberError("Room number already exists.");
-          }
-        } else {
-          setRoomNumberError("Please enter a valid room number (1-9999) without leading zeros.");
-        }
-      };
-      
-    const handleRemoveRoomNumber = (index: number) => {
-      setRoomNumbers(roomNumbers.filter((_, i) => i !== index));
-    };
-
-    const hotelAddValidation = Yup.object().shape({
-        name: Yup.string().required("Room Name is required"),
-        description: Yup.string().required("Description is required"),
-        hotelId: Yup.string().required("Hotel is required"),
-        price: Yup.number().required("Price is required").positive("Price must be positive"),
-        maxAdults: Yup.number().required("Max Adults is required").positive("Max Adults must be positive"),
-        maxChildren: Yup.number().required("Max Children is required").positive("Max Children must be positive"),
+        showToast(response?.data?.message, "error");
       });
+  };
+
+  const handleAddRoomNumber = (roomNumber: string, setFieldValue: any) => {
+    const number = parseInt(roomNumber, 10);
+    if (!isNaN(number) && number > 0 && number <= 9999) {
+      if (!roomNumbers.includes(number)) {
+        setRoomNumbers([...roomNumbers, number]);
+        setRoomNumberError(null); // Clear error when valid number is added
+        setFieldValue("roomNumber", ""); // Clear the input field
+      } else {
+        setRoomNumberError("Room number already exists.");
+      }
+    } else {
+      setRoomNumberError("Please enter a valid room number (1-9999) without leading zeros.");
+    }
+  };
+
+  const handleRemoveRoomNumber = (index: number) => {
+    setRoomNumbers(roomNumbers.filter((_, i) => i !== index));
+  };
+
+  const hotelAddValidation = Yup.object().shape({
+    name: Yup.string().required("Room Name is required"),
+    description: Yup.string().required("Description is required"),
+    hotelId: Yup.string().required("Hotel is required"),
+    price: Yup.number().required("Price is required").positive("Price must be positive"),
+    maxAdults: Yup.number().required("Max Adults is required").positive("Max Adults must be positive"),
+    maxChildren: Yup.number().required("Max Children is required").positive("Max Children must be positive"),
+  });
+
+  const validate = (values: any) => {
+    const errors: any = {};
+    if (roomNumbers.length === 0) {
+      errors.roomNumbers = "At least one room number is required.";
+    }
+    return errors;
+  };
 
   return (
     <div>
@@ -82,11 +85,13 @@ const AddRoom: React.FC = () => {
           maxChildren: 0,
           price: "",
           desc: "",
+          roomNumber: "",
         }}
         validationSchema={hotelAddValidation}
+        validate={validate}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values, setFieldValue, errors }) => (
           <div className="px-4 py-7 md:px-14 flex justify-center">
             <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
               <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">
@@ -159,8 +164,6 @@ const AddRoom: React.FC = () => {
                       <ErrorMessage name="price" />
                     </span>
                   </div>
-
-
 
                   <div>
                     <label className="text-gray-700 text-lg font-bold mb-2">
@@ -237,7 +240,7 @@ const AddRoom: React.FC = () => {
                     <label className="text-gray-700 text-lg font-bold mb-2">
                       Room Numbers:
                     </label>
-                    <div className="flex items-center ">
+                    <div className="flex items-center">
                       <Field
                         type="number"
                         name="roomNumber"
@@ -246,7 +249,7 @@ const AddRoom: React.FC = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => handleAddRoomNumber(values.roomNumber)}
+                        onClick={() => handleAddRoomNumber(values.roomNumber, setFieldValue)}
                         className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                       >
                         Add
@@ -255,6 +258,11 @@ const AddRoom: React.FC = () => {
                     {roomNumberError && (
                       <div className="text-Strawberry_red text-sm mt-1">
                         {roomNumberError}
+                      </div>
+                    )}
+                    {errors.roomNumbers && (
+                      <div className="text-Strawberry_red text-sm mt-1">
+                        {errors.roomNumbers}
                       </div>
                     )}
                     <div className="mt-2 grid grid-cols-12 gap-2">
@@ -294,4 +302,3 @@ const AddRoom: React.FC = () => {
 };
 
 export default AddRoom;
-

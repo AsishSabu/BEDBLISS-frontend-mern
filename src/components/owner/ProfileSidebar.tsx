@@ -32,7 +32,7 @@ const ProfileSidebar:React.FC = () => {
               <span className="ms-3">Profile</span>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/"
               className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-400 group"
@@ -51,10 +51,10 @@ const ProfileSidebar:React.FC = () => {
                 My Hotels
               </span>
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link
-              to="/"
+              to="/owner/profile/MyWallet"
               className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-400 group"
             >
               <svg
@@ -66,7 +66,7 @@ const ProfileSidebar:React.FC = () => {
               >
                 <LiaWalletSolid fontSize={22} />{" "}
               </svg>
-              <span className="flex-1 ms-3 whitespace-nowrap">Bookings</span>
+              <span className="flex-1 ms-3 whitespace-nowrap">My Account</span>
             </Link>
           </li>
           {/* <li>

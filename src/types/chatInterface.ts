@@ -1,7 +1,8 @@
 export interface ChatInterface {
-    _id: string;
-    members: string[];
-    createdAt: Date;
+  createdAt: string;
+  members: string[];
+  updatedAt: string;
+  _id: string;
   }
   export interface MessageInterface {
     _id?: string;

@@ -39,6 +39,8 @@ const useUserHotels = () => {
 
   useEffect(() => {
     if (hotelsData) {
+      console.log(hotelsData,"//////////");
+      
       setLoadingState(false)
     }
     if (error) {

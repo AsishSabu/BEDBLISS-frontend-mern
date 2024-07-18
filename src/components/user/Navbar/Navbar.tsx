@@ -84,23 +84,18 @@ const Header: React.FC = () => {
 
   const handleLogOut = () => {
     dispatch(clearUser())
-    navigate("/auth/login")
+    navigate("/")
   }
 
   const UserDropdowns = [
     { label: "Personal Info", to: "/user/profile" },
-    { label: "Account", to: "/user/account" },
-    { label: "Docs", to: "/user/docs" },
+
     ...(user.isAuthenticated && user.role === "user"
-      ? [{ label: "Profile", to: "/user/profile" }]
+      ? [{ label: "Saved", to: "/user/saved" }]
       : []),
   ]
 
   const OwnerDropdowns = [
-    { label: "Personal Info", to: "/owner/profile" },
-    { label: "Account", to: "/owner/account" },
-    { label: "Listings", to: "/owner/hotels" },
-    { label: "Notifications", to: "/owner/notifications" },
     ...(user.isAuthenticated
       ? [{ label: "Profile", to: "/owner/profile" }]
       : []),
@@ -110,8 +105,6 @@ const Header: React.FC = () => {
     { label: "Home", to: "/owner" },
     { label: "Bookings", to: "/owner/bookings" },
     { label: "My Listings", to: "/owner/hotels" },
-    { label: "Add Hotels", to: "/owner/addHotel" },
-    { label: "Add Rooms", to: "/owner/addRooms" },
     { label: "Add Offers", to: "/owner/addOffer" },
     { label: "Conversations", to: "/owner/chat" },
   ]
@@ -119,8 +112,6 @@ const Header: React.FC = () => {
   const UserNavbarLinks = [
     { label: "Home", to: "/user" },
     { label: "About", to: "/user/about" },
-    { label: "Services", to: "/user/services" },
-    { label: "Pricing", to: "/user/pricing" },
     { label: "Contact", to: "/user/contact" },
   ]
 
@@ -154,7 +145,11 @@ const Header: React.FC = () => {
             <>
               <div className="text-white rounded-full border border-gray-500 overflow-hidden">
                 <img
-                  src={user.image !== "" ? user.image : noProfile}
+                  src={
+                    user.image !== ""&& user.isAuthenticated
+                      ? user.image
+                      : noProfile
+                  }
                   alt="Author Name"
                   className="w-10 h-10 cursor-pointer"
                 />
@@ -178,7 +173,7 @@ const Header: React.FC = () => {
               <Link to="/auth/login">
                 <DropdownItem>Sign In</DropdownItem>
               </Link>
-              <Link to="/user/register">
+              <Link to="/auth/register">
                 <DropdownItem>Sign Up</DropdownItem>
               </Link>
             </>

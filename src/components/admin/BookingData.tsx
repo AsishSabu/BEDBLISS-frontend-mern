@@ -19,8 +19,20 @@ const BookingData: React.FC<BookingInterface> = ({
       </Table.Cell>
       <Table.Cell>{userId?.name}</Table.Cell>
       <Table.Cell>{hotelId?.name}</Table.Cell>
-      <Table.Cell>{checkInDate}</Table.Cell>
-      <Table.Cell>{checkOutDate}</Table.Cell>
+      <Table.Cell>
+        {new Date(checkInDate).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })}
+      </Table.Cell>
+      <Table.Cell>
+        {new Date(checkOutDate).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })}
+      </Table.Cell>
       <Table.Cell>{bookingStatus}</Table.Cell>
       <Table.Cell>{paymentMethod}</Table.Cell>
       <Table.Cell>{price}</Table.Cell>

@@ -27,7 +27,7 @@ interface SearchingState {
 }
 
 const initialState: SearchingState = {
-  destination: "manali",
+  destination: "kochi",
   dates: [
     {
       startDate: new Date(),
@@ -35,7 +35,7 @@ const initialState: SearchingState = {
     },
   ],
   options: {
-    adult: 2,
+    adult: 1,
     children: 1,
     room: 1,
   },

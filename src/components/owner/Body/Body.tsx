@@ -89,7 +89,7 @@ const Body = () => {
         </div>
       </header>
 
-      <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      {/* <main className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <section className="mb-8 shadow-xl rounded-3xl w-full p-8 bg-varCream">
           <h2 className="text-2xl font-semibold text-gray-900">
             Your next steps
@@ -159,7 +159,7 @@ const Body = () => {
             </div>
           </div>
         </section>
-      </main>
+      </main> */}
     </div>
   )
 }

@@ -1,19 +1,24 @@
 import React from "react"
-import {
-  AreaChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Area,
-} from "recharts"
+import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area } from "recharts"
 
 const AreaChartComponent = ({ data }) => {
   return (
-    <div className="">
+    <div className=" h-full w-full">
+      <div className="flex justify-center text-lg">User-Owner-Hotel</div>
+      <div className="flex justify-center mt-2.5">
+        <div className="mr-4">
+          <span className="text-[#8884d8] mr-1.5">■</span> Users
+        </div>
+        <div className="mr-4">
+          <span className="text-[#82ca9d] mr-1.5">■</span> Owners
+        </div>
+        <div className="mr-4">
+          <span className="text-[#ffc658] mr-1.5">■</span> Hotels
+        </div>
+      </div>
       <AreaChart
         width={500}
-        height={250}
+        height={280}
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
@@ -57,17 +62,6 @@ const AreaChartComponent = ({ data }) => {
           fill="url(#colorDv)"
         />
       </AreaChart>
-      <div className="flex justify-center mt-2.5">
-        <div className="mr-4">
-          <span className="text-[#8884d8] mr-1.5">■</span> Users
-        </div>
-        <div className="mr-4">
-          <span className="text-[#82ca9d] mr-1.5">■</span> Owners
-        </div>
-        <div className="mr-4">
-          <span className="text-[#ffc658] mr-1.5">■</span> Hotels
-        </div>
-      </div>
     </div>
   )
 }

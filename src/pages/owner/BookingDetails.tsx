@@ -134,6 +134,9 @@ const BookingDetails = () => {
                   <p className="text-base text-red-500 mb-2">
                     Payment Method: {booking.paymentMethod}
                   </p>
+                  <p className=" text-lg  mb-2">
+                   Amount: {booking.price}
+                  </p>
 
                   <div className="flex justify-between">
                     <div>
@@ -141,7 +144,14 @@ const BookingDetails = () => {
                         Check-in-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkInDate}
+                        {booking.checkInDate?new Date(booking.checkInDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              ):""}
                       </p>
                     </div>
                     <div>
@@ -149,7 +159,14 @@ const BookingDetails = () => {
                         Check-out-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkOutDate}
+                        {booking.checkOutDate?new Date(booking.checkOutDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              ):""}
                       </p>
                     </div>
                   </div>

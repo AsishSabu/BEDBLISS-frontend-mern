@@ -9,6 +9,7 @@ import { USER_API } from "../../constants"
 import useSWR from "swr"
 import { UserWalletInterface } from "../../types/userInterface"
 import { useFetchData } from "../../utils/fetcher"
+import { offerRemove } from "../../../../backend/src/app/use-cases/Owner/hotel"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -38,7 +39,7 @@ const CheckoutPage = () => {
   const { id } = useParams<{ id: string }>()
   const bookingData = useAppSelector(state => state.bookingSlice)
   console.log(bookingData, "bookingData...........")
-  const { data, isError:error } = useFetchData<any>(USER_API + "/profile")
+  const { data, isError: error } = useFetchData<any>(USER_API + "/profile")
 
   useEffect(() => {
     if (data) {
@@ -54,22 +55,51 @@ const CheckoutPage = () => {
   const totalDays = Math.ceil(
     (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
   )
-  console.log(totalDays)
-  
+  console.log(totalDays, "days")
+  console.log(bookingData.rooms)
 
   const totalPrice =
     totalDays *
     bookingData.rooms.reduce(
-      (acc, item) => acc + item[1].count * item[1].price,
+      (acc, item) => acc + item.rooms.length * item.roomDetails.price,
       0
     )
-  const platformFee=totalPrice * 0.05
-  console.log(platformFee,"feeeee");
-  
-  console.log(totalPrice, "price")
-  const amountToPay=platformFee+totalPrice
-  console.log(amountToPay,"fdsfsd");
-  
+  console.log(totalPrice, "total price")
+  const today = new Date(Date.now())
+  console.log(today, "today")
+
+  let discount = 0
+
+  if (bookingData.offer) {
+    const offerStartDate = new Date(bookingData.offer.startDate)
+    const offerEndDate = new Date(bookingData.offer.endDate)
+
+    if (today >= offerStartDate && today <= offerEndDate) {
+      console.log(bookingData.offer, "offer")
+
+      if (bookingData.offer.type === "flat") {
+        if (
+          totalPrice >= bookingData.offer.minAmount &&
+          totalPrice <= bookingData.offer.maxAmount
+        ) {
+          console.log(bookingData.offer.type, bookingData.offer.amount)
+          discount = bookingData.offer.amount
+        }
+      } else {
+        console.log(bookingData.offer.type, bookingData.offer.amount)
+        discount = totalPrice * (bookingData.offer.amount / 100)
+      }
+    }
+  }
+
+  console.log(discount, "discount applied")
+  console.log(totalPrice, "total price after discount")
+
+  const platformFee = totalPrice * 0.05
+  console.log(platformFee, "platform fee")
+
+  const amountToPay = platformFee + totalPrice - discount
+  console.log(amountToPay, "final amount to pay")
 
   const formattedCheckInDate = formatDate(bookingData.checkIn)
   const formattedCheckOutDate = formatDate(bookingData.checkOut)
@@ -109,13 +139,12 @@ const CheckoutPage = () => {
       const stripe = await loadStripe(
         import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
       )
+      console.log(bookingData.rooms)
 
       const roomDetails = bookingData.rooms.map((room: any) => {
         return {
-          roomId: room[0],
-          roomNumbers: room[1].roomNumbers.map(
-            (roomNumber: any) => roomNumber.number
-          ),
+          roomId: room.roomDetails?._id,
+          roomNumbers: room.rooms.map((roomNumber: any) => roomNumber.number),
         }
       })
       const data = {
@@ -130,6 +159,7 @@ const CheckoutPage = () => {
         maxChildren: bookingData.children,
         rooms: roomDetails,
         price: amountToPay,
+        platformFee,
         totalDays: bookingData.totalDays,
         paymentMethod,
       }
@@ -146,7 +176,7 @@ const CheckoutPage = () => {
         if (result?.error) console.error(result.error)
       }
       const bookingId = response.data.booking.bookingId
-      
+
       navigate(`/user/payment_status/${bookingId}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)
@@ -214,6 +244,11 @@ const CheckoutPage = () => {
                 <p>
                   platform fee: <strong>₹ {platformFee}</strong>
                 </p>
+                {discount !== 0 && (
+                  <p>
+                    Discount price: <strong>-₹{discount}</strong>
+                  </p>
+                )}
                 <p>
                   Total Amount: <strong>₹ {amountToPay}</strong>
                 </p>
@@ -402,21 +437,25 @@ const CheckoutPage = () => {
                     </span>
                   </div>
                   <div className="border border-spacing-2 rounded-lg">
-                    <span className="text-gray-700 text-sm font-bold flex justify-center">Cancellation Policy</span>
-                    {bookingData.cancellationPolicies&&bookingData?.cancellationPolicies.map((policy, index) => (
-                      <div className="p-1" key={index}>
-                        <div className="text-sm ">
-                          {policy.name}
+                    <span className="text-gray-700 text-sm font-bold flex justify-center">
+                      Cancellation Policy
+                    </span>
+                    {bookingData.cancellationPolicies &&
+                      bookingData?.cancellationPolicies.map((policy, index) => (
+                        <div className="p-1" key={index}>
+                          <div className="text-sm ">{policy.name}</div>
+                          <ul>
+                            {Object.entries(policy.terms).map(
+                              ([key, value]) => (
+                                <li className="text-gray-500 text-xs" key={key}>
+                                  <div className="text-varGreen">{key}:</div>{" "}
+                                  {value}
+                                </li>
+                              )
+                            )}
+                          </ul>
                         </div>
-                        <ul>
-                          {Object.entries(policy.terms).map(([key, value]) => (
-                            <li className="text-gray-500 text-xs" key={key}>
-                              <div className="text-varGreen">{key}:</div> {value}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 </div>
               </div>

@@ -2,11 +2,12 @@ import React from "react"
 import useHotelList from "../../hooks/owner/UseHotelList"
 import { Button } from "flowbite-react"
 import { useNavigate } from "react-router-dom"
+import { addButton } from "../../assets/images"
 
 const HotelList: React.FC = () => {
   const { hotels } = useHotelList()
-  console.log(hotels,'hotels.........');
-  
+  console.log(hotels, "hotels.........")
+
   const navigate = useNavigate()
   const handleClick = (id: string) => {
     navigate(`/owner/hotelDetails/${id}`)
@@ -24,13 +25,17 @@ const HotelList: React.FC = () => {
             <header className="flex justify-between mb-5">
               <h1 className="text-2xl">Your listing</h1>
               <div className="flex space-x-3">
-                <button className="text-xl" onClick={handleAddHotel}>
-                  ➕
-                </button>
+              <button
+                className="text-sm bg-varGreen p-2 flex gap-1 rounded-md hover:bg-varRed hover:scale-105 transition-transform duration-300 ease-in-out"
+                onClick={handleAddHotel}
+              >
+                <img src={addButton} alt="" className="h-4" />
+                <span className="font-semibold">Add Hotel</span>
+              </button>
               </div>
             </header>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 ">
-              {hotels.map((hotel:any) => (
+              {hotels.map((hotel: any) => (
                 <div
                   key={hotel._id}
                   className="relative rounded-3xl shadow-sm p-2"
@@ -54,7 +59,6 @@ const HotelList: React.FC = () => {
                   </div>
                   <div className="mt-3 ">
                     <h2 className="text-xl font-semibold">{hotel.name}</h2>
-    
                   </div>
                 </div>
               ))}
@@ -63,17 +67,21 @@ const HotelList: React.FC = () => {
         </>
       ) : (
         <>
-          <div className="p-10 ">
-            <header className=" flex justify-between">
-              <h1 className="text-4xl text-red-600 font-body">
+          <div className="p-10 h-screen ">
+            <header className=" flex justify-end">
+            <button
+                className="text-sm bg-varGreen p-2 flex gap-1 rounded-md hover:bg-varRed hover:scale-105 transition-transform duration-300 ease-in-out"
+                onClick={handleAddHotel}
+              >
+                <img src={addButton} alt="" className="h-4" />
+                <span className="font-semibold">Add Hotel</span>
+              </button>
+            </header>
+            <div className=" h-1/2 ">
+              <h1 className="text-2xl font-bold text-red-600 font-body flex justify-center">
                 No Hotels listed yet
               </h1>
-              <button className="text-xl" onClick={handleAddHotel}>
-                  ➕
-                </button>
-              
-            </header>
-            
+            </div>
           </div>
         </>
       )}

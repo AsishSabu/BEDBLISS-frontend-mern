@@ -76,97 +76,97 @@ const supercluster = new Supercluster({
 
 const HomePage: React.FC = () => {
   const { hotels, loading } = useUserHotels();
-  const [points, setPoints] = useState<Point[]>([]);
-  const [clusters, setClusters] = useState<Cluster[]>([]);
-  const [bounds, setBounds] = useState<number[]>([-180, -85, 180, 85]);
-  const [zoom, setZoom] = useState(0);
-  const [popupInfo, setPopupInfo] = useState<ClusterProperties | null>(null);
-  const [userLocation, setUserLocation] = useState<{
-    longitude: number;
-    latitude: number;
-  } | null>(null);
-  const mapRef = useRef<MapRef | null>(null); // Ensure mapRef is properly typed
+  // const [points, setPoints] = useState<Point[]>([]);
+  // const [clusters, setClusters] = useState<Cluster[]>([]);
+  // const [bounds, setBounds] = useState<number[]>([-180, -85, 180, 85]);
+  // const [zoom, setZoom] = useState(0);
+  // const [popupInfo, setPopupInfo] = useState<ClusterProperties | null>(null);
+  // const [userLocation, setUserLocation] = useState<{
+  //   longitude: number;
+  //   latitude: number;
+  // } | null>(null);
+  // const mapRef = useRef<MapRef | null>(null); // Ensure mapRef is properly typed
 
-  useEffect(() => {
-    axios
-      .get("https://ipapi.co/json")
-      .then((response) => {
-        const { longitude, latitude } = response.data;
-        setUserLocation({ longitude, latitude });
-        console.log("User location fetched:", { longitude, latitude });
-      })
-      .catch((error) =>
-        console.error("Error fetching user location:", error)
-      );
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("https://ipapi.co/json")
+  //     .then((response) => {
+  //       const { longitude, latitude } = response.data;
+  //       setUserLocation({ longitude, latitude });
+  //       console.log("User location fetched:", { longitude, latitude });
+  //     })
+  //     .catch((error) =>
+  //       console.error("Error fetching user location:", error)
+  //     );
+  // }, []);
 
-  useEffect(() => {
-    console.log("Hotels Data:", hotels);
+  // useEffect(() => {
+  //   console.log("Hotels Data:", hotels);
 
-    const validHotels = hotels.filter(
-      (hotel: Hotel) =>
-        hotel.coordinates &&
-        hotel.coordinates.latitude &&
-        hotel.coordinates.longitude
-    );
-    console.log("Valid Hotels:", validHotels);
+  //   const validHotels = hotels.filter(
+  //     (hotel: Hotel) =>
+  //       hotel.coordinates &&
+  //       hotel.coordinates.latitude &&
+  //       hotel.coordinates.longitude
+  //   );
+  //   console.log("Valid Hotels:", validHotels);
 
-    const points: Point[] = validHotels.map((hotel: Hotel) => ({
-      type: "Feature",
-      properties: {
-        cluster: false,
-        hotelId: hotel._id,
-        title: hotel.name,
-        description: hotel.description,
-        lng: hotel.coordinates.longitude,
-        lat: hotel.coordinates.latitude,
-        images: hotel.imageUrls,
-        uPhoto: hotel.ownerPhoto,
-        uName: hotel.name,
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [
-          parseFloat(hotel.coordinates.longitude.toString()),
-          parseFloat(hotel.coordinates.latitude.toString()),
-        ],
-      },
-    }));
-    setPoints(points);
-    console.log("Generated Points:", points);
-  }, [hotels]);
+  //   const points: Point[] = validHotels.map((hotel: Hotel) => ({
+  //     type: "Feature",
+  //     properties: {
+  //       cluster: false,
+  //       hotelId: hotel._id,
+  //       title: hotel.name,
+  //       description: hotel.description,
+  //       lng: hotel.coordinates.longitude,
+  //       lat: hotel.coordinates.latitude,
+  //       images: hotel.imageUrls,
+  //       uPhoto: hotel.ownerPhoto,
+  //       uName: hotel.name,
+  //     },
+  //     geometry: {
+  //       type: "Point",
+  //       coordinates: [
+  //         parseFloat(hotel.coordinates.longitude.toString()),
+  //         parseFloat(hotel.coordinates.latitude.toString()),
+  //       ],
+  //     },
+  //   }));
+  //   setPoints(points);
+  //   console.log("Generated Points:", points);
+  // }, [hotels]);
 
-  useEffect(() => {
-    if (points.length > 0) {
-      supercluster.load(points);
-      const clusters = supercluster.getClusters(bounds, zoom);
-      setClusters(clusters);
-      console.log("Generated Clusters:", clusters);
-    } else {
-      console.log("No points to load into supercluster");
-    }
-  }, [points, zoom, bounds]);
+  // useEffect(() => {
+  //   if (points.length > 0) {
+  //     supercluster.load(points);
+  //     const clusters = supercluster.getClusters(bounds, zoom);
+  //     setClusters(clusters);
+  //     console.log("Generated Clusters:", clusters);
+  //   } else {
+  //     console.log("No points to load into supercluster");
+  //   }
+  // }, [points, zoom, bounds]);
 
-  useEffect(() => {
-    if (mapRef.current) {
-      const mapBounds = mapRef.current.getMap().getBounds();
-      if (mapBounds) {
-        setBounds(mapBounds.toArray().flat());
-        console.log("Updated Bounds:", mapBounds.toArray().flat());
-      }
-    }
-  }, [mapRef?.current]);
+  // useEffect(() => {
+  //   if (mapRef.current) {
+  //     const mapBounds = mapRef.current.getMap().getBounds();
+  //     if (mapBounds) {
+  //       setBounds(mapBounds.toArray().flat());
+  //       console.log("Updated Bounds:", mapBounds.toArray().flat());
+  //     }
+  //   }
+  // }, [mapRef?.current]);
 
-  const handleZoomEnd = (e: ViewStateChangeEvent) => {
-    setZoom(Math.round(e.viewState.zoom));
-    if (mapRef.current) {
-      const mapBounds = mapRef.current.getMap().getBounds();
-      if (mapBounds) {
-        setBounds(mapBounds.toArray().flat());
-        console.log("Map bounds after zoom:", mapBounds.toArray().flat());
-      }
-    }
-  };
+  // const handleZoomEnd = (e: ViewStateChangeEvent) => {
+  //   setZoom(Math.round(e.viewState.zoom));
+  //   if (mapRef.current) {
+  //     const mapBounds = mapRef.current.getMap().getBounds();
+  //     if (mapBounds) {
+  //       setBounds(mapBounds.toArray().flat());
+  //       console.log("Map bounds after zoom:", mapBounds.toArray().flat());
+  //     }
+  //   }
+  // };
 
   return (
     <>

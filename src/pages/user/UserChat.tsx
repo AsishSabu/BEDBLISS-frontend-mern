@@ -208,7 +208,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
           <input
             type="text"
             name="message"
-            placeholder="Ketik pesan anda"
+            placeholder="Type your message"
             className="pl-4 pr-16 py-2 border border-green-500 focus:outline-none w-full"
             onChange={e => setNewMessage(e.target.value)}
             value={newMessage}

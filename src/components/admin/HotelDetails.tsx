@@ -150,10 +150,10 @@ const HotelDetails = () => {
         <table className="min-w-full bg-white">
           <thead className="bg-gray-200">
             <tr>
-              <th className="text-left py-3 px-4">Rooms</th>
-              <th className="text-left py-3 px-4">Beds</th>
-              <th className="text-left py-3 px-4">Bathrooms</th>
-              <th className="text-left py-3 px-4">Guests</th>
+              <th className="text-left py-3 px-4">Room</th>
+              <th className="text-left py-3 px-4">Description</th>
+              <th className="text-left py-3 px-4">max Adults</th>
+              <th className="text-left py-3 px-4">max Children</th>
               <th className="text-left py-3 px-4">Price</th>
             </tr>
           </thead>

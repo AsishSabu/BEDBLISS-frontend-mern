@@ -1,23 +1,70 @@
+import React, { useEffect, useState } from "react";
 import {
-    Card,
-    CardBody,
-    CardHeader,
-    Typography,
-  } from "@material-tailwind/react";
-  import Chart from "react-apexcharts";
-  import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
-   
-  // If you're using Next.js please use the dynamic import for react-apexcharts and remove the import from the top for the react-apexcharts
-  // import dynamic from "next/dynamic";
-  // const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
-   
-  const chartConfig = {
-    type: "line",
-    height: 240,
+  Card,
+  CardBody,
+  CardHeader,
+  Typography,
+} from "@material-tailwind/react";
+import Chart from "react-apexcharts";
+import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import { useFetchData } from "../../utils/fetcher";
+import { USER_API } from "../../constants";
+
+// Define the type for the chart data
+interface ChartData {
+  series: { name: string; data: number[] }[];
+  options: {
+    chart: {
+      toolbar: { show: boolean };
+      height: number;
+    };
+    title: { show: boolean };
+    dataLabels: { enabled: boolean };
+    colors: string[];
+    stroke: { lineCap: string; curve: string };
+    markers: { size: number };
+    xaxis: {
+      axisTicks: { show: boolean };
+      axisBorder: { show: boolean };
+      labels: {
+        style: {
+          colors: string;
+          fontSize: string;
+          fontFamily: string;
+          fontWeight: number;
+        };
+      };
+      categories: string[];
+    };
+    yaxis: {
+      labels: {
+        style: {
+          colors: string;
+          fontSize: string;
+          fontFamily: string;
+          fontWeight: number;
+        };
+      };
+    };
+    grid: {
+      show: boolean;
+      borderColor: string;
+      strokeDashArray: number;
+      xaxis: { lines: { show: boolean } };
+      padding: { top: number; right: number };
+    };
+    fill: { opacity: number };
+    tooltip: { theme: string };
+  };
+}
+
+const RevenueChart = () => {
+  const { data, isError: error } = useFetchData<any>(USER_API + "/wallet");
+  const [chartData, setChartData] = useState<ChartData>({
     series: [
       {
-        name: "Sales",
-        data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
+        name: "Revenue",
+        data: [],
       },
     ],
     options: {
@@ -25,9 +72,10 @@ import {
         toolbar: {
           show: false,
         },
+        height: 240,  // Set height here
       },
       title: {
-        show: "",
+        show: false,
       },
       dataLabels: {
         enabled: false,
@@ -55,23 +103,13 @@ import {
             fontWeight: 400,
           },
         },
-        categories: [
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ],
+        categories: [],
       },
       yaxis: {
         labels: {
           style: {
             colors: "#616161",
-            fontSize: "12px",
+            fontSize: "10px",
             fontFamily: "inherit",
             fontWeight: 400,
           },
@@ -98,37 +136,80 @@ import {
         theme: "dark",
       },
     },
-  };
-   
-  export default function RevenueChart() {
-    return (
-      <Card>
-        <CardHeader
-          floated={false}
-          shadow={false}
-          color="transparent"
-          className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
-        >
-          <div className="w-max rounded-lg bg-gray-900 p-5 text-white">
-            <Square3Stack3DIcon className="h-6 w-6" />
-          </div>
-          <div>
-            <Typography variant="h3" color="blue-gray">
-              Revenue Chart
-            </Typography>
-            <Typography
-              variant="small"
-              color="gray"
-              className="max-w-sm font-normal"
-            >
-              {/* Visualize your data in a simple way using the
-              @material-tailwind/react chart plugin. */}
-            </Typography>
-          </div>
-        </CardHeader>
-        <CardBody className="px-2 pb-0">
-          <Chart {...chartConfig} />
-        </CardBody>
-      </Card>
-    );
-  }
+  });
+
+  useEffect(() => {
+    if (data) {
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const currentDate = now.getDate();
+
+      // Array to hold daily revenue for the current month
+      const dailyRevenue = Array(currentDate).fill(0);
+
+      data.transaction.forEach((transaction) => {
+        const transactionDate = new Date(transaction.createdAt);
+        if (
+          transactionDate.getFullYear() === currentYear &&
+          transactionDate.getMonth() === currentMonth &&
+          transactionDate.getDate() <= currentDate
+        ) {
+          const day = transactionDate.getDate() - 1; // getDate() returns day of the month (1-31)
+          const amount = transaction.amount;
+          if (transaction.type === "Credit") {
+            dailyRevenue[day] += amount;
+          } else if (transaction.type === "Debit") {
+            dailyRevenue[day] -= amount;
+          }
+        }
+      });
+
+      const categories = Array.from({ length: currentDate }, (_, i) => `${i + 1}`);
+
+      setChartData((prevState) => ({
+        ...prevState,
+        series: [
+          {
+            name: "Revenue",
+            data: dailyRevenue.slice(0, currentDate),
+          },
+        ],
+        options: {
+          ...prevState.options,
+          xaxis: {
+            ...prevState.options.xaxis,
+            categories,
+          },
+        },
+      }));
+    }
+  }, [data]);
+
+  if (!data) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
+  return (
+    <Card>
+      <CardHeader
+        floated={false}
+        shadow={false}
+        variant="filled"
+        color="transparent"
+        className="flex flex-col gap-4 h-8 rounded-lg md:flex-row md:items-center"
+      >
+
+        <div>
+          <Typography variant="h3" color="blue-gray">
+            Revenue Chart
+          </Typography>
+        </div>
+      </CardHeader>
+      <CardBody className="pb-0">
+        <Chart {...chartData} />
+      </CardBody>
+    </Card>
+  );
+};
+
+export default RevenueChart;

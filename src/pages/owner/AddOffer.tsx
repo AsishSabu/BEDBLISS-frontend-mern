@@ -37,14 +37,15 @@ const AddOffer: React.FC = () => {
           }
     }
     const response = await axios.patch(
-        `${OWNER_API}/editHotel/${values.hotelId}`,offer,{
+        `${OWNER_API}/addOffer/${values.hotelId}`,offer,{
             headers: {
               authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
           })
         .then((response)=>{
-            console.log(response);
-            
+            showToast(response.data.message)
+            navigate("/owner/hotels")
+          
         })
     
     

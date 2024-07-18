@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setData } from "../../redux/slices/searchingSlice"
 import { RoomInterface } from "./../../../../backend/src/types/RoomInterface"
-import { setCheckoutData } from "../../redux/slices/bookingslice"
+import { clearData, setCheckoutData } from "../../redux/slices/bookingslice"
 import { useAppSelector } from "../../redux/store/store"
 import Image from "../../components/Image"
 import SearchBoxDetail from "../../components/user/SearchInDetail"
@@ -14,6 +14,9 @@ import { USER_API } from "../../constants"
 import { noProfile } from "../../assets/images"
 import { Review } from "../../types/reviewInterface"
 import StarComponent from "../../components/user/Review/StarComponent"
+import axios from "axios"
+import showToast from "../../utils/toast"
+import EditReview from "../../components/EditReview"
 
 interface RoomNumber {
   number: number
@@ -29,10 +32,15 @@ interface Room {
   roomNumbers: RoomNumber[]
 }
 
+interface RoomSelection {
+  roomId: string
+  count: number
+}
+
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   console.log(id, "hotel id")
-  const { hotel, loading, error } = useHotelDetails(id)
+  const { hotel, loading, error, reloadHotelDetails} = useHotelDetails(id)
   const [err, setErr] = useState("")
   console.log(hotel, "hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
@@ -42,12 +50,17 @@ const HotelDetail: React.FC = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [showAllPhotos, setShowAllPhotos] = useState(false)
-  const [roomSelections, setRoomSelections] = useState<{
-    [key: string]: { count: number; price: number; roomNumbers: RoomNumber[] }
-  }>({})
-
+  const [roomSelections, setRoomSelections] = useState<RoomSelection[]>([])
+  const [submitting, setSubmitting] = useState(false)
   const { data, isError } = useFetchData<any>(`${USER_API}/getRating/${id}`)
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
 
+  const today = new Date()
+
+  useEffect(() => {
+    dispatch(clearData())
+  }, [])
   useEffect(() => {
     console.log(data, "review.......")
 
@@ -88,13 +101,13 @@ const HotelDetail: React.FC = () => {
     stayType,
     address,
     rooms,
+    cancellationPolicies,
+    offer,
   } = hotel
 
   const handleSelectChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
-    roomId: string,
-    price: number,
-    roomNumbers: RoomNumber[]
+    roomId: string
   ) => {
     const { value } = e.target
     setErr("")
@@ -102,28 +115,89 @@ const HotelDetail: React.FC = () => {
 
     if (count === 0) {
       // Remove the room from the roomSelections state
-      setRoomSelections(prevSelections => {
-        const { [roomId]: removedRoom, ...rest } = prevSelections
-        return rest
-      })
+      setRoomSelections(prevSelections =>
+        prevSelections.filter(selection => selection.roomId !== roomId)
+      )
     } else {
       // Create an array of room numbers based on the selected count
-      const selectedRoomNumbers = roomNumbers.slice(0, count)
-
-      setRoomSelections(prevSelections => ({
-        ...prevSelections,
-        [roomId]: { count, price, roomNumbers: selectedRoomNumbers },
-      }))
+      setRoomSelections(prevSelections => {
+        const existingSelection = prevSelections.find(
+          selection => selection.roomId === roomId
+        )
+        if (existingSelection) {
+          // Update the existing selection
+          return prevSelections.map(selection =>
+            selection.roomId === roomId ? { ...selection, count } : selection
+          )
+        } else {
+          // Add a new selection
+          return [...prevSelections, { roomId, count }]
+        }
+      })
     }
   }
 
-  const handleReserve = () => {
-    const selectedRooms = Object.entries(roomSelections)
-    if (selectedRooms.length <= 0) {
-      setErr("please select atleast one room")
+  const checkAvilability = async (roomId, count, startDate, endDate) => {
+    console.log(roomId, count, startDate, endDate, "..........................")
+
+    const response = await axios.post(
+      USER_API + "/checkAvailability/" + roomId,
+      {
+        count,
+        dates: {
+          checkInDate: startDate,
+          checkOutDate: endDate,
+        },
+      }
+    )
+    return response.data.RoomAvailable
+  }
+  const discountedPrice = price => {
+    if (offer.type === "flat") {
+      if (
+        price >= (offer.minAmount ?? 0) &&
+        price <= (offer.maxAmount ?? Infinity)
+      ) {
+        return price - offer.amount
+      }
+      return null
+    } else {
+      return (price * (100 - offer.amount)) / 100
+    }
+  }
+
+  const handleEdit = (id: string) => {
+    setSelectedReviewId(id)
+    setShowReviewModal(true)
+  }
+
+  const handleReserve = async () => {
+    console.log(roomSelections)
+    if (roomSelections.length === 0) {
+      setErr("Please select at least one room")
       return
     }
-    console.log("hloooo")
+
+    setSubmitting(true)
+    // try {
+    const availabilityPromises = roomSelections.map(({ roomId, count }) =>
+      checkAvilability(
+        roomId,
+        count,
+        searchingData.dates[0].startDate,
+        searchingData.dates[0].endDate
+      )
+    )
+
+    const availabilityResults = await Promise.all(availabilityPromises)
+    console.log(availabilityResults)
+
+    for (const data of availabilityResults) {
+      if (data === undefined) {
+        showToast("something went wrong, please select room once more", "error")
+        return
+      }
+    }
 
     const data = {
       name: hotel?.name ?? "",
@@ -133,17 +207,49 @@ const HotelDetail: React.FC = () => {
       pincode: hotel?.address.pincode ?? "",
       country: hotel?.address.country ?? "",
       hotelId: hotel?._id ?? "",
-      rooms: selectedRooms,
+      rooms: availabilityResults,
       checkIn: searchingData.dates[0].startDate,
       checkOut: searchingData.dates[0].endDate,
       adults: searchingData.options.adult,
       children: searchingData.options.children,
+      offer: hotel?.offer,
+      cancellationPolicies: hotel?.cancellationPolicies,
     }
 
     console.log(data)
     dispatch(setCheckoutData(data))
-    navigate(`/user/checkout/${hotel._id}`)
+
+    const dataToSend = availabilityResults.map(result => ({
+      roomId: result.roomDetails?._id ?? "",
+      roomNumbers: result.rooms
+        ? result.rooms.map((room: any) => room.number)
+        : [],
+    }))
+    const result = await axios.post(
+      USER_API + "/addUnavilableDates",
+      {
+        rooms: dataToSend,
+        checkInDate: searchingData.dates[0].startDate,
+        checkOutDate: searchingData.dates[0].endDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    )
+    if (result) {
+      navigate(`/user/checkout/${hotel._id}`)
+    }
+    setSubmitting(false)
   }
+
+
+
+  const handleCloseReviewModal = async() => {
+    setSelectedReviewId(null);
+    setShowReviewModal(false);
+  };
 
   if (showAllPhotos) {
     return (
@@ -230,7 +336,7 @@ const HotelDetail: React.FC = () => {
           ) : (
             ""
           )}
-          <p className="text-gray-700 mb-2">{stayType}</p>
+          <p className="text-gray-700 mb-2">{stayType.name}</p>
           <p className="text-gray-600 mb-2">{destination}</p>
         </div>
         <div className="grid grid-cols-4 gap-2">
@@ -332,19 +438,38 @@ const HotelDetail: React.FC = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="py-4 px-4 border-r">₹ {item.price}</td>
+                  <td className="py-4 px-4 border-r w-fit ">
+                    {offer && new Date(offer.endDate) >= today ? (
+                      discountedPrice(item.price) !== null ? (
+                        <>
+                          <span className="text-sm  text-gray-600 line-through flex justify-center py-2">
+                            ₹ {item.price}
+                          </span>
+                          <span className="text-lg font-bold text-gray-700 flex justify-center pb-3">
+                            ₹ {discountedPrice(item.price)}
+                          </span>
+                          <span className="text-xs  text-varWhite bg-varGreen flex justify-center w-fit p-0.5 rounded-md ">
+                            {offer.type === "flat"
+                              ? `FLAT ₹  ${offer.amount} off/-`
+                              : `${offer.amount}% off/-`}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold text-gray-700 flex justify-center">
+                          ₹ {item.price}
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-lg font-bold text-gray-700 flex justify-center">
+                        ₹ {item.price}
+                      </span>
+                    )}
+                  </td>
                   <td className="py-4 px-4 border-r">
                     <select
                       title="select"
                       className="border p-2 rounded"
-                      onChange={e =>
-                        handleSelectChange(
-                          e,
-                          item._id,
-                          item.price,
-                          item?.roomNumbers
-                        )
-                      }
+                      onChange={e => handleSelectChange(e, item._id)}
                     >
                       {Array.from(
                         { length: item.roomNumbers.length + 1 },
@@ -363,7 +488,12 @@ const HotelDetail: React.FC = () => {
           <div className="py-4 flex justify-center">
             {availableRooms.length > 0 ? (
               <button
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                disabled={submitting ? true : false}
+                className={
+                  submitting
+                    ? "px-4 py-2 bg-gray-500 text-black rounded"
+                    : "px-4 py-2 bg-blue-500 text-white rounded"
+                }
                 onClick={handleReserve}
               >
                 I'll reserve
@@ -393,7 +523,6 @@ const HotelDetail: React.FC = () => {
                     key={r?._id}
                     className="flex flex-col border rounded-lg shadow-md p-4 space-y-4 w-full"
                   >
-                    {r?.userId?._id === user.id ? <>edit</> : ""}
                     <StarComponent stars={r.rating} />
                     <div className="flex items-center space-x-4">
                       <img
@@ -441,10 +570,26 @@ const HotelDetail: React.FC = () => {
                     <p className="text-gray-500 text-xl font-thin">
                       {r?.description}
                     </p>
+                    <p
+                      onClick={() => handleEdit(r?._id)}
+                      className="flex justify-end"
+                    >
+                      {r?.userId?._id === user.id ? <>edit</> : ""}
+                    </p>
                   </div>
                 ))}
             </div>
           </div>
+        </div>
+      )}
+      {showReviewModal && (
+        <div className="absolute inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
+          {selectedReviewId && (
+            <EditReview
+              reviewId={selectedReviewId}
+              onClose={handleCloseReviewModal}
+            />
+          )}
         </div>
       )}
     </>

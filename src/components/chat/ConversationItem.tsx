@@ -4,6 +4,8 @@ import { useFetchData } from "../../utils/fetcher"
 import { USER_API } from "../../constants"
 import { noProfile } from "../../assets/images"
 import { useSocket } from "../../redux/contexts/SocketContext"
+import { useAppSelector } from "../../redux/store/store"
+import { RootState } from "../../redux/reducer/reducer"
 interface ConversationProps extends ChatInterface {
   userId: string
   currentChat: ChatInterface | null
@@ -14,6 +16,16 @@ const ConversationItem: React.FC<ConversationProps> = ({
   _id: conversationId,
   currentChat,
 }) => {
+  const chat=useAppSelector((state: RootState) => state.chatSlice)
+  const [current,setCurrent]=useState<ChatInterface | null>(null)
+
+  useEffect(()=>{
+    if(chat){
+      setCurrent(chat.currentChat)
+    }
+    
+  },[chat])
+ const curr=chat.currentChat
   const friendId = members.find((m: string) => m !== userId)
   const { data, isError: error } = useFetchData<any>(
     friendId ? `${USER_API}/user/${friendId}` : ""
@@ -34,8 +46,22 @@ const ConversationItem: React.FC<ConversationProps> = ({
       chatId: string
       text: string
     }) => {
+      console.log(curr,"current");
+      console.log( senderId,"chat id");
       if (members.includes(senderId)) {
-        setNewMessageCount(prev => prev + count)
+
+        
+        
+        if(current){
+          if(current._id!==chatId){
+            setNewMessageCount(prev => prev + count)
+          }else{
+            setNewMessageCount(0)
+          }
+        }else{
+          setNewMessageCount(prev => prev + count)
+
+        }
       }
     }
     socket?.on("msgCount", handleNotification)
@@ -49,11 +75,11 @@ const ConversationItem: React.FC<ConversationProps> = ({
 
   return (
     <div>
-      <div className="conversation-item p-1 dark:bg-gray-700 bg-varCream hover:bg-gray-200 m-1 rounded-md ">
+      <div className="conversation-item p-1 dark:bg-gray-700 bg-varBlueGray hover:bg-gray-200 m-1 rounded-md ">
         <div className={"flex items-center p-2  cursor-pointer  "}>
           <div className="w-7 h-7 m-1">
             <img
-              className="rounded-full"
+              className="w-7 h-7 rounded-full"
               src={data.user.profilePic ? data.user.profilePic : noProfile}
               alt={data.user.name || "User"}
             />

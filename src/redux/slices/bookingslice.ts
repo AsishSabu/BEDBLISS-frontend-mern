@@ -23,6 +23,7 @@ interface SearchingState {
   cancellationPolicies:[];
   rooms: Room[]; // Array of Room objects
   totalDays: number; // Add a property to store the total number of days
+  offer:any;
 }
 
 const initialState: SearchingState = {
@@ -39,6 +40,7 @@ const initialState: SearchingState = {
   pincode: "",
   country: "",
   hotelId: "",
+  offer:"",
   cancellationPolicies:[],
   rooms: [],
   totalDays: 0, // Initialize with 0

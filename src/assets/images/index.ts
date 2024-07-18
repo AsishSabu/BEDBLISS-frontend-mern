@@ -9,6 +9,11 @@ import reportImg from "./images/reporting.svg"
 import starImg from "./images/star.svg"
 import verifiedImg from "./images/verified.svg"
 import rejectedImg from "./images/rejected.svg"
+import whishlistBlack from "./images/wishlist-black.png"
+import whishlistWhite from "./images/wishlist-white.png"
+import whishlistRed from "./images/whislist-red.png"
+import addButton from "./images/addButton.svg"
+
 export {
   logo,
   paymentFailed,
@@ -20,5 +25,9 @@ export {
   reportImg,
   starImg,
   verifiedImg,
-  rejectedImg
+  rejectedImg,
+  whishlistBlack,
+  whishlistWhite,
+  whishlistRed,
+  addButton
 }

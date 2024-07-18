@@ -70,7 +70,7 @@ const ProfileSidebar:React.FC = () => {
           </li>
           <li>
             <Link
-              to="/"
+              to="/user/saved"
               className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-400 group"
             >
               <svg

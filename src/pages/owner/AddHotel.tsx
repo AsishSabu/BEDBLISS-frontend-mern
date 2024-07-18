@@ -14,7 +14,6 @@ import AddLocation from "../../components/addLocation/AddLocation"
 import { useAppSelector } from "../../redux/store/store"
 import useSWR from "swr"
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
-const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
 
 const AddHotelForm: FC = () => {
   const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
@@ -33,7 +32,6 @@ const AddHotelForm: FC = () => {
     "Hot tub",
     "Beach Access",
   ]
-  const reservationTypes = ["instant", "approveDecline"]
   const [stayTypes,setStayTypes]=useState([])
   const [images, setImages] = useState<(string | ArrayBuffer | null)[]>([])
   const [hotelDocument, setHotelDocument] = useState<
@@ -96,7 +94,7 @@ const AddHotelForm: FC = () => {
     setOwnerId([])
   }
   const handleSubmit = async (values: HotelInterface) => {
-    // setLoading(true)
+    setLoading(true)
     const hotelData = {
       name: values.name,
       destination: values.destination,
@@ -111,7 +109,7 @@ const AddHotelForm: FC = () => {
       stayType: values.stayType,
       description: values.description,
       amenities: values.amenities,
-      coordinates: { latitude: location.lat, longitude: location.lng },
+      // coordinates: { latitude: location.lat, longitude: location.lng },
       propertyRules,
       imageUrls: images,
       hotelDocument: hotelDocument[0],
@@ -180,16 +178,16 @@ const AddHotelForm: FC = () => {
           if (ownerId.length < 1) {
             errors.ownerId = "ownerId is required"
           }
-          if (!location.lng || !location.lat) {
-            errors.location = "location is required"
-          }
+          // if (!location.lng || !location.lat) {
+          //   errors.location = "location is required"
+          // }
           console.log(errors)
           return errors
         }}
         onSubmit={handleSubmit}
       >
         {({ values, setFieldValue }) => (
-          <div className="px-4 py-7 md:px-14 flex justify-center">
+          <div className=" py-7 md:px-14 flex justify-center">
             <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
               <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">
                 Add Hotel
@@ -421,32 +419,7 @@ const AddHotelForm: FC = () => {
                     </div>
 
                     <div className="col-span-2">
-                      {/* <label
-                        htmlFor="reservationType "
-                        className="text-gray-700 text-lg font-bold mb-2"
-                      >
-                        Reservation Type
-                      </label> */}
-                      <AddLocation />
-                      {/* <div className="py-3">
-                        {reservationTypes.map((type, index) => (
-                          <label
-                            key={index}
-                            className="flex gap-2 items-center p-2"
-                          >
-                            <Field
-                              type="radio"
-                              className="form-radio h-5 w-5 text-purple-600"
-                              name="reservationType"
-                              value={type}
-                            />
-                            <span className="ml-2 text-gray-700">{type}</span>
-                          </label>
-                        ))}
-                      </div>
-                      <span className="text-Strawberry_red text-sm">
-                        <ErrorMessage name="reservationType" />
-                      </span> */}
+                      {/* <AddLocation /> */}
                     </div>
                     <div className="flex flex-col mt-4 col-span-2">
                       <label className="block text-sm font-medium text-gray-700">

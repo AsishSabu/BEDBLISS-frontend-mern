@@ -70,6 +70,45 @@ const BookingDetails: React.FC = () => {
           },
         }
       )
+      // const notification = {
+      //   type: "1",
+      //   message: `${data.result.hotelId.name} booked by ${user.name}`,
+      //   data: {
+      //     senderId: user.id,
+      //     name: user.name,
+      //     image: user.image,
+      //     onClickPath: `/owner/bookingDetails/${data.result._id}`,
+      //   },
+      // };
+
+      // const socketNotification = {
+      //   type: "1",
+      //   message: `${data.result.hotelId.name} booked by ${user.name}`,
+      //   data: {
+      //     senderId: user.id,
+      //     name: user.name,
+      //     image: user.image,
+      //     onClickPath: `/owner/bookingDetails/${data.result._id}`,
+      //   },
+      //   createdAt: new Date(Date.now()),
+      // };
+
+      // socket?.emit(
+      //   "noti",
+      //   socketNotification,
+      //   data.result.hotelId.ownerId._id
+      // );
+      // axios.patch(
+      //   `${USER_API}/addNotification/${data.result.hotelId.ownerId._id}`,
+      //   notification,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem(
+      //         "access_token"
+      //       )}`,
+      //     },
+      //   }
+      // );
 
       setBooking(prevBooking => ({
         ...prevBooking!,
@@ -112,6 +151,9 @@ const BookingDetails: React.FC = () => {
                   </p>
                   <p className="text-base text-red-500 mb-2">
                     Payment Method: {booking.paymentMethod}
+                  </p>
+                  <p className=" text-lg  mb-2">
+                  Amount: {booking.price}
                   </p>
 
                   <div className="flex justify-between">
