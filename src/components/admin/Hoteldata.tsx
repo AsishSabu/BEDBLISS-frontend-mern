@@ -4,14 +4,19 @@ import { ADMIN_API } from "../../constants"
 import { Table } from "flowbite-react"
 import { Link } from "react-router-dom"
 
-interface UserDataProps {
-  _id: string
-  name: string
-  isBlocked: boolean
-  type: "user" | "hotel"
+interface OwnerProps {
+  _id: string;
+  name: string;
 }
 
-const Hoteldata: React.FC<UserDataProps> = ({ _id, name, isBlocked, type }) => {
+interface UserDataProps {
+  _id: string;
+  name: string;
+  ownerId: OwnerProps;
+  isBlocked: boolean;
+  type: "user" | "hotel";
+}
+const Hoteldata: React.FC<UserDataProps> = ({ _id, name,ownerId,isBlocked,}) => {
   const [isChecked, setIsChecked] = useState<boolean>(isBlocked)
 
   const handleCheckboxChange = () => {
@@ -24,6 +29,9 @@ const Hoteldata: React.FC<UserDataProps> = ({ _id, name, isBlocked, type }) => {
     <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
       <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
         {name}
+      </Table.Cell>
+            <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+        {ownerId.name}
       </Table.Cell>
       <Table.Cell>
         <div className="flex items-center gap-2">

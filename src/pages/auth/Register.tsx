@@ -1,14 +1,14 @@
-import axios from "axios";
-import { useFormik } from "formik";
-import React from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { USER_API } from "../../constants";
-import { setItemToLocalStorage } from "../../utils/localStorage";
-import showToast from "../../utils/toast";
-import { RegisterValidation } from "../../utils/validation";
+import axios from "axios"
+import { useFormik } from "formik"
+import React from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { USER_API } from "../../constants"
+import { setItemToLocalStorage } from "../../utils/localStorage"
+import showToast from "../../utils/toast"
+import { RegisterValidation } from "../../utils/validation"
 
-const Register = () => {
-  const navigate = useNavigate();
+const Register: React.FC = () => {
+  const navigate = useNavigate()
   const {
     values,
     isSubmitting,
@@ -28,7 +28,7 @@ const Register = () => {
     },
     validationSchema: RegisterValidation,
     onSubmit: ({ name, email, password, phone, role }) => {
-      console.log(role);
+      console.log(role)
 
       axios
         .post(USER_API + "/auth/register", {
@@ -39,20 +39,20 @@ const Register = () => {
           role,
         })
         .then(({ data }) => {
-          const { message, newUser } = data;
-          console.log(data);
-          showToast(data.message, "success");
+          const { newUser } = data
+          console.log(data)
+          showToast(data.message, "success")
           setTimeout(() => {
-            setItemToLocalStorage("userId", newUser._id);
-            navigate("/auth/verifyOtp");
-          }, 1000);
+            setItemToLocalStorage("userId", newUser._id)
+            navigate("/auth/verifyOtp")
+          }, 1000)
         })
         .catch(({ response }) => {
-          const { message } = response.data;
-          showToast(message, "error");
-        });
+          const { message } = response.data
+          showToast(message, "error")
+        })
     },
-  });
+  })
 
   return (
     <body className="flex font-poppins items-center justify-center">
@@ -129,7 +129,7 @@ const Register = () => {
               <div>
                 <label className="mb-2  text-gray-400 text-lg">Role</label>
                 <select
-                title="role"
+                  title="role"
                   id="role"
                   name="role"
                   value={values.role}
@@ -170,7 +170,7 @@ const Register = () => {
         </div>
       </div>
     </body>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

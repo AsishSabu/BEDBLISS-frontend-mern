@@ -1,9 +1,8 @@
-import useSWR from 'swr';
 import React, { useEffect } from 'react';
 import {  USER_API } from '../../constants';
 import { useFetchData } from '../../utils/fetcher';
 
-const OwnerWallet = () => {
+const OwnerWallet:React.FC = () => {
   const { data, isError: error } = useFetchData<any>(USER_API + '/wallet');
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const OwnerWallet = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((transaction, index) => (
+                  {transactions.map((transaction:any, index:number) => (
                     <tr key={index} className="text-center">
                       <td className="py-2">{transaction.amount}</td>
                       <td className="py-2">{new Date(transaction.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>

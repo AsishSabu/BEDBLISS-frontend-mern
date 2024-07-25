@@ -3,14 +3,20 @@ import axios from "axios";
 import { USER_API } from "../../constants";
 import { useAppSelector } from "../../redux/store/store";
 
-// Fetcher function for SWR
+// Fetcher function for SWR with improved error handling
 const fetcher = async (url: string) => {
   try {
     const response = await axios.get(url);
     return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    throw error; // Ensure errors are thrown for SWR to handle
+  } catch (error:any) {
+    // Log error details for debugging
+    if (axios.isAxiosError(error)) {
+      // Axios error
+      throw new Error(`Error fetching data: ${error.response?.status} ${error.response?.statusText}`);
+    } else {
+      // Non-Axios error
+      throw new Error(`Unexpected error: ${error.message}`);
+    }
   }
 };
 
@@ -35,12 +41,19 @@ const useHotelDetails = (id: string | undefined) => {
     fetcher
   );
 
-  // Function to reload hotel details
+  // Function to reload hotel details with error handling
   const reloadHotelDetails = async () => {
     try {
       await mutate();
-    } catch (error) {
-      console.error("Error reloading hotel details:", error);
+    } catch (error:any) {
+      // Handle reloading error
+      if (axios.isAxiosError(error)) {
+        // Axios error
+        console.error(`Error reloading hotel details: ${error.response?.status} ${error.response?.statusText}`);
+      } else {
+        // Non-Axios error
+        console.error(`Unexpected error reloading hotel details: ${error.message}`);
+      }
     }
   };
 

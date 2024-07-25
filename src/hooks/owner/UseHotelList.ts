@@ -1,7 +1,5 @@
 import useSWR from "swr";
 import { OWNER_API } from "../../constants";
-import { HotelInterface } from "../../types/hotelInterface";
-
 const fetcher = async (url: string) => {
   const res = await fetch(url, {
     headers: {

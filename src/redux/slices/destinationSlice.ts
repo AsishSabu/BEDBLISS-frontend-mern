@@ -7,6 +7,7 @@ interface DestinationState {
   destination: string | null
   featured: HotelInterface[] | null
   search: HotelInterface[]
+  length:number|null
   error: string | null
 }
 
@@ -16,6 +17,7 @@ const initialState: DestinationState = {
   destination: null,
   featured: null,
   search: [],
+  length:0,
   error: null,
 }
 
@@ -29,6 +31,9 @@ const destinationSlice = createSlice({
     removeSearchResult: (state) => {
       state.search = []
     },
+    setLength: (state, action: PayloadAction<number>) => {
+      state.length= action.payload
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload
     },
@@ -38,5 +43,5 @@ const destinationSlice = createSlice({
   },
 })
 
-export const { removeSearchResult, setSearchResult, setLoading, setError } = destinationSlice.actions
+export const { removeSearchResult, setSearchResult,setLength, setLoading, setError } = destinationSlice.actions
 export default destinationSlice.reducer

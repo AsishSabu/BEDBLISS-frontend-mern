@@ -52,7 +52,7 @@ const Categories: React.FC = () => {
       } else {
         showToast(result.data.message, "error");
       }
-    } catch (error) {
+    } catch (error:any) {
       showToast(error?.response?.data?.message, "error");
     }
   };

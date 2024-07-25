@@ -1,8 +1,12 @@
 import React from "react"
 import { Button } from "@material-tailwind/react"
 
+interface uploadButtonProps {
+  text:string;
+  onclick: () => void;
+}
 
-const UploadButton = ({ text, onclick }) => {
+const UploadButton :React.FC<uploadButtonProps>= ({ text, onclick }) => {
   const handleClick = () => {
     onclick()
   }

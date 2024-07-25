@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import * as Yup from "yup";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import useHotelList from "../../hooks/owner/UseHotelList";
-import { OWNER_API } from "../../constants";
-import axios from "axios";
-import showToast from "../../utils/toast";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react"
+import * as Yup from "yup"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import useHotelList from "../../hooks/owner/UseHotelList"
+import { OWNER_API } from "../../constants"
+import axios from "axios"
+import showToast from "../../utils/toast"
+import { useNavigate } from "react-router-dom"
 
 const AddRoom: React.FC = () => {
-  const { hotels } = useHotelList();
-  const [roomNumbers, setRoomNumbers] = useState<number[]>([]);
-  const [roomNumberError, setRoomNumberError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const { hotels } = useHotelList()
+  const [roomNumbers, setRoomNumbers] = useState<number[]>([])
+  const [roomNumberError, setRoomNumberError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const handleSubmit = async (values: any) => {
     const data = {
@@ -21,59 +21,67 @@ const AddRoom: React.FC = () => {
       price: values.price,
       desc: values.description,
       roomNumbers: roomNumbers,
-    };
-    console.log(data);
+    }
+    console.log(data)
 
-    const response = await axios
+    await axios
       .post(`${OWNER_API}/addRoom/${values.hotelId}`, data, {
         headers: {
           authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then(({ data }) => {
-        showToast(data.message);
-        navigate("/owner/hotelDetails/"+values.hotelId);
+        showToast(data.message)
+        navigate("/owner/hotelDetails/" + values.hotelId)
       })
       .catch(({ response }) => {
-        showToast(response?.data?.message, "error");
-      });
-  };
+        showToast(response?.data?.message, "error")
+      })
+  }
 
   const handleAddRoomNumber = (roomNumber: string, setFieldValue: any) => {
-    const number = parseInt(roomNumber, 10);
+    const number = parseInt(roomNumber, 10)
     if (!isNaN(number) && number > 0 && number <= 9999) {
       if (!roomNumbers.includes(number)) {
-        setRoomNumbers([...roomNumbers, number]);
-        setRoomNumberError(null); // Clear error when valid number is added
-        setFieldValue("roomNumber", ""); // Clear the input field
+        setRoomNumbers([...roomNumbers, number])
+        setRoomNumberError(null) // Clear error when valid number is added
+        setFieldValue("roomNumber", "") // Clear the input field
       } else {
-        setRoomNumberError("Room number already exists.");
+        setRoomNumberError("Room number already exists.")
       }
     } else {
-      setRoomNumberError("Please enter a valid room number (1-9999) without leading zeros.");
+      setRoomNumberError(
+        "Please enter a valid room number (1-9999) without leading zeros."
+      )
     }
-  };
+  }
 
   const handleRemoveRoomNumber = (index: number) => {
-    setRoomNumbers(roomNumbers.filter((_, i) => i !== index));
-  };
+    setRoomNumbers(roomNumbers.filter((_, i) => i !== index))
+  }
 
   const hotelAddValidation = Yup.object().shape({
     name: Yup.string().required("Room Name is required"),
     description: Yup.string().required("Description is required"),
     hotelId: Yup.string().required("Hotel is required"),
-    price: Yup.number().required("Price is required").positive("Price must be positive"),
-    maxAdults: Yup.number().required("Max Adults is required").positive("Max Adults must be positive"),
-    maxChildren: Yup.number().required("Max Children is required").positive("Max Children must be positive"),
-  });
+    price: Yup.number()
+      .required("Price is required")
+      .positive("Price must be positive"),
+    maxAdults: Yup.number()
+      .required("Max Adults is required")
+      .positive("Max Adults must be positive"),
+    maxChildren: Yup.number()
+      .required("Max Children is required")
+      .positive("Max Children must be positive"),
+  })
 
-  const validate = (values: any) => {
-    const errors: any = {};
+  const validate = () => {
+    const errors: any = {}
     if (roomNumbers.length === 0) {
-      errors.roomNumbers = "At least one room number is required.";
+      errors.roomNumbers = "At least one room number is required."
     }
-    return errors;
-  };
+    return errors
+  }
 
   return (
     <div>
@@ -139,7 +147,7 @@ const AddRoom: React.FC = () => {
                       className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                     >
                       <option value="" label="Select a hotel" />
-                      {hotels.map((hotel, index) => (
+                      {hotels.map((hotel:any, index:number) => (
                         <option key={index} value={hotel._id}>
                           {hotel.name}
                         </option>
@@ -174,7 +182,10 @@ const AddRoom: React.FC = () => {
                         title="button"
                         type="button"
                         onClick={() =>
-                          setFieldValue("maxAdults", Math.max(0, values.maxAdults - 1))
+                          setFieldValue(
+                            "maxAdults",
+                            Math.max(0, values.maxAdults - 1)
+                          )
                         }
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                       >
@@ -190,7 +201,9 @@ const AddRoom: React.FC = () => {
                       <button
                         title="button"
                         type="button"
-                        onClick={() => setFieldValue("maxAdults", values.maxAdults + 1)}
+                        onClick={() =>
+                          setFieldValue("maxAdults", values.maxAdults + 1)
+                        }
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                       >
                         +
@@ -209,7 +222,10 @@ const AddRoom: React.FC = () => {
                         title="button"
                         type="button"
                         onClick={() =>
-                          setFieldValue("maxChildren", Math.max(0, values.maxChildren - 1))
+                          setFieldValue(
+                            "maxChildren",
+                            Math.max(0, values.maxChildren - 1)
+                          )
                         }
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                       >
@@ -225,7 +241,9 @@ const AddRoom: React.FC = () => {
                       <button
                         title="button"
                         type="button"
-                        onClick={() => setFieldValue("maxChildren", values.maxChildren + 1)}
+                        onClick={() =>
+                          setFieldValue("maxChildren", values.maxChildren + 1)
+                        }
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
                       >
                         +
@@ -249,7 +267,9 @@ const AddRoom: React.FC = () => {
                       />
                       <button
                         type="button"
-                        onClick={() => handleAddRoomNumber(values.roomNumber, setFieldValue)}
+                        onClick={() =>
+                          handleAddRoomNumber(values.roomNumber, setFieldValue)
+                        }
                         className="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                       >
                         Add
@@ -260,14 +280,17 @@ const AddRoom: React.FC = () => {
                         {roomNumberError}
                       </div>
                     )}
-                    {errors.roomNumbers && (
+                    {errors.roomNumber && (
                       <div className="text-Strawberry_red text-sm mt-1">
-                        {errors.roomNumbers}
+                        {errors.roomNumber}
                       </div>
                     )}
                     <div className="mt-2 grid grid-cols-12 gap-2">
                       {roomNumbers.map((roomNumber, index) => (
-                        <div key={index} className="col-span-1 flex items-center mt-1 w-fit">
+                        <div
+                          key={index}
+                          className="col-span-1 flex items-center mt-1 w-fit"
+                        >
                           <span>{roomNumber}</span>
                           <button
                             type="button"
@@ -298,7 +321,7 @@ const AddRoom: React.FC = () => {
         )}
       </Formik>
     </div>
-  );
-};
+  )
+}
 
-export default AddRoom;
+export default AddRoom

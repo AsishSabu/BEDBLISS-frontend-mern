@@ -25,20 +25,19 @@ const ChatComponent = () => {
   const [messages, setMessages] = useState<any[]>([])
   const [newMessage, setNewMessage] = useState("")
   const [arrivalMessage, setArrivalMessage] = useState<any>(null)
-  const [lastMessages, setLastMessages] = useState<{ [key: string]: any }>({})
   const socket = useSocket()
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const user = useSelector((state: RootState) => state.userSlice)
   const [isTyping, setIsTyping] = useState<boolean>(false)
   const [typingId, setTypingId] = useState("")
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false)
-  const [senderInfo, setSenderInfo] = useState(null)
+  const [senderInfo, setSenderInfo] = useState<any>(null)
   const dispatch = useAppDispatch()
-  const { data: conversationData, isError: conversationError } = useFetchData<
+  const { data: conversationData} = useFetchData<
     ChatInterface[]
   >(`${OWNER_API}/conversations`)
 
-  const { data: messageData, isError: messageError } = useFetchData<{
+  const { data: messageData} = useFetchData<{
     message: Message[]
   }>(currentChat ? `${OWNER_API}/messages/${currentChat._id}` : "")
 
@@ -78,7 +77,7 @@ const ChatComponent = () => {
           setMessages(prev => [...prev, arrivalMessage])
         }
       } else {
-        setConversations(prev => [
+        setConversations((prev:any )=> [
           {
             members: [user.id, arrivalMessage.senderId],
             _id: "new_conversation",

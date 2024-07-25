@@ -15,7 +15,6 @@ import {
   NavbarLink,
   NavbarToggle,
 } from "flowbite-react"
-import axios from "axios"
 import { USER_API } from "../../../constants"
 import NotificationComponent from "../../NotificationComponent"
 import { useSocket } from "../../../redux/contexts/SocketContext"
@@ -29,7 +28,7 @@ const Header: React.FC = () => {
 
   const socket = useSocket()
   const [newMessageCount, setNewMessageCount] = useState<number>(0)
-  const { data, isError } = useFetchData<any>(`${USER_API}/user/${user.id}`)
+  const { data } = useFetchData<any>(`${USER_API}/user/${user.id}`)
 
   useEffect(() => {
     if (data && data.user) {
@@ -112,7 +111,7 @@ const Header: React.FC = () => {
   const UserNavbarLinks = [
     { label: "Home", to: "/user" },
     { label: "About", to: "/user/about" },
-    { label: "Contact", to: "/user/contact" },
+    { label: "Contact", to: "/user/contactUs" },
   ]
 
   const handleClick = () => {
@@ -125,15 +124,10 @@ const Header: React.FC = () => {
   return (
     <Navbar fluid rounded className="bg-Marine_blue text-varWhite">
       <NavbarBrand>
-        <div className="bg-White inline-block mx-2 rounded-2xl">
-          <img src={logo} className="h-14 rounded-2xl" alt="BedBliss Logo" />
+        <div className="bg-Marine_blue inline-block mx-2 p-2">
+          <img src={logo} className="h-10  w-fit" alt="BedBliss Logo" />
         </div>
-
-        <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
-          BedBliss
-        </span>
       </NavbarBrand>
-
       <div className="flex md:order-2 justify-center">
         <div onClick={handleClick}>
           <NotificationComponent count={newMessageCount} />
@@ -146,8 +140,10 @@ const Header: React.FC = () => {
               <div className="text-white rounded-full border border-gray-500 overflow-hidden">
                 <img
                   src={
-                    user.image !== ""&& user.isAuthenticated
-                      ? user.image
+                    user.isAuthenticated
+                      ? user.image !== ""
+                        ? user.image
+                        : noProfile
                       : noProfile
                   }
                   alt="Author Name"

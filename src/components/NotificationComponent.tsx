@@ -1,10 +1,10 @@
 import React from "react"
 
-const NotificationComponent = ({count}) => {
+const NotificationComponent:React.FC<any> = ({count}) => {
   return (
     <div className="relative inline-block">
       {count >0 && (
-        <div className="absolute top-0 right-0 bg-black text-varWhite text-xs inline-flex items-center justify-center px-1 py-0.3 rounded-full">
+        <div className="absolute top-0 right-0 bg-Strawberry_red text-varWhite text-xs inline-flex items-center justify-center px-1 py-0.3 rounded-full">
           {count}
         </div>
       )}

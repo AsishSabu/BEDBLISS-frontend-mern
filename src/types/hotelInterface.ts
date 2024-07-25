@@ -1,4 +1,3 @@
-import mongoose from "mongoose"
 
 interface Address {
   streetAddress: string
@@ -9,13 +8,13 @@ interface Address {
   country: string
 }
 interface OwnerInterface {
-  _id:mongoose.Types.ObjectId
+  _id:string
   name: string
   email: string
 }
 
 export interface RoomInterface {
-  _id: mongoose.Types.ObjectId
+  _id:string
   createdAt: Date
   updatedAt: Date
   title: string
@@ -28,9 +27,9 @@ export interface RoomInterface {
 
 // Hotel interface
 export interface HotelInterface {
-  _id: mongoose.Types.ObjectId
+  _id:string
   name: string
-  ownerId:OwnerInterface
+  ownerId: OwnerInterface
   destination: string
   description: string
   propertyRules: string[]
@@ -46,6 +45,31 @@ export interface HotelInterface {
   ownerDocument: string
   hotelDocument: string
   ownerPhoto: string
+  isVerified: "rejected" | "cancelled" | "pending" | "verified"
+  unavailbleDates: Date[]
+  rooms: RoomInterface[]
+}
+
+export interface hotelInterface {
+  _id:string
+  name: string
+  ownerId: string
+  destination: string
+  description: string
+  propertyRules: string[]
+  reservationType: string
+  stayType: string
+  amenities: string[]
+  isBlocked: boolean
+  isListed: boolean
+  createdAt: Date
+  updatedAt: Date
+  imageUrls: string[]
+  address: Address
+  ownerDocument: string
+  hotelDocument: string
+  ownerPhoto: string
+  isVerified: "rejected" | "cancelled" | "pending" | "verified"
   unavailbleDates: Date[]
   rooms: RoomInterface[]
 }

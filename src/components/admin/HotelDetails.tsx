@@ -3,10 +3,9 @@ import useHotelDetails from "../../hooks/admin/useHotelDetails"
 import { useParams } from "react-router-dom"
 import { GoVerified } from "react-icons/go"
 import RejectHotalModal from "./RejectionModal"
-import axios from "axios"
 import { rejectedImg } from "../../assets/images"
 
-const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
+const ImageModal:React.FC<any>= ({ isOpen, onClose, imageSrc, altText }) => {
   if (!isOpen) return null
 
   return (
@@ -34,15 +33,17 @@ const ImageModal = ({ isOpen, onClose, imageSrc, altText }) => {
 
 const HotelDetails = () => {
   const { id } = useParams<{ id: string }>()
+  if (!id) {
+    // Handle the case where id is undefined
+    return <div>Invalid hotel ID</div>;
+  }
   const { hotel, verifyHotel,RejectHotel } = useHotelDetails(id)
-  console.log(hotel)
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
   const [modalImageSrc, setModalImageSrc] = useState("")
   const [modalAltText, setModalAltText] = useState("")
 
-  const handleShowPreviewClick = (imageSrc, altText) => {
+  const handleShowPreviewClick = (imageSrc:any, altText:any) => {
     setModalImageSrc(imageSrc)
     setModalAltText(altText)
     setIsModalOpen(true)

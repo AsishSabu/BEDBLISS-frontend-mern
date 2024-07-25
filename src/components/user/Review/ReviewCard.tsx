@@ -1,12 +1,11 @@
 import React from 'react';
 import { FaStar } from "react-icons/fa";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { Review } from '../../../types/reviewInterface';
 
-const ReviewCard: React.FC<Review[]> = ({ review }) => {
+const ReviewCard: React.FC<any> = ({ review }) => {
     console.log(review, "review in review card");
 
-    const ratingCounts: { [key: number]: number } = review.reduce((acc, { rating }) => {
+    const ratingCounts: { [key: number]: number } = review.reduce((acc:any, { rating }:any) => {
         if (rating >= 1 && rating <= 5) {
             acc[rating] = (acc[rating] || 0) + 1;
         }

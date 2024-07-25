@@ -130,7 +130,17 @@ const UserProfile = () => {
   )
 }
 
-const ProfileItem = ({
+interface ProfileItemProps {
+  title: string;
+  name: string;
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
+  disabled?: boolean;
+  type?: string;
+}
+
+const ProfileItem: React.FC<ProfileItemProps> = ({
   title,
   name,
   value,

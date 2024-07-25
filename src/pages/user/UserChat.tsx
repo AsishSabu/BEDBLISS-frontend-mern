@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react"
-import showToast from "../../utils/toast"
 import { noProfile } from "../../assets/images"
 import { useSelector } from "react-redux"
 import { RootState } from "../../redux/reducer/reducer"
@@ -40,7 +39,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
     `${USER_API}/conversations?senderId=${senderId}&receiverId=${receiverId}`
   )
 
-  const { data: messageData, isError: messageError } = useFetchData<{
+  const { data: messageData } = useFetchData<{
     message: Message[]
   }>(currentChat ? `${USER_API}/messages/${conversationData?._id}` : "")
 
@@ -51,12 +50,10 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
   }, [conversationData])
 
   useEffect(() => {
-    if (messageData) {      
+    if (messageData) {
       setMessages(messageData?.message)
     }
   }, [messageData])
-
-  console.log(messageData, "messages")
 
   useEffect(() => {
     socket?.on("getMessage", (data: any) => {
@@ -65,7 +62,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
         text: data.text,
         createdAt: Date.now(),
       })
-      socket?.on("senderTyping", (isTyping) => {
+      socket?.on("senderTyping", isTyping => {
         isTyping ? setIsTyping(true) : setIsTyping(false)
       })
     })
@@ -80,16 +77,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("connect", () => {
-        console.log("connected to socket")
-      })
-
       socket.emit("addUser", user.id)
-
-      socket.on("getUsers", users => {
-        console.log(users)
-      })
-
       return () => {
         socket.off("getUsers")
       }
@@ -122,12 +110,11 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
       senderId,
       receiverId,
       text: newMessage,
-      chatId:currentChat?._id
+      chatId: currentChat?._id,
     }
 
     try {
       const res = await axios.post(`${USER_API}/chat`, message)
-      console.log(res,"response..........")
       setMessages(prev => [...prev, res.data.message])
       setNewMessage("")
     } catch (err) {
@@ -137,15 +124,10 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
-  
+
   const closeChat = () => {
     onClose()
   }
-  console.log(ownerId, "ownerrr   id")
-  console.log(user.id, "user   id")
-  console.log(owner, "owner")
-  console.log(isTyping,".......................")
-
   if (!isOpen) return null
 
   return (
@@ -191,7 +173,7 @@ const UserChat: React.FC<ModalProps> = ({ isOpen, onClose, ownerId }) => {
             </h2>
           </div>
           <div className="flex items-center justify-center">
-            <small className="mr-1">{isTyping?"Typing.....":""}</small>
+            <small className="mr-1">{isTyping ? "Typing....." : ""}</small>
             <div className="rounded-full w-2 h-2 bg-white"></div>
           </div>
         </div>

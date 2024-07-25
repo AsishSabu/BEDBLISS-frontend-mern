@@ -2,7 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 import { USER_API } from "../../constants"
 import { useAppDispatch, useAppSelector } from "../../redux/store/store"
-import { setError, setSearchResult } from "../../redux/slices/destinationSlice"
+import { setError, setLength, setSearchResult } from "../../redux/slices/destinationSlice"
 
 
 const useHotelsUser = () => {
@@ -21,6 +21,7 @@ const useHotelsUser = () => {
       const maxAmount = searchingData.budget.max.toString()
       const amenitiesString = searchingData.amenities.join(',')
       const stayTypesString = searchingData.stayTypes.join(',')
+      const page=searchingData.page
 
       const { data } = await axios.get(`${USER_API}/searchedHotels`, {
         params: {
@@ -34,9 +35,11 @@ const useHotelsUser = () => {
           maxAmount,
           amenities: amenitiesString,
           stayTypes: stayTypesString,
+          page
         },
       })
-      dispatch(setSearchResult(data.data))
+      dispatch(setSearchResult(data.data.paginatedHotels))
+      dispatch(setLength(data.data.totalLength))
     } catch (error) {
       dispatch(setError("Failed to fetch hotels"))
       console.error(error)

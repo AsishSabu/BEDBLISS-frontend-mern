@@ -46,7 +46,7 @@ export const ProtectedUserRoute: FC = () => {
 };
 
 export const ProtectedAllUserRoute: FC = () => {
-  const { isAuthenticated, role } = useAppSelector((state) => state.userSlice);
+  const {role } = useAppSelector((state) => state.userSlice);
   const dispatch = useAppDispatch();
   const [blocked, setBlocked] = useState(false);
 

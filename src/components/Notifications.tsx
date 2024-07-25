@@ -22,15 +22,13 @@ interface Notification {
   privateMessage?: string
 }
 
-const Notifications = () => {
+const Notifications:React.FC= () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const user = useSelector((state: RootState) => state.userSlice)
   const navigate = useNavigate()
   const socket = useSocket()
   const {
     data,
-    isError: error,
-    isLoading: loading,
     mutate,
   } = useFetchData<any>(`${USER_API}/user/${user.id}`)
 
@@ -53,7 +51,8 @@ const Notifications = () => {
 
   const [value, setValue] = useState("1")
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (_:any, newValue: string) => {
+   
     setValue(newValue)
   }
 
@@ -152,7 +151,7 @@ const Notifications = () => {
                 >
                   Mark all as read
                 </button>
-                {filteredNotifications.map(notification => (
+                {filteredNotifications.map((notification:any) => (
                   <div
                     className="flex justify-between items-center px-3 py-[10px] rounded-md bg-primary-l-g-blue-1"
                     key={notification._id}
@@ -205,7 +204,7 @@ const Notifications = () => {
                 >
                   Clear All
                 </button>
-                {filteredNotifications.map(notification => (
+                {filteredNotifications.map((notification:any) => (
                   <div
                     className="flex justify-between items-center px-3 py-[10px] rounded-md bg-primary-l-g-blue-1"
                     key={notification._id}

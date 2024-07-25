@@ -1,9 +1,5 @@
-import { useAppDispatch } from "../../redux/store/store";
-import { clearUser } from "../../redux/slices/userSlice";
-import showToast from "../../utils/toast";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { Sidebar } from "flowbite-react";
+import { Link } from "react-router-dom"
+import { Sidebar } from "flowbite-react"
 import {
   // HiArrowSmRight,
   HiChartPie,
@@ -12,20 +8,29 @@ import {
   // HiTable,
   HiUser,
   HiViewBoards,
-  HiOutlineLogout,
-  HiFlag
-} from "react-icons/hi";
+  HiFlag,
+} from "react-icons/hi"
+import Hamburger from "hamburger-react"
+import { FC } from "react";
+interface HeaderProps {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}
 
-const AdminSidebar = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-
+const AdminSidebar : FC<HeaderProps> = ({ isOpen, toggleSidebar }) => {
   return (
     <Sidebar aria-label="Default sidebar example">
-            <Sidebar.Logo href="" img="" imgAlt="">
+      <div className="flex ">
+        <div className="block md:hidden">
+          <Hamburger toggled={isOpen} size={20} toggle={toggleSidebar} />
+        </div>
+        <div className="flex justify-start pt-2">
+          <Sidebar.Logo href="" img="" imgAlt="" className="">
             BEDBLISS ADMIN
-      </Sidebar.Logo>
+          </Sidebar.Logo>
+        </div>
+      </div>
+
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/admin">
@@ -52,7 +57,7 @@ const AdminSidebar = () => {
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>
-  );
-};
+  )
+}
 
-export default AdminSidebar;
+export default AdminSidebar

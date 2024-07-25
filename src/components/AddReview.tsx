@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Rating } from "@material-tailwind/react"
-import SubmitButton from "../components/submitButton"
 import uploadImagesToCloudinary from "../api/imageUpload"
 import axios from "axios"
 import { USER_API } from "../constants"
@@ -14,7 +13,6 @@ interface ModalProps {
 
 const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
   const [description, setDescription] = useState("")
-  const [title, setTitle] = useState("")
   const [rating, setRating] = useState(0)
   const [images, setImages] = useState<{ file: File; url: string }[]>([])
   const [descriptionError, setDescriptionError] = useState(false)
@@ -31,9 +29,6 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
     setDescriptionError(e.target.value.trim() === "")
   }
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value)
-  }
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files
@@ -90,7 +85,7 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
 
     // Handle form submission logic here
 
-    const result = await axios
+     await axios
       .post(
         `${USER_API}/addRating`,
         {
@@ -168,7 +163,7 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
             </div>
             <div className="w-3/4 flex flex-col">
               <textarea
-                rows="3"
+                rows={3}
                 className={`p-4 text-gray-500 rounded-xl resize-none ${
                   descriptionError ? "border-red-500" : "border-gray-300"
                 }`}

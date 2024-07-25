@@ -13,8 +13,6 @@ interface ConversationProps extends ChatInterface {
 const ConversationItem: React.FC<ConversationProps> = ({
   members,
   userId,
-  _id: conversationId,
-  currentChat,
 }) => {
   const chat=useAppSelector((state: RootState) => state.chatSlice)
   const [current,setCurrent]=useState<ChatInterface | null>(null)
@@ -39,7 +37,6 @@ const ConversationItem: React.FC<ConversationProps> = ({
       count,
       senderId,
       chatId,
-      text,
     }: {
       count: number
       senderId: string
@@ -48,10 +45,7 @@ const ConversationItem: React.FC<ConversationProps> = ({
     }) => {
       console.log(curr,"current");
       console.log( senderId,"chat id");
-      if (members.includes(senderId)) {
-
-        
-        
+      if (members.includes(senderId)) {   
         if(current){
           if(current._id!==chatId){
             setNewMessageCount(prev => prev + count)

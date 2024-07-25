@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { BookingInterface } from "../../types/hotelInterface";
 import { useFetchData } from '../../utils/fetcher';
 
-const BookingHistoryList = () => {
+const BookingHistoryList:React.FC = () => {
   const [bookings, setBookings] = useState([]);
   const navigate = useNavigate();
   const { data, isError:error } = useFetchData<any>(USER_API + "/bookings");

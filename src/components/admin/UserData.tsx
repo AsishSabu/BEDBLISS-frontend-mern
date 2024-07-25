@@ -11,7 +11,7 @@ interface UserDataProps {
   type: "user" | "hotel";
 }
 
-const UserData: React.FC<UserDataProps> = ({ _id, name, email, isBlocked, type }) => {
+const UserData: React.FC<UserDataProps> = ({ _id, name, email, isBlocked,}) => {
   const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
 
   const handleCheckboxChange = () => {

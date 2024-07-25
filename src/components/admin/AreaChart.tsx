@@ -1,9 +1,9 @@
 import React from "react"
 import { AreaChart, XAxis, YAxis, CartesianGrid, Tooltip, Area } from "recharts"
 
-const AreaChartComponent = ({ data }) => {
+const AreaChartComponent:React.FC<any> = ({ data }) => {
   return (
-    <div className=" h-full w-full">
+    <div className=" h-full w-full pt-2">
       <div className="flex justify-center text-lg">User-Owner-Hotel</div>
       <div className="flex justify-center mt-2.5">
         <div className="mr-4">

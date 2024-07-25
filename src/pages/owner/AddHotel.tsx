@@ -4,20 +4,16 @@ import { hotelAddValidation } from "../../utils/validation"
 import { Button } from "@material-tailwind/react"
 import { FaTrashAlt } from "react-icons/fa"
 import axios from "axios"
-import { HotelInterface } from "../../types/hotelInterface"
 import showToast from "../../utils/toast"
 import { useNavigate } from "react-router-dom"
 import PhotoUploadModal from "../../components/owner/photoUploadModal"
 import { ADMIN_API, OWNER_API } from "../../constants"
 import UploadButton from "../../components/UploadButton"
-import AddLocation from "../../components/addLocation/AddLocation"
-import { useAppSelector } from "../../redux/store/store"
 import useSWR from "swr"
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 const AddHotelForm: FC = () => {
-  const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
-  const { location } = useAppSelector(state => state.locationSlice)
+  const { data} = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
   const amenitiesList = [
     "Swimming Pool",
     "Gym",
@@ -32,7 +28,7 @@ const AddHotelForm: FC = () => {
     "Hot tub",
     "Beach Access",
   ]
-  const [stayTypes,setStayTypes]=useState([])
+  const [stayTypes, setStayTypes] = useState([])
   const [images, setImages] = useState<(string | ArrayBuffer | null)[]>([])
   const [hotelDocument, setHotelDocument] = useState<
     (string | ArrayBuffer | null)[]
@@ -45,14 +41,13 @@ const AddHotelForm: FC = () => {
   const [isOwnerModalOpen, setIsOwnerModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  useEffect(()=>{
-      if(data){
-        setStayTypes(data.data)
-      }
-  },[data])
+  useEffect(() => {
+    if (data) {
+      setStayTypes(data.data)
+    }
+  }, [data])
 
-  console.log(stayTypes,"types");
-  
+  console.log(stayTypes, "types")
 
   const addPropertyRule = () => {
     if (newRule.trim() !== "") {
@@ -65,22 +60,20 @@ const AddHotelForm: FC = () => {
     setPropertyRules(propertyRules.filter((_, i) => i !== index))
   }
 
-  const handleUpload = imageUrls => {
-    console.log("hiiiii")
+  const handleUpload = (imageUrls:any) => {
     console.log(imageUrls)
 
     setImages(imageUrls)
     setIsModalOpen(false)
   }
 
-  const handleHotelDocumentUpload = imageUrls => {
-    console.log("hlooooo")
+  const handleHotelDocumentUpload = (imageUrls:any)=> {
     console.log(imageUrls)
 
     setHotelDocument(imageUrls)
     setIsHotelModalOpen(false)
   }
-  const handleOwnerIdUpload = imageUrls => {
+  const handleOwnerIdUpload = (imageUrls:any) => {
     setOwnerId(imageUrls)
     setIsOwnerModalOpen(false)
   }
@@ -93,7 +86,7 @@ const AddHotelForm: FC = () => {
   const handleRemoveOwner = () => {
     setOwnerId([])
   }
-  const handleSubmit = async (values: HotelInterface) => {
+  const handleSubmit = async (values: any) => {
     setLoading(true)
     const hotelData = {
       name: values.name,
@@ -109,7 +102,6 @@ const AddHotelForm: FC = () => {
       stayType: values.stayType,
       description: values.description,
       amenities: values.amenities,
-      // coordinates: { latitude: location.lat, longitude: location.lng },
       propertyRules,
       imageUrls: images,
       hotelDocument: hotelDocument[0],
@@ -117,7 +109,7 @@ const AddHotelForm: FC = () => {
     }
     console.log(hotelData, "valuesssss")
 
-    const response = await axios
+    await axios
       .post(`${OWNER_API}/addhotel`, hotelData, {
         headers: {
           authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -148,9 +140,8 @@ const AddHotelForm: FC = () => {
             pincode: "",
             country: "",
           },
-
           description: "",
-          amenities: [],
+          amenities:[],
           reservationType: "",
         }}
         validationSchema={hotelAddValidation}
@@ -178,15 +169,12 @@ const AddHotelForm: FC = () => {
           if (ownerId.length < 1) {
             errors.ownerId = "ownerId is required"
           }
-          // if (!location.lng || !location.lat) {
-          //   errors.location = "location is required"
-          // }
           console.log(errors)
           return errors
         }}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue }) => (
+        {({ values }:any) => (
           <div className=" py-7 md:px-14 flex justify-center">
             <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
               <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">
@@ -234,7 +222,7 @@ const AddHotelForm: FC = () => {
                       className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
                     >
                       <option value="" label="Select stay type" />
-                      {stayTypes.map((type, index) => (
+                      {stayTypes.map((type: any, index) => (
                         <option key={index} value={type?._id}>
                           {type.name}
                         </option>
@@ -340,7 +328,7 @@ const AddHotelForm: FC = () => {
                       Amenities:
                     </label>
                     <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                      {amenitiesList.map((amenity, index) => (
+                      {amenitiesList.map((amenity:string, index) => (
                         <label
                           key={index}
                           className="flex items-center text-gray-700"
@@ -387,6 +375,7 @@ const AddHotelForm: FC = () => {
                           <div key={index} className="flex items-center">
                             <p className="text-gray-700">{rule}</p>
                             <button
+                              title="button"
                               type="button"
                               onClick={() => removePropertyRule(index)}
                               className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
@@ -418,9 +407,7 @@ const AddHotelForm: FC = () => {
                       </span>
                     </div>
 
-                    <div className="col-span-2">
-                      {/* <AddLocation /> */}
-                    </div>
+                    <div className="col-span-2">{/* <AddLocation /> */}</div>
                     <div className="flex flex-col mt-4 col-span-2">
                       <label className="block text-sm font-medium text-gray-700">
                         Hotel Images
@@ -432,7 +419,7 @@ const AddHotelForm: FC = () => {
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-4">
-                        {images.map((image, index) => (
+                        {images.map((image: any, index) => (
                           <div key={index} className="relative">
                             <img
                               src={image}
@@ -440,6 +427,7 @@ const AddHotelForm: FC = () => {
                               className="h-40 w-full object-cover rounded-md"
                             />
                             <button
+                              title="button"
                               className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
                               onClick={() => handleRemoveImage(image)}
                             >
@@ -470,7 +458,7 @@ const AddHotelForm: FC = () => {
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mt-4">
-                        {hotelDocument.map((image, index) => (
+                        {hotelDocument.map((image: any, index) => (
                           <div key={index} className="relative">
                             <img
                               src={image}
@@ -513,7 +501,7 @@ const AddHotelForm: FC = () => {
                         className="text-red-500 text-sm mt-1"
                       />
                       <div className="grid grid-cols-2 gap-4 mt-4">
-                        {ownerId.map((image, index) => (
+                        {ownerId.map((image: any, index) => (
                           <div key={index} className="relative">
                             <img
                               src={image}
@@ -521,6 +509,7 @@ const AddHotelForm: FC = () => {
                               className="h-40 w-full object-cover rounded-md"
                             />
                             <button
+                              title="button"
                               className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
                               onClick={() => handleRemoveOwner()}
                             >

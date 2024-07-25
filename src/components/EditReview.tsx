@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Rating } from "@material-tailwind/react";
-import SubmitButton from "../components/submitButton";
 import uploadImagesToCloudinary from "../api/imageUpload";
 import axios from "axios";
 import { USER_API } from "../constants";
 import showToast from "../utils/toast";
-import { useFetchData } from "../utils/fetcher";
-
 interface ModalProps {
   onClose: () => void;
   reviewId: string;
@@ -122,7 +119,7 @@ const EditReview: React.FC<ModalProps> = ({ onClose, reviewId }) => {
       );
       showToast(data.message);
       onClose();
-    } catch (error) {
+    } catch (error:any) {
       showToast(error.response?.data?.message, "error");
     }
   };
@@ -163,7 +160,7 @@ const EditReview: React.FC<ModalProps> = ({ onClose, reviewId }) => {
           </div>
           <div className="w-3/4 flex flex-col">
             <textarea
-              rows="3"
+              rows={3}
               className={`p-4 text-gray-500 rounded-xl resize-none ${
                 descriptionError ? "border-red-500" : "border-gray-300"
               }`}

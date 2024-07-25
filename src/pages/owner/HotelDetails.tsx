@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react"
-import useHotelDetails from "../../hooks/user/useHotelDetails"
 import { useNavigate, useParams } from "react-router-dom"
 import axios from "axios"
 import { OWNER_API, USER_API } from "./../../constants/index"
 import OutlinedButton from "../../components/OutlinedButton"
 import { useFetchData } from "../../utils/fetcher"
 import { addButton } from "../../assets/images"
-import { offer } from "./../../../../backend/src/app/use-cases/Owner/hotel"
 import showToast from "../../utils/toast"
 
 const HotelDetails: React.FC = () => {
@@ -96,18 +94,18 @@ const HotelDetails: React.FC = () => {
     setEditingRoomIndex(index)
   }
 
-  const handleRemoveRoom = async (roomId: string) => {
-    try {
-      await axios.delete(`${OWNER_API}/deleteRoom/${id}/${roomId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      await reloadHotelDetails()
-    } catch (error) {
-      console.error("Failed to remove room", error)
-    }
-  }
+  // const handleRemoveRoom = async (roomId: string) => {
+  //   try {
+  //     await axios.delete(`${OWNER_API}/deleteRoom/${id}/${roomId}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  //       },
+  //     })
+  //     await reloadHotelDetails()
+  //   } catch (error) {
+  //     console.error("Failed to remove room", error)
+  //   }
+  // }
 
   const validateRoomData = (roomData: any) => {
     if (!roomData.title || roomData.title.trim() === "") {
@@ -503,7 +501,7 @@ const HotelDetails: React.FC = () => {
         <div className="text-right col-span-2 mx-16 mb-10 flex justify-between pt-10">
           {isVerified === "rejected" ? (
             <OutlinedButton
-              onclick={() => navigate(`/owner/editHotel/${id}`)}
+              onClick={() => navigate(`/owner/editHotel/${id}`)}
               color={"blue"}
               text={"Edit Hotel And REsubmit"}
             />
@@ -513,13 +511,13 @@ const HotelDetails: React.FC = () => {
 
           {isListed ? (
             <OutlinedButton
-              onclick={() => handleListUnlist("false")}
+              onClick={() => handleListUnlist("false")}
               color={"red"}
               text={"unList"}
             />
           ) : (
             <OutlinedButton
-              onclick={() => handleListUnlist("true")}
+              onClick={() => handleListUnlist("true")}
               color={"green"}
               text={"List"}
             />

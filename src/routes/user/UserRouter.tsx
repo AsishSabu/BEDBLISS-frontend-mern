@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { ProtectedAllUserRoute, ProtectedUserRoute } from "../protectedRoutes"
 import SavedHotels from "../../pages/user/SavedHotels"
 import Notifications from "../../components/Notifications"
+import ContactUs from "../../pages/user/ContactUs"
 
 const Layout = lazy(() => import("../../pages/Layout"))
 const CheckoutPage = lazy(() => import("../../pages/user/CheckoutPage"))
@@ -25,10 +26,8 @@ const UserRouter: FC = () => {
           <Route index element={<Home />} />
           <Route path="hotels" element={<Hotels />} />
           <Route path="hotelDetails/:id" element={<HotelDetails />} />
+          <Route path="contactUs" element={<ContactUs />} />
         </Route>
-
-        {/* user private routes */}
-
         <Route path="" element={<ProtectedUserRoute />}>
           <Route path="saved" element={<SavedHotels />} />
           <Route path="checkout/:id" element={<CheckoutPage />} />

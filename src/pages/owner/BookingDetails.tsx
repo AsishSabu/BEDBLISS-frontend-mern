@@ -1,23 +1,28 @@
-import useSWR from "swr"
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { OWNER_API, USER_API } from "../../constants"
+import { USER_API } from "../../constants"
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface"
 import axios from "axios"
 import showToast from "../../utils/toast"
 import CancelBookingModal from "../../components/owner/cancelBookingModal"
 import { useFetchData } from "../../utils/fetcher"
+import { useAppSelector } from "../../redux/store/store"
+import { RootState } from "../../redux/reducer/reducer"
+import { useNotification } from "../../hooks/NotificationHook"
 // Import the modal component
 
-const BookingDetails = () => {
+const BookingDetails:React.FC = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const user = useAppSelector((state: RootState) => state.userSlice)
+  const { sendNotification } = useNotification()
   const { id } = useParams<{ id: string }>()
-  
+
   const navigate = useNavigate()
 
-  const { data,isError:error } = useFetchData<BookingResponse>( `${USER_API}/bookingDetails/${id}`);
-
+  const { data, isError: error } = useFetchData<BookingResponse>(
+    `${USER_API}/bookingDetails/${id}`
+  )
 
   useEffect(() => {
     console.log(data, "data.......")
@@ -50,6 +55,11 @@ const BookingDetails = () => {
         }
       )
 
+      const message = `${response.data.booking.hotelId.name} booking rejected by ${user.name}`
+      const path = `/user/profile/bookingDetails/${response.data.booking._id}`
+      const receiverId = response.data.booking.userId
+      sendNotification(message, path, user, receiverId, 3)
+      
       setBooking(prevBooking => ({
         ...prevBooking!,
         bookingStatus:
@@ -62,20 +72,24 @@ const BookingDetails = () => {
     }
   }
 
-
   const handleCancellation = async () => {
     if (!booking) return
 
     try {
       const response = await axios.patch(
         `${USER_API}/booking/cancel/${booking.bookingId}`,
-        {  status: "cancelled" }, 
+        { status: "cancelled" },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       )
+
+      const message = `${response.data.booking.hotelId.name} hotel cancellation accepted by ${user.name}`
+      const path = `/user/profile/bookingDetails/${response.data.booking._id}`
+      const receiverId = response.data.booking.userId
+      sendNotification(message, path, user, receiverId, 5)
       setBooking(prevBooking => ({
         ...prevBooking!,
         bookingStatus:
@@ -94,7 +108,7 @@ const BookingDetails = () => {
     try {
       const response = await axios.patch(
         `${USER_API}/booking/update/${booking.bookingId}`,
-        {status:"booked"},
+        { status: "booked" },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -102,11 +116,17 @@ const BookingDetails = () => {
         }
       )
 
+      const message = `${response.data.booking.hotelId.name} booking accepted by ${user.name}`
+      const path =`/user/profile/bookingDetails/${response.data.booking._id}`
+      const receiverId = response.data.booking.userId
+      sendNotification(message, path, user, receiverId, 4)
+
       setBooking(prevBooking => ({
         ...prevBooking!,
         bookingStatus:
           response.data.booking.bookingStatus ?? prevBooking?.bookingStatus,
       }))
+
       showToast("Booking successfully Approved", "success")
     } catch (error) {
       console.error("Error approving booking:", error)
@@ -134,9 +154,7 @@ const BookingDetails = () => {
                   <p className="text-base text-red-500 mb-2">
                     Payment Method: {booking.paymentMethod}
                   </p>
-                  <p className=" text-lg  mb-2">
-                   Amount: {booking.price}
-                  </p>
+                  <p className=" text-lg  mb-2">Amount: {booking.price}</p>
 
                   <div className="flex justify-between">
                     <div>
@@ -144,14 +162,16 @@ const BookingDetails = () => {
                         Check-in-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkInDate?new Date(booking.checkInDate).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                }
-                              ):""}
+                        {booking.checkInDate
+                          ? new Date(booking.checkInDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )
+                          : ""}
                       </p>
                     </div>
                     <div>
@@ -159,14 +179,16 @@ const BookingDetails = () => {
                         Check-out-Date
                       </p>
                       <p className="text-sm text-gray-600">
-                        {booking.checkOutDate?new Date(booking.checkOutDate).toLocaleDateString(
-                                "en-US",
-                                {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                }
-                              ):""}
+                        {booking.checkOutDate
+                          ? new Date(booking.checkOutDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              }
+                            )
+                          : ""}
                       </p>
                     </div>
                   </div>
@@ -252,7 +274,7 @@ const BookingDetails = () => {
               </>
             )}
 
-{booking && booking.bookingStatus === "cancel requested" && (
+            {booking && booking.bookingStatus === "cancel requested" && (
               <>
                 {" "}
                 <button

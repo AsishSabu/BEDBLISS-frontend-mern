@@ -1,114 +1,132 @@
-import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
-import { RootState } from "../../redux/reducer/reducer"
-import { Range } from "react-range"
-import { useNavigate } from "react-router-dom"
-import { Formik, Field, Form } from "formik"
-import useSWR from "swr"
-import { ADMIN_API } from "../../constants"
-import axios from "axios"
-import { useAppDispatch, useAppSelector } from "../../redux/store/store"
-import { setData } from "../../redux/slices/searchingSlice"
-import useHotelsUser from "../../hooks/user/useHotels"
-import SearchBoxUser from "../../components/user/SearchBoxUser"
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/reducer/reducer";
+import { Range } from "react-range";
+import { useNavigate } from "react-router-dom";
+import { Formik, Field, Form } from "formik";
+import useSWR from "swr";
+import { ADMIN_API } from "../../constants";
+import axios from "axios";
+import { useAppDispatch, useAppSelector } from "../../redux/store/store";
+import { setData } from "../../redux/slices/searchingSlice";
+import useHotelsUser from "../../hooks/user/useHotels";
+import SearchBoxUser from "../../components/user/SearchBoxUser";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
- 
 
-const STEP = 100
-const MIN = 0
-const MAX = 100000
+const STEP = 100;
+const MIN = 0;
+const MAX = 100000;
 
-const fetcher = (url: string) => axios.get(url).then(res => res.data)
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 const Hotels: React.FC = () => {
-  const searchData = useAppSelector(state => state.searchingSlice)
-  const { handleSearch, loading } = useHotelsUser()
-  const dispatch = useAppDispatch()
+  const searchData = useAppSelector(state => state.searchingSlice);
+  const { handleSearch, loading } = useHotelsUser();
+  const dispatch = useAppDispatch();
 
-  const [stayTypes, setStayTypes] = useState<string[]>([])
-  const [localLoading, setLocalLoading] = useState<boolean>(false)
-  const navigate = useNavigate()
+  const [stayTypes, setStayTypes] = useState<string[]>([]);
+  const [localLoading, setLocalLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
   const handleClick = (id: string) => {
-    navigate(`/user/hotelDetails/${id}`)
-  }
+    navigate(`/user/hotelDetails/${id}`);
+  };
 
   const searchResults = useSelector(
     (state: RootState) => state.destinationSlice.search
-  )
-  const { data, error } = useSWR(`${ADMIN_API}/stayTypes`, fetcher)
+  );
+  const totalResults = useSelector(
+    (state: RootState) => state.destinationSlice.length
+  ) || 0;
+
+  console.log(totalResults, "page...........................");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 4;
+
+  const { data } = useSWR(`${ADMIN_API}/stayTypes`, fetcher);
 
   useEffect(() => {
     if (data && data.data) {
-      setStayTypes(data.data)
+      setStayTypes(data.data);
     }
-  }, [data])
+  }, [data]);
 
   useEffect(() => {
     if (!loading) {
-      setLocalLoading(false)
+      setLocalLoading(false);
     }
-  }, [loading])
+  }, [loading]);
 
-  const [active, setActive] = React.useState(1);
- 
-  const getItemProps = (index) =>
-    ({
-      variant: active === index ? "filled" : "text",
-      color: "gray",
-      onClick: () => setActive(index),
-    } as any);
- 
-  const next = () => {
-    if (active === 5) return;
- 
-    setActive(active + 1);
+  const getItemProps = (index: number) => ({
+    variant: currentPage === index ? "filled" : "text",
+    color: "gray",
+    onClick: () => {
+      setCurrentPage(index);
+    },
+  } as any);
+
+  const next = async () => {
+    if (currentPage < Math.ceil(totalResults / resultsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
   };
- 
-  const prev = () => {
-    if (active === 1) return;
- 
-    setActive(active - 1);
+
+  const prev = async () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
- 
+
+  useEffect(() => {
+    const fetchPageData = async () => {
+      setLocalLoading(true);
+      const data = { ...searchData, page: currentPage };
+      await dispatch(setData(data));
+    };
+
+    fetchPageData();
+  }, [currentPage]);
 
   type optionType = {
-    adult: number
-    children: number
-    room: number
-  }
+    adult: number;
+    children: number;
+    room: number;
+  };
 
   type datesType = {
-    startDate: Date
-    endDate: Date
-  }
+    startDate: Date;
+    endDate: Date;
+  };
 
   const handleSearchFunction = async (
     destination: string,
     options: optionType,
     dates: datesType
   ) => {
-    const { startDate, endDate } = dates
+    const { startDate, endDate } = dates;
     const searchData = {
       destination,
       dates: [{ startDate, endDate }],
       options,
-    }
-    setLocalLoading(true)
-    await dispatch(setData(searchData))
-  }
+      page: 1, // reset to the first page on a new search
+    };
+    setCurrentPage(1); // reset pagination
+    setLocalLoading(true);
+    await dispatch(setData(searchData));
+  };
 
   useEffect(() => {
     if (localLoading) {
-      handleSearch()
+      handleSearch();
     }
-  }, [searchData, localLoading])
+  }, [searchData, localLoading]);
 
   useEffect(() => {
     if (searchResults.length > 0) {
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
     }
-  }, [searchResults])
+  }, [searchResults]);
 
   return (
     <div className="md:px-40 lg:px-60 pt-8">
@@ -122,14 +140,14 @@ const Hotels: React.FC = () => {
               amenities: [],
             }}
             onSubmit={async values => {
-              setLocalLoading(true)
+              setLocalLoading(true);
               await dispatch(
                 setData({
                   stayTypes: values.StayType,
                   budget: { min: values.budget[0], max: values.budget[1] },
                   amenities: values.amenities,
                 })
-              )
+              );
             }}
           >
             {({ values, setFieldValue }) => (
@@ -142,7 +160,7 @@ const Hotels: React.FC = () => {
                     Stay Type
                   </h2>
                   <ul className="mt-2 space-y-2">
-                    {stayTypes.map(category => (
+                    {stayTypes.map((category: any) => (
                       <li key={category}>
                         <label className="flex items-center">
                           <Field
@@ -186,7 +204,6 @@ const Hotels: React.FC = () => {
                       )}
                     />
                   </div>
-
                   <div className="flex justify-between mt-2 text-sm text-gray-600">
                     <span>₹ {values.budget[0]}</span>
                     <span>₹ {values.budget[1]}+</span>
@@ -238,9 +255,9 @@ const Hotels: React.FC = () => {
             )}
           </Formik>
         </div>
-        <div className="col-span-12 lg:col-span-9  bg-gray-100 p-5">
+        <div className="col-span-12 lg:col-span-9 bg-gray-100 p-5">
           {searchResults.length > 0 ? (
-            searchResults.map(hotel => (
+            searchResults.map((hotel: any) => (
               <div
                 key={hotel._id}
                 className="flex flex-col p-4 min-w-full my-4 rounded-lg bg-white shadow-md md:max-w-xl md:flex-row transform transition-transform hover:scale-105 hover:shadow-md hover:bg-varGray"
@@ -273,22 +290,22 @@ const Hotels: React.FC = () => {
             variant="text"
             className="flex items-center gap-2"
             onClick={prev}
-            disabled={active === 1}
+            disabled={currentPage === 1}
           >
             <ArrowLeftIcon strokeWidth={2} className="h-4 w-4" /> Previous
           </Button>
           <div className="flex items-center gap-2">
-            <IconButton {...getItemProps(1)}>1</IconButton>
-            <IconButton {...getItemProps(2)}>2</IconButton>
-            <IconButton {...getItemProps(3)}>3</IconButton>
-            <IconButton {...getItemProps(4)}>4</IconButton>
-            <IconButton {...getItemProps(5)}>5</IconButton>
+            {Array.from({ length: Math.ceil(totalResults / resultsPerPage) }).map((_, index) => (
+              <IconButton key={index} {...getItemProps(index + 1)}>
+                {index + 1}
+              </IconButton>
+            ))}
           </div>
           <Button
             variant="text"
             className="flex items-center gap-2"
             onClick={next}
-            disabled={active === 5}
+            disabled={currentPage === Math.ceil(totalResults / resultsPerPage)}
           >
             Next
             <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />
@@ -296,7 +313,7 @@ const Hotels: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Hotels
+export default Hotels;

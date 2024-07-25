@@ -1,6 +1,5 @@
 import React from "react"
 import useHotelList from "../../hooks/owner/UseHotelList"
-import { Button } from "flowbite-react"
 import { useNavigate } from "react-router-dom"
 import { addButton } from "../../assets/images"
 

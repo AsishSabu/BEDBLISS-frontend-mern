@@ -18,13 +18,14 @@ import {
 } from "flowbite-react"
 import { useSocket } from "../../../redux/contexts/SocketContext"
 
-
 const Header: React.FC = () => {
   const user = useSelector((state: RootState) => state.userSlice)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const socket=useSocket()
+  const socket = useSocket()
   const [newMessageCount, setNewMessageCount] = useState<number>(0)
+
+  console.log(newMessageCount)
 
   useEffect(() => {
     if (socket) {
@@ -44,21 +45,15 @@ const Header: React.FC = () => {
     }
   }, [socket])
 
-
   useEffect(() => {
-    const handleNotification = ({
-      count,
-    }: {
-      count: number
-    }) => {
-        setNewMessageCount(prev => prev + count)
+    const handleNotification = ({ count }: { count: number }) => {
+      setNewMessageCount(prev => prev + count)
     }
     socket?.on("msgCount", handleNotification)
     return () => {
       socket?.off("msgCount", handleNotification)
     }
   }, [])
-
 
   const handleLogOut = () => {
     dispatch(clearUser())
@@ -68,20 +63,18 @@ const Header: React.FC = () => {
     { label: "Personal Info", to: "/owner/profile" },
     { label: "Account", to: "/owner/account" },
     { label: "Listings", to: "/owner/hotels" },
-    ...(user.isAuthenticated ? [{ label: "Profile", to: "/owner/profile" }] : [])
-  ];
+    ...(user.isAuthenticated
+      ? [{ label: "Profile", to: "/owner/profile" }]
+      : []),
+  ]
 
-  
   const NavbarLinks = [
-   
     { label: " Home", to: "/owner" },
     { label: "About", to: "/owner/about" },
     { label: "Listings", to: "/owner/hotels" },
-
   ]
 
   return (
-    
     <Navbar fluid rounded shadow-lg>
       <NavbarBrand href="https://flowbite-react.com">
         <img src={logo} className="mr-3 h-14 " alt="BedBliss Logo" />
@@ -132,9 +125,10 @@ const Header: React.FC = () => {
         <NavbarToggle />
       </div>
       <NavbarCollapse>
-        {NavbarLinks.map((navbar)=>(
+        {NavbarLinks.map(navbar => (
           <Link to={navbar.to}>
-          <NavbarLink >{navbar.label}</NavbarLink></Link>
+            <NavbarLink>{navbar.label}</NavbarLink>
+          </Link>
         ))}
       </NavbarCollapse>
     </Navbar>

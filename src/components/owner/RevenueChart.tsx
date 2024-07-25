@@ -6,7 +6,6 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
-import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import { useFetchData } from "../../utils/fetcher";
 import { USER_API } from "../../constants";
 
@@ -58,7 +57,7 @@ interface ChartData {
   };
 }
 
-const RevenueChart = () => {
+const RevenueChart:React.FC = () => {
   const { data, isError: error } = useFetchData<any>(USER_API + "/wallet");
   const [chartData, setChartData] = useState<ChartData>({
     series: [
@@ -148,7 +147,7 @@ const RevenueChart = () => {
       // Array to hold daily revenue for the current month
       const dailyRevenue = Array(currentDate).fill(0);
 
-      data.transaction.forEach((transaction) => {
+      data.transaction.forEach((transaction:any) => {
         const transactionDate = new Date(transaction.createdAt);
         if (
           transactionDate.getFullYear() === currentYear &&

@@ -15,7 +15,7 @@ const useDashboard = () => {
   let Revenue
 
     if (booking) {
-     Revenue = booking.result.reduce((acc, curr) => {
+     Revenue = booking.result.reduce((acc:number, curr:any) => {
         return acc + curr.platformFee
       }, 0)
     }
@@ -25,9 +25,7 @@ const useDashboard = () => {
   const hotelCount = hotelData?.Hotels.length || "0"
   const bookingCount = booking?.result.length || "0"
   const totalRevenue=Revenue||0
-  const [graphData, setGraphData] = useState(null)
-  console.log(totalRevenue, "totalllll")
-
+  const [graphData, setGraphData] = useState<any>(null)
   const months = 5
   const today = new Date()
   const tempData: any[] = []

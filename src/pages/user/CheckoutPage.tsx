@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate} from "react-router-dom"
 import { useAppSelector } from "../../redux/store/store"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { loadStripe } from "@stripe/stripe-js"
 import * as Yup from "yup"
 import axios from "axios"
 import { USER_API } from "../../constants"
-import useSWR from "swr"
 import { UserWalletInterface } from "../../types/userInterface"
 import { useFetchData } from "../../utils/fetcher"
-import { offerRemove } from "../../../../backend/src/app/use-cases/Owner/hotel"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -31,15 +29,15 @@ const validationSchema = Yup.object().shape({
   phone: Yup.string().required("Please fill in your phone number"),
 })
 
-const CheckoutPage = () => {
+const CheckoutPage:React.FC = () => {
   const navigate = useNavigate()
   const [wallet, setWallet] = useState<UserWalletInterface | null>(null)
   const [Error, setError] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState("Online")
-  const { id } = useParams<{ id: string }>()
+  // const { id } = useParams<{ id: string }>()
   const bookingData = useAppSelector(state => state.bookingSlice)
   console.log(bookingData, "bookingData...........")
-  const { data, isError: error } = useFetchData<any>(USER_API + "/profile")
+  const { data} = useFetchData<any>(USER_API + "/profile")
 
   useEffect(() => {
     if (data) {
@@ -48,8 +46,8 @@ const CheckoutPage = () => {
     }
   }, [data])
 
-  const checkInDate = new Date(bookingData.checkIn)
-  const checkOutDate = new Date(bookingData.checkOut)
+  const checkInDate :any= new Date(bookingData.checkIn)
+  const checkOutDate:any = new Date(bookingData.checkOut)
 
   // Calculate total days
   const totalDays = Math.ceil(
@@ -61,7 +59,7 @@ const CheckoutPage = () => {
   const totalPrice =
     totalDays *
     bookingData.rooms.reduce(
-      (acc, item) => acc + item.rooms.length * item.roomDetails.price,
+      (acc, item:any) => acc + item.rooms.length * item.roomDetails.price,
       0
     )
   console.log(totalPrice, "total price")
@@ -136,9 +134,7 @@ const CheckoutPage = () => {
       if (Error !== null) {
         return
       }
-      const stripe = await loadStripe(
-        import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
-      )
+
       console.log(bookingData.rooms)
 
       const roomDetails = bookingData.rooms.map((room: any) => {
@@ -171,13 +167,22 @@ const CheckoutPage = () => {
       })
       console.log(response)
       const sessionId = response.data.id
+
       if (sessionId) {
+        console.log("with stripe");
+        const stripe = await loadStripe(
+          import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+        )
+        console.log(stripe);
+        
         const result = await stripe?.redirectToCheckout({ sessionId })
         if (result?.error) console.error(result.error)
+      } else {
+    console.log("without stripope");
+    
+        const bookingId = response.data.booking.bookingId
+        navigate(`/user/payment_status/${bookingId}?success=true`)
       }
-      const bookingId = response.data.booking.bookingId
-
-      navigate(`/user/payment_status/${bookingId}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)
     }
@@ -441,7 +446,7 @@ const CheckoutPage = () => {
                       Cancellation Policy
                     </span>
                     {bookingData.cancellationPolicies &&
-                      bookingData?.cancellationPolicies.map((policy, index) => (
+                      bookingData?.cancellationPolicies.map((policy:any, index) => (
                         <div className="p-1" key={index}>
                           <div className="text-sm ">{policy.name}</div>
                           <ul>
@@ -449,7 +454,7 @@ const CheckoutPage = () => {
                               ([key, value]) => (
                                 <li className="text-gray-500 text-xs" key={key}>
                                   <div className="text-varGreen">{key}:</div>{" "}
-                                  {value}
+                                  {value as string}
                                 </li>
                               )
                             )}

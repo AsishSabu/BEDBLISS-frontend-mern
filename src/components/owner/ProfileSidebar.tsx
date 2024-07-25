@@ -1,8 +1,6 @@
 import React from "react";
 import { CgProfile } from "react-icons/cg";
-import { MdFavoriteBorder } from "react-icons/md";
 import { LiaWalletSolid } from "react-icons/lia";
-import { TbBrandBooking } from "react-icons/tb";
 import { Link } from "react-router-dom";
 
 

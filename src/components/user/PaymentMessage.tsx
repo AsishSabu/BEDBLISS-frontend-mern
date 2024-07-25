@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { CookingPot } from "lucide-react";
 import { paymentFailed } from "../../assets/images";
 
@@ -7,7 +7,6 @@ interface PaymentMessageProps {
 }
 
 const PaymentMessage: React.FC<PaymentMessageProps> = ({ isSuccess }) => {
-  const { id } = useParams();
   return (
     <div className="bg-gray-100 min-h-screen flex justify-center items-center px-2">
       <div

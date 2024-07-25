@@ -31,10 +31,10 @@ const ReportActionModal: React.FC<ReportActionModalProps> = ({
   
   const handleAction = async (url: string, action: string) => {
     try {
-      const response = await axios.patch(url);
+      await axios.patch(url);
       await updateReporting(action);
       onClose();
-    } catch (error) {
+    } catch (error:any) {
       showToast(error.response?.data?.message || `Failed to ${action}`, "error");
     }
   };
@@ -47,7 +47,7 @@ const ReportActionModal: React.FC<ReportActionModalProps> = ({
       console.log(response.data);
       
       showToast(response.data.message, "success");
-    } catch (error) {
+    } catch (error:any) {
       showToast(error.response?.data?.message || "Failed to update reporting", "error");
     }
   };

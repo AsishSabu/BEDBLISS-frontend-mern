@@ -21,6 +21,7 @@ export default  withMT({
         varCream2:"#FEFAF6",
         varGrey:"#EEEEEE",
         varBlueGray:"#DAEAF1",
+        AdminDasboard:"#343a40",
         varLight:"#F9F9F9",
         Marine_blue: "hsl(213, 96%, 18%)",
         Purplish_blue: "hsl(243, 100%, 62%)",

@@ -1,7 +1,7 @@
 import axios from "axios"
 import { signInWithPopup } from "firebase/auth"
 import { useFormik } from "formik"
-import React, { useEffect, useState } from "react"
+import React, {useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { USER_API } from "../../constants"
 import { auth, facebookProvider, googleProvider } from "../../firebase/config"
@@ -118,7 +118,7 @@ const Login: React.FC = () => {
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2  text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2  text-gray-300 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="email"
                   placeholder="Email"
                 />
@@ -133,7 +133,7 @@ const Login: React.FC = () => {
                   value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="border p-2  text-gray-300 border-gray-700 shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
+                  className="border p-2  text-gray-300  shadow-md placeholder:text-base focus:scale-105 ease-in-out duration-300 border-gray-300 rounded-lg w-full"
                   type="password"
                   placeholder="Password"
                 />
@@ -154,7 +154,7 @@ const Login: React.FC = () => {
                 </span>
               </Link>
               <button
-                className="bg-blue-600 text-gray-300  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
+                className="bg-blue-600  shadow-lg mt-6 p-2 text-white rounded-lg w-full hover:scale-105 hover:from-purple-500 hover:to-blue-500 transition duration-300 ease-in-out"
                 type="submit"
               >
                 SIGN IN

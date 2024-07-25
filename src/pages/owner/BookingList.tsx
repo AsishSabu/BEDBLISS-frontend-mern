@@ -1,11 +1,10 @@
-import useSWR from 'swr';
 import React, { useEffect, useState } from "react";
-import { OWNER_API, USER_API } from "../../constants";
+import { OWNER_API} from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { BookingInterface } from "../../types/hotelInterface";
 import { useFetchData } from '../../utils/fetcher';
 
-const BookingList = () => {
+const BookingList:React.FC= () => {
   const [bookings, setBookings] = useState([]);
   const navigate = useNavigate();
   const { data,isError:error } = useFetchData<any>(OWNER_API + "/bookings");

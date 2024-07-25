@@ -177,7 +177,7 @@ const HotelCards: React.FC = () => {
       </div>
       <div className="col-span-12 lg:col-span-9 bg-gray-100 p-5">
         {searchResults.length > 0 ? (
-          searchResults.map(hotel => (
+          searchResults.map((hotel:any)=> (
             <div
               key={hotel._id}
               className="flex flex-col p-4 min-w-full rounded-lg bg-white shadow-md md:max-w-xl md:flex-row"

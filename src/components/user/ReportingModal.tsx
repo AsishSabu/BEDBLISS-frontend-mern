@@ -32,25 +32,26 @@ const ReportModal: React.FC<ModalProps> = ({
 
   const handleSubmit = () => {
     if (selectedReason) {
-      const result = axios.post(
-        USER_API + "/addReporting/" + userId,
-        {
-          hotelId,
-          bookingId,
-          reason: selectedReason,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      axios
+        .post(
+          USER_API + "/addReporting/" + userId,
+          {
+            hotelId,
+            bookingId,
+            reason: selectedReason,
           },
-        }
-      )
-      .then(({ data }) => {
-        showToast(data.message)
-      })
-      .catch(({ response }) => {
-        showToast(response?.data?.message, "error")
-      })
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
+        .then(({ data }) => {
+          showToast(data.message)
+        })
+        .catch(({ response }) => {
+          showToast(response?.data?.message, "error")
+        })
 
       onClose()
     } else {

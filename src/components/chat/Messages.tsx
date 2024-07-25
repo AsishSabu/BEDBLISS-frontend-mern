@@ -1,7 +1,7 @@
 import React from "react"
 import { format } from "timeago.js"
 
-const Messages = ({ message, own }) => {
+const Messages:React.FC<any> = ({ message, own}) => {
   return (
     <div>
       {own ? (

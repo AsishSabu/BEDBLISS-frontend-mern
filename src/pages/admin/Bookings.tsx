@@ -6,11 +6,11 @@ import { ADMIN_API } from "../../constants"
 import BookingData from "../../components/admin/BookingData"
 import { BookingInterface } from "../../types/hotelInterface"
 
-const fetcher = url => axios.get(url).then(res => res.data)
+const fetcher = (url:string )=> axios.get(url).then(res => res.data)
 
 const Bookings: React.FC = () => {
-  const { data, error: userError } = useSWR(`${ADMIN_API}/bookings`, fetcher)
-  const [bookings, setBookings] = useState(null)
+  const { data} = useSWR(`${ADMIN_API}/bookings`, fetcher)
+  const [bookings, setBookings] = useState<any>(null)
 
   useEffect(() => {
     if (data) {
@@ -34,7 +34,7 @@ const Bookings: React.FC = () => {
           <Table.HeadCell>Price</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
-          {bookings?.map((booking: BookingInterface) => (
+          {bookings&&bookings?.map((booking: BookingInterface) => (
             <BookingData key={booking.bookingId} {...booking} />
           ))}
         </Table.Body>

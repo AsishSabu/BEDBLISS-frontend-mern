@@ -5,7 +5,7 @@ import { Table } from "flowbite-react";
 
 
 const Owners:React.FC= () => {
-    const {owners, loadingOwners,ownerError } = useUsers();
+    const {owners} = useUsers();
 
   return (
     <div className="overflow-x-auto">

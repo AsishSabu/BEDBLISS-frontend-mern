@@ -2,9 +2,9 @@ import React from "react"
 import { FaStar, FaStarHalfAlt } from "react-icons/fa"
 import { AiOutlineStar } from "react-icons/ai"
 
-const StarComponent = ({ stars }) => {
-  const ratingStar = Array.from({ length: 5 }, (elem, index) => {
-    let number = index + 0.5
+const StarComponent:React.FC<any> = ({ stars }) => {
+  const ratingStar = Array.from({ length: 5 }, (_, index) => {
+    let number = index + 0.5  
     return (
       <span key={index}>
         {stars >= index + 1 ? (
@@ -19,10 +19,9 @@ const StarComponent = ({ stars }) => {
   })
   return (
     <>
-        <div className=" flex gap-2 align-middle justify-start">
-            {ratingStar}
-            {/* <p>({review} customer reviews)</p> */}
-        </div>
+      <div className=" flex gap-2 align-middle justify-start">
+        {ratingStar}
+      </div>
     </>
   )
 }

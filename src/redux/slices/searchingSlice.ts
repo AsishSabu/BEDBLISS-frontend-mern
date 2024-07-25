@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { addDays } from "date-fns"
 
-interface DateRange {
-  startDate: Date
-  endDate: Date
-}
 
 interface SearchOptions {
   adult: number
@@ -24,6 +20,7 @@ interface SearchingState {
   stayTypes: string[]
   budget: Budget
   amenities: string[]
+  page:number
 }
 
 const initialState: SearchingState = {
@@ -45,6 +42,7 @@ const initialState: SearchingState = {
     max: 0,
   },
   amenities: [],
+  page:1
 }
 
 const searchingSlice = createSlice({

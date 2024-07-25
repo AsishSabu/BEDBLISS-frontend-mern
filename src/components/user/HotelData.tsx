@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { whishlistBlack, whishlistRed, whishlistWhite } from "../../assets/images";
+import { whishlistRed, whishlistWhite } from "../../assets/images";
 import { useEffect, useState } from "react";
 import { useFetchData } from "../../utils/fetcher";
 import { USER_API } from "../../constants";
@@ -13,7 +13,7 @@ interface HotelDataProps {
   imageUrls: string[];
   name: string;
   destination: string;
-  stayType: string;
+  stayType: any;
   rooms: { price: number }[];
   offer: {
     type: string;
@@ -36,7 +36,7 @@ const HotelData: React.FC<HotelDataProps> = ({
   const navigate = useNavigate();
   const user = useAppSelector((state: RootState) => state.userSlice);
   const [isSaved, setIsSaved] = useState(false);
-  const { data, isError, isLoading } = useFetchData<any>(`${USER_API}/saved`);
+  const { data} = useFetchData<any>(`${USER_API}/saved`);
   const today = new Date();
 
   useEffect(() => {

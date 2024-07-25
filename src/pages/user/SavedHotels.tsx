@@ -5,12 +5,10 @@ import axios from "axios"
 import showToast from "../../utils/toast"
 import { useNavigate } from "react-router-dom"
 
-const SavedHotels = () => {
+const SavedHotels:React.FC= () => {
   const [hotels, setHotels] = useState([])
   const navigate = useNavigate()
-  const { data, isError, isLoading, refetch } = useFetchData<any>(
-    `${USER_API}/saved`
-  )
+  const { data, isError, isLoading } = useFetchData<any>(`${USER_API}/saved`)
 
   useEffect(() => {
     if (data && data.savedHotels) {
@@ -20,11 +18,11 @@ const SavedHotels = () => {
     }
   }, [data])
 
-  const handleClick =( id )=> {
+  const handleClick = (id: any) => {
     navigate(`/user/hotelDetails/${id}`)
   }
 
-  const handleRemoveHotel = async hotelId => {
+  const handleRemoveHotel = async (hotelId: any) => {
     try {
       const result = await axios.patch(
         `${USER_API}/removeSaved/${hotelId}`,
@@ -36,8 +34,7 @@ const SavedHotels = () => {
         }
       )
       showToast(result.data.message, "success")
-      // Update local state after successful removal
-      const updatedHotels = hotels.filter(hotel => hotel._id !== hotelId)
+      const updatedHotels = hotels.filter((hotel: any) => hotel._id !== hotelId)
       setHotels(updatedHotels)
     } catch (error) {
       showToast("Failed to remove hotel", "error")
@@ -57,7 +54,7 @@ const SavedHotels = () => {
       <h2 className="text-2xl font-bold mb-5">My next trip</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 rounded-2xl">
         {hotels.length > 0 ? (
-          hotels.map(hotel => (
+          hotels.map((hotel: any) => (
             <div
               key={hotel._id}
               className="bg-varGray col-span-1 relative border rounded-3xl shadow-sm p-2 border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -75,7 +72,10 @@ const SavedHotels = () => {
                   alt={hotel.name}
                 />
               </div>
-              <div className="pt-2 h-fit rounded-lg " onClick={()=>handleClick(hotel._id)}>
+              <div
+                className="pt-2 h-fit rounded-lg "
+                onClick={() => handleClick(hotel._id)}
+              >
                 <h5 className="mb-1 text-lg font-bold tracking-tight text-gray-900 dark:text-white">
                   {hotel.name}
                 </h5>

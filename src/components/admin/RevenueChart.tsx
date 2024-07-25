@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react"
 import {
-  Card,
   CardBody,
-  CardHeader,
-  Typography,
 } from "@material-tailwind/react"
 import Chart from "react-apexcharts"
 import useSWR from "swr"
@@ -58,7 +55,7 @@ interface ChartData {
   }
 }
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
-const RevenueChart = () => {
+const RevenueChart:React.FC = () => {
   const { data, error } = useSWR(`${ADMIN_API}/bookings`, fetcher)
   console.log(data)
 
@@ -148,7 +145,7 @@ const RevenueChart = () => {
       // Array to hold total platform fee for each month of the current year
       const monthlyPlatformFee = Array(12).fill(0)
 
-      data.result.forEach(booking => {
+      data.result.forEach((booking:any) => {
         const bookingDate = new Date(booking.createdAt)
         if (bookingDate.getFullYear() === currentYear) {
           const month = bookingDate.getMonth() // getMonth() returns month (0-11)
@@ -195,7 +192,7 @@ const RevenueChart = () => {
 
   return (
     <>
-    <div className="flex justify-center text-lg"> Revenue Chart</div>
+    <div className="flex justify-center text-lg pt-2"> Revenue Chart</div>
       <CardBody className="pb-0">
         <Chart {...chartData} />
       </CardBody>

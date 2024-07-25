@@ -2,7 +2,7 @@ import React, { useState, useCallback,useEffect} from "react";
 
 const names = ["hotel", "appartment", "villas","resorts"];
 
-const Banner = () => {
+const Banner:React.FC= () => {
   const [newName, setnewName] = useState("");
   const shuffle = useCallback(() => {
     const index = Math.floor(Math.random() * names.length);

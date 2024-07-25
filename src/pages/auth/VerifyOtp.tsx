@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Formik, useFormik } from "formik";
+import { Formik, FormikHelpers,useFormik } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { USER_API } from "../../constants";
@@ -13,34 +13,32 @@ const VerifyOtp: React.FC = () => {
   const [seconds, setSeconds] = useState(60);
 
   const navigate = useNavigate();
-  const formik = useFormik({
+  const formik = useFormik<any>({
     initialValues: {
       otp: Array.from({ length: 6 }).fill(""),
     },
 
-    onSubmit: (values) => {
+    onSubmit: async (values: { otp: string[] }, formikHelpers: FormikHelpers<{ otp: string[] }>) => {
       const userid = getItemFromLocalStorage("userId");
-      console.log("...........", userid);
       const otp = values.otp.join("");
-      console.log(otp);
       if (userid) {
-        axios
-          .post(USER_API + "/auth/verifyOtp", { otp, userid })
-          .then(({ data }) => {
-            showToast(data.message, "success");
-            removeItemFromLocalStorage("userId");
-            navigate("/auth/login");
-          })
-          .catch(({ response }) => {
-            showToast(response.data.message, "error");
-          });
+        try {
+          const { data } = await axios.post(USER_API + "/auth/verifyOtp", { otp, userid });
+          showToast(data.message, "success");
+          removeItemFromLocalStorage("userId");
+          navigate("/auth/login");
+        } catch (error: any) {
+          showToast(error.response?.data?.message || "An error occurred", "error");
+        }
       } else {
-        showToast("something went wrong", "error");
-        return navigate("/auth/login", { replace: true });
+        showToast("Something went wrong", "error");
+        navigate("/auth/login", { replace: true });
       }
+      formikHelpers.setSubmitting(false); // Ensure to call this to update formik's isSubmitting state
     },
   });
-  const inputRef = useRef<HTMLInputElement[]>([]);
+
+  const inputRef = useRef<any>([]);
 
   useEffect(() => {
     const currentInput = inputRef.current[0];
@@ -50,10 +48,11 @@ const VerifyOtp: React.FC = () => {
       return () => currentInput.removeEventListener("paste", pasteText);
     }
   }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       if (seconds > 0) {
-        setSeconds((prevSeconds) => prevSeconds - 1);
+        setSeconds(prevSeconds => prevSeconds - 1);
       }
     }, 1000);
     return () => clearInterval(timer);
@@ -79,13 +78,14 @@ const VerifyOtp: React.FC = () => {
     const newOtp = pastedText
       ?.split("")
       .slice(0, 6)
-      .map((char) => char || "");
-    formik.setValues((prev: any) => ({
+      .map(char => char || "");
+    formik.setValues((prev:any) => ({
       ...prev,
       otp: newOtp,
     }));
     inputRef.current[5]?.focus();
   };
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -94,7 +94,7 @@ const VerifyOtp: React.FC = () => {
 
     const currentOtp = [...formik.values.otp];
     currentOtp[index] = value.slice(-1);
-    formik.setValues((prev) => ({
+    formik.setValues((prev:any )=> ({
       ...prev,
       otp: currentOtp,
     }));
@@ -115,21 +115,23 @@ const VerifyOtp: React.FC = () => {
   };
 
   const renderInput = () => {
-    return formik.values.otp.map((value, index) => (
+    return formik.values.otp.map((value:any, index:any) => (
       <input
+        title="input"
         key={index}
         maxLength={1}
         type="text"
         name={index.toString()}
         value={value as string}
-        onKeyUp={(event) => handleBackSpace(event, index)}
-        ref={(element) => (inputRef.current[index] = element)}
-        onChange={(event) => handleChange(event, index)}
+        onKeyUp={event => handleBackSpace(event, index)}
+        ref={element => (inputRef.current[index] = element)}
+        onChange={event => handleChange(event, index)}
         className="w-14 h-14 text-center text-2xl font-extrabold text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 appearance-none rounded p-4 outline-none focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
         pattern="\d*"
       />
     ));
   };
+
   return (
     <div className="relative font-inter antialiased">
       <main className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden">
@@ -141,27 +143,30 @@ const VerifyOtp: React.FC = () => {
                   Mobile Phone Verification
                 </h1>
                 <p className="text-[15px] text-slate-500">
-                  Enter the 4-digit verification code that was sent to your
+                  Enter the 6-digit verification code that was sent to your
                   phone number.
                 </p>
               </header>
-              <form id="otp-form">
-                <Formik>
-                  <div className="flex items-center justify-center gap-3">
-                    {renderInput()}
-                  </div>
-                </Formik>
-
-                <div className="max-w-[260px] mx-auto mt-4">
-                  <button
-                    onClick={formik.handleSubmit}
-                    type="submit"
-                    className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150"
-                  >
-                    Verify Account
-                  </button>
-                </div>
-              </form>
+              <Formik
+                initialValues={formik.initialValues}
+                onSubmit={formik.handleSubmit}
+              >
+                {({ handleSubmit }) => (
+                  <form id="otp-form" onSubmit={handleSubmit}>
+                    <div className="flex items-center justify-center gap-3">
+                      {renderInput()}
+                    </div>
+                    <div className="max-w-[260px] mx-auto mt-4">
+                      <button
+                        type="submit"
+                        className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150"
+                      >
+                        Verify Account
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </Formik>
               <div className="text-sm text-slate-500 mt-4">
                 Didn't receive code?{" "}
                 <button

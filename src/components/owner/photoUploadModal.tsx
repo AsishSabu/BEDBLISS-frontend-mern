@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react"
 import Modal from "react-modal"
-import { Accept, DropEvent, FileRejection, useDropzone } from "react-dropzone"
+import { Accept, useDropzone } from "react-dropzone"
 import { FaTrashAlt } from "react-icons/fa"
 import uploadImagesToCloudinary from "../../api/imageUpload"
 import PulseLoader from "react-spinners/PulseLoader"
@@ -30,8 +30,6 @@ const PhotoUploadModal = ({
   const onDrop = useCallback(
     (
       acceptedFiles: File[],
-      fileRejections: FileRejection[],
-      event: DropEvent
     ) => {
       console.log(selectedFiles)
 
@@ -56,7 +54,7 @@ const PhotoUploadModal = ({
     multiple: maxFiles !== 1,
   })
 
-  const handleRemoveFile = file => {
+  const handleRemoveFile = (file: any) => {
     setSelectedFiles(prevFiles => prevFiles.filter(f => f !== file))
   }
 

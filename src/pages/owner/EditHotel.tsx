@@ -3,7 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik"
 import { hotelAddValidation } from "../../utils/validation"
 import { FaTrashAlt } from "react-icons/fa"
 import axios from "axios"
-import { HotelInterface } from "../../types/hotelInterface"
+import { hotelInterface} from "../../types/hotelInterface"
 import showToast from "../../utils/toast"
 import { useNavigate, useParams } from "react-router-dom"
 import PhotoUploadModal from "../../components/owner/photoUploadModal"
@@ -14,12 +14,10 @@ import OutlinedButton from "../../components/OutlinedButton"
 
 const EditHotelForm: FC = () => {
   const { id } = useParams<{ id: string }>()
-  const { data, isError: error } = useFetchData<HotelInterface>(
-    `${OWNER_API}/hotelDetails/${id}`
-  )
+  const { data } = useFetchData<any>(`${OWNER_API}/hotelDetails/${id}`)
 
   const navigate = useNavigate()
-  const [hotelData, setHotelData] = useState<HotelInterface | null>(null)
+  const [hotelData, setHotelData] = useState<hotelInterface | null>(null)
 
   const amenitiesList = [
     "Swimming Pool",
@@ -35,7 +33,6 @@ const EditHotelForm: FC = () => {
     "Hot tub",
     "Beach Access",
   ]
-  const reservationTypes = ["instant", "approveDecline"]
   const StayTypes = ["Flat/Appartment", "Hotel", "Villa"]
   const [images, setImages] = useState<(string | null)[]>([])
   const [hotelDocument, setHotelDocument] = useState<(string | null)[]>([])
@@ -95,7 +92,7 @@ const EditHotelForm: FC = () => {
     setOwnerId([])
   }
 
-  const handleSubmit = async (values: HotelInterface) => {
+  const handleSubmit = async (values:any) => {
     try {
       const response = await axios.patch(
         `${OWNER_API}/editHotel/${id}`,
@@ -118,7 +115,7 @@ const EditHotelForm: FC = () => {
           imageUrls: images,
           hotelDocument: hotelDocument[0],
           ownerPhoto: ownerId[0],
-          isVerified:"pending"
+          isVerified: "pending",
         },
         {
           headers: {
@@ -153,12 +150,15 @@ const EditHotelForm: FC = () => {
           description: hotelData?.description || "",
           amenities: hotelData?.amenities || [],
           reservationType: hotelData?.reservationType || "",
+          _id: hotelData?._id || "",
+          ownerId: hotelData?.ownerId || "",
+          propertyRules: hotelData?.propertyRules || [],
+          isBlocked: hotelData?.isBlocked || false,
+          isVerified: hotelData?.isVerified || "pending",
         }}
         validationSchema={hotelAddValidation}
-        validate={values => {
+        validate={() => {
           const errors: any = {}
-
-          // Validate propertyrules
           if (propertyRules.length < 2) {
             errors.propertyRules = "At least two rules are required"
           }
@@ -181,7 +181,7 @@ const EditHotelForm: FC = () => {
         }}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, dirty }) => (
+        {({ values, dirty }) => (
           <div className="px-4 py-7 md:px-14 flex justify-center">
             <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
               <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">
@@ -386,6 +386,7 @@ const EditHotelForm: FC = () => {
                         <div key={index} className="flex items-center">
                           <p className="text-gray-700">{rule}</p>
                           <button
+                            title="button"
                             type="button"
                             onClick={() => removePropertyRule(index)}
                             className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
@@ -407,7 +408,7 @@ const EditHotelForm: FC = () => {
                       <div className="px-2 pt-2">
                         {" "}
                         <OutlinedButton
-                          onclick={addPropertyRule}
+                          onClick={addPropertyRule}
                           color={"black"}
                           text={"Add"}
                         />
@@ -445,6 +446,7 @@ const EditHotelForm: FC = () => {
                             className="w-32 h-20 object-cover rounded-md"
                           />
                           <button
+                            title="button"
                             type="button"
                             onClick={() => handleRemoveImage(image || "")}
                             className="absolute top-1 right-1 bg-white rounded-full p-1 hover:bg-gray-200"
@@ -548,7 +550,7 @@ const EditHotelForm: FC = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onUpload={handleUpload}
-          max={5}
+          file="5"
         />
       )}
 
@@ -557,7 +559,7 @@ const EditHotelForm: FC = () => {
           isOpen={isHotelModalOpen}
           onClose={() => setIsHotelModalOpen(false)}
           onUpload={handleHotelDocumentUpload}
-          max={1}
+          file="1"
         />
       )}
 
@@ -566,7 +568,7 @@ const EditHotelForm: FC = () => {
           isOpen={isOwnerModalOpen}
           onClose={() => setIsOwnerModalOpen(false)}
           onUpload={handleOwnerIdUpload}
-          max={1}
+          file="1"
         />
       )}
     </>

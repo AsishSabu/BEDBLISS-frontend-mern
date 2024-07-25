@@ -7,7 +7,7 @@ import { ADMIN_API } from "../../constants";
 import showToast from "../../utils/toast";
 
 interface Report {
-  id: string;
+  _id: string;
   userId: { name: string };
   hotelId: { name: string; _id: string; ownerId: string };
   bookingId: { checkInDate: string; checkOutDate: string };
@@ -23,7 +23,7 @@ const AdminReports: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
-  const { data, error } = useSWR(`${ADMIN_API}/reportings`, fetcher);
+  const { data} = useSWR(`${ADMIN_API}/reportings`, fetcher);
 
   useEffect(() => {
     if (data) {
@@ -50,7 +50,7 @@ const AdminReports: React.FC = () => {
       
       showToast(response.data.message, "success");
 changState(!state);
-    } catch (err) {
+    } catch (err:any) {
       showToast(err.response.data.message, "error");
     }
   };
@@ -71,7 +71,7 @@ console.log(selectedReport,"selected.........");
           </tr>
         </thead>
         <tbody>
-          {reports.map((report) => (
+          {reports.map((report:any) => (
             <tr key={report.id} className="text-center">
               <td className="py-2">{report.userId.name}</td>
               <td className="py-2">{report.hotelId.name}</td>

@@ -1,4 +1,3 @@
-import useSWR from "swr"
 import React, { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { USER_API } from "../../constants"
@@ -11,8 +10,9 @@ import UserChat from "./UserChat"
 import { chatImg, reportImg, starImg } from "../../assets/images"
 import AddReview from "../../components/AddReview"
 import ReportModal from "../../components/user/ReportingModal"
-import { useSocket } from "../../redux/contexts/SocketContext"
-
+import { useNotification } from "../../hooks/NotificationHook"
+import { useAppSelector } from "../../redux/store/store"
+import { RootState } from "../../redux/reducer/reducer"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString)
@@ -26,11 +26,12 @@ const formatDate = (dateString: string) => {
 
 const BookingDetails: React.FC = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null)
+  const user = useAppSelector((state: RootState) => state.userSlice)
+  const { sendNotification } = useNotification()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showChatModal, setShowChatModal] = useState(false)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
-  const socket = useSocket()
   const { id } = useParams<{ id: string }>()
 
   const navigate = useNavigate()
@@ -70,45 +71,10 @@ const BookingDetails: React.FC = () => {
           },
         }
       )
-      // const notification = {
-      //   type: "1",
-      //   message: `${data.result.hotelId.name} booked by ${user.name}`,
-      //   data: {
-      //     senderId: user.id,
-      //     name: user.name,
-      //     image: user.image,
-      //     onClickPath: `/owner/bookingDetails/${data.result._id}`,
-      //   },
-      // };
-
-      // const socketNotification = {
-      //   type: "1",
-      //   message: `${data.result.hotelId.name} booked by ${user.name}`,
-      //   data: {
-      //     senderId: user.id,
-      //     name: user.name,
-      //     image: user.image,
-      //     onClickPath: `/owner/bookingDetails/${data.result._id}`,
-      //   },
-      //   createdAt: new Date(Date.now()),
-      // };
-
-      // socket?.emit(
-      //   "noti",
-      //   socketNotification,
-      //   data.result.hotelId.ownerId._id
-      // );
-      // axios.patch(
-      //   `${USER_API}/addNotification/${data.result.hotelId.ownerId._id}`,
-      //   notification,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem(
-      //         "access_token"
-      //       )}`,
-      //     },
-      //   }
-      // );
+      const message = `${response.data.booking.hotelId.name} cancel requested by ${user.name}`
+      const path = `/owner/bookingDetails/${response.data.booking._id}`
+      const receiverId = response.data.booking.hotelId.ownerId._id
+      sendNotification(message, path, user, receiverId, 2)
 
       setBooking(prevBooking => ({
         ...prevBooking!,
@@ -152,9 +118,7 @@ const BookingDetails: React.FC = () => {
                   <p className="text-base text-red-500 mb-2">
                     Payment Method: {booking.paymentMethod}
                   </p>
-                  <p className=" text-lg  mb-2">
-                  Amount: {booking.price}
-                  </p>
+                  <p className=" text-lg  mb-2">Amount: {booking.price}</p>
 
                   <div className="flex justify-between">
                     <div>
@@ -265,7 +229,7 @@ const BookingDetails: React.FC = () => {
                 </button>
               )}
           </div>
-          <div  className="flex justify-center mt-5">
+          <div className="flex justify-center mt-5">
             {" "}
             <div
               onClick={showChat}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import useHotelDetails from "../../hooks/user/useHotelDetails"
 import { useNavigate, useParams } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import { setData } from "../../redux/slices/searchingSlice"
 import { RoomInterface } from "./../../../../backend/src/types/RoomInterface"
 import { clearData, setCheckoutData } from "../../redux/slices/bookingslice"
 import { useAppSelector } from "../../redux/store/store"
@@ -18,19 +17,7 @@ import axios from "axios"
 import showToast from "../../utils/toast"
 import EditReview from "../../components/EditReview"
 
-interface RoomNumber {
-  number: number
-  unavailableDates: string[]
-}
 
-interface Room {
-  title: string
-  price: number
-  maxAdults: number
-  maxChildren: number
-  desc: string
-  roomNumbers: RoomNumber[]
-}
 
 interface RoomSelection {
   roomId: string
@@ -40,7 +27,7 @@ interface RoomSelection {
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   console.log(id, "hotel id")
-  const { hotel, loading, error, reloadHotelDetails} = useHotelDetails(id)
+  const { hotel, loading, error} = useHotelDetails(id)
   const [err, setErr] = useState("")
   console.log(hotel, "hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
@@ -52,7 +39,7 @@ const HotelDetail: React.FC = () => {
   const [showAllPhotos, setShowAllPhotos] = useState(false)
   const [roomSelections, setRoomSelections] = useState<RoomSelection[]>([])
   const [submitting, setSubmitting] = useState(false)
-  const { data, isError } = useFetchData<any>(`${USER_API}/getRating/${id}`)
+  const { data} = useFetchData<any>(`${USER_API}/getRating/${id}`)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
 
@@ -100,8 +87,6 @@ const HotelDetail: React.FC = () => {
     propertyRules,
     stayType,
     address,
-    rooms,
-    cancellationPolicies,
     offer,
   } = hotel
 
@@ -137,7 +122,7 @@ const HotelDetail: React.FC = () => {
     }
   }
 
-  const checkAvilability = async (roomId, count, startDate, endDate) => {
+  const checkAvilability = async (roomId:string, count:number, startDate:any, endDate:any) => {
     console.log(roomId, count, startDate, endDate, "..........................")
 
     const response = await axios.post(
@@ -152,7 +137,7 @@ const HotelDetail: React.FC = () => {
     )
     return response.data.RoomAvailable
   }
-  const discountedPrice = price => {
+  const discountedPrice = (price:number) => {
     if (offer.type === "flat") {
       if (
         price >= (offer.minAmount ?? 0) &&

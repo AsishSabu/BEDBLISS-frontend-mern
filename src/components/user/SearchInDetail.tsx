@@ -6,8 +6,6 @@ import { format, addDays } from "date-fns"
 import "react-date-range/dist/styles.css"
 import "react-date-range/dist/theme/default.css"
 import { useAppDispatch, useAppSelector } from "../../redux/store/store"
-import axios from "axios"
-import { USER_API } from "../../constants"
 import { setData } from "../../redux/slices/searchingSlice"
 import useHotelDetails from "../../hooks/user/useHotelDetails"
 
@@ -22,7 +20,7 @@ type datesTypes = {
   endDate: Date
 }
 
-const SearchBoxDetail = ({ id }) => {
+const SearchBoxDetail = ({ id }:any) => {
   const { reloadHotelDetails } = useHotelDetails(id)
   const data = useAppSelector(state => state.searchingSlice)
   const dispatch = useAppDispatch()
@@ -44,15 +42,14 @@ const SearchBoxDetail = ({ id }) => {
     room: data.options.room,
   })
 
-  const dateRef = useRef(null)
-  const optionsRef = useRef(null)
+  const dateRef = useRef<HTMLDivElement>(null)
+  const optionsRef = useRef<HTMLDivElement>(null)
 
   const handleSearch = async (options: optionType, dates: datesTypes) => {
     console.log(options, "options..........")
     console.log(dates, "dates......")
 
     try {
-      const { adult, children, room } = options
       const { startDate, endDate } = dates
       console.log(startDate, "startDates......")
       console.log(endDate, "endDates......")
@@ -65,7 +62,7 @@ const SearchBoxDetail = ({ id }) => {
     }
   }
 
-  const handleOption = (name: string, operation: string) => {
+  const handleOption = (name: "adult" | "children" | "room", operation: "i" | "d") => {
     setOptions(prev => {
       return {
         ...prev,
@@ -73,6 +70,7 @@ const SearchBoxDetail = ({ id }) => {
       }
     })
   }
+
 
   const handleDateChange = (item: {
     selection: { startDate: Date; endDate: Date }
@@ -93,7 +91,7 @@ const SearchBoxDetail = ({ id }) => {
   }
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event:any) => {
       if (dateRef.current && !dateRef.current.contains(event.target)) {
         setOpenDate(false)
       }
@@ -125,7 +123,7 @@ const SearchBoxDetail = ({ id }) => {
           <div className="absolute top-12 left-0 z-50 mt-2">
             <DateRange
               editableDateInputs={true}
-              onChange={handleDateChange}
+              onChange={()=>handleDateChange}
               moveRangeOnFirstSelection={false}
               ranges={[
                 {

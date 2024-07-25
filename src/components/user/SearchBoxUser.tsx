@@ -7,7 +7,7 @@ import "react-date-range/dist/styles.css"
 import "react-date-range/dist/theme/default.css"
 import { useAppSelector } from "../../redux/store/store"
 
-const SearchBoxUser = ({ handleSearch }) => {
+const SearchBoxUser = ({ handleSearch }:any) => {
   const data = useAppSelector(state => state.searchingSlice)
   const [openDate, setOpenDate] = useState(false)
   const [openOptions, setOpenOptions] = useState(false)
@@ -22,10 +22,11 @@ const SearchBoxUser = ({ handleSearch }) => {
   })
   const [destination, setDestination] = useState(data.destination)
 
-  const dateRef = useRef(null)
-  const optionsRef = useRef(null)
+  const dateRef = useRef<HTMLDivElement>(null)
+  const optionsRef = useRef<HTMLDivElement>(null)
 
-  const handleOption = (name, operation) => {
+
+  const handleOption = (name: "adult" | "children" | "room", operation: "i" | "d") => {
     setOptions(prev => {
       return {
         ...prev,
@@ -34,7 +35,8 @@ const SearchBoxUser = ({ handleSearch }) => {
     })
   }
 
-  const handleDateChange = (item) => {
+
+  const handleDateChange = (item: any) => {
     const { startDate, endDate } = item.selection
     // Ensure endDate is at least one day after startDate
     if (endDate <= startDate) {
@@ -50,7 +52,8 @@ const SearchBoxUser = ({ handleSearch }) => {
     }
   }
 
-  const handleClickOutside = (event) => {
+
+  const handleClickOutside = (event:any) => {
     if (dateRef.current && !dateRef.current.contains(event.target)) {
       setOpenDate(false)
     }
@@ -67,7 +70,7 @@ const SearchBoxUser = ({ handleSearch }) => {
   }, [])
 
   return (
-    <div className="flex items-center space-x-4 p-4 bg-Alabaster border-varRed border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
+    <div className="flex items-center space-x-4 p-4 bg-Alabaster border-blue-200 border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
       <input
         type="text"
         placeholder="Enter your destination"

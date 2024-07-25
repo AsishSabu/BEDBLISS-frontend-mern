@@ -1,14 +1,12 @@
-import useSWR from 'swr';
 import React, { useEffect } from 'react';
 import { USER_API } from '../../constants';
 import { useFetchData } from '../../utils/fetcher';
 
-const Wallet = () => {
+const Wallet:React.FC = () => {
   const { data,isError:error } = useFetchData<any>(USER_API + '/wallet');
 
   useEffect(() => {
     if (data) {
-      console.log(data, 'wallet');
     }
   }, [data]);
 
@@ -42,7 +40,7 @@ const Wallet = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((transaction, index) => (
+                  {transactions.map((transaction:any, index:any) => (
                     <tr key={index} className="text-center">
                       <td className="py-2">{transaction.amount}</td>
                       <td className="py-2">{new Date(transaction.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>

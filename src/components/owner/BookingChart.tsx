@@ -1,45 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import {
   Card,
   CardBody,
   CardHeader,
   Typography,
-} from "@material-tailwind/react";
-import Chart from "react-apexcharts";
-import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
-import { useFetchData } from "../../utils/fetcher";
-import { OWNER_API } from "../../constants";
+} from "@material-tailwind/react"
+import Chart from "react-apexcharts"
+import { useFetchData } from "../../utils/fetcher"
+import { OWNER_API } from "../../constants"
 
-const BookingChart = () => {
-  const [bookingData, setBookingData] = useState([]);
-  const { data, isError } = useFetchData<any>(OWNER_API + "/bookings");
+const BookingChart: React.FC = () => {
+  const [bookingData, setBookingData] = useState([])
+  const { data } = useFetchData<any>(OWNER_API + "/bookings")
 
   useEffect(() => {
     if (data && data.success) {
-      setBookingData(data.bookings);
+      setBookingData(data.bookings)
     }
-  }, [data]);
+  }, [data])
 
   // Function to count bookings per day for the current month
   const countBookingsPerDay = () => {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1; // January is 0, so add 1
-    const bookingsPerDay = new Array(31).fill(0); // Initialize array for 31 days (could be less for some months)
+    const currentDate = new Date()
+    const currentMonth = currentDate.getMonth() + 1 // January is 0, so add 1
+    const bookingsPerDay = new Array(31).fill(0) // Initialize array for 31 days (could be less for some months)
 
-    bookingData.forEach((booking) => {
-      const updatedAt = new Date(booking.updatedAt);
+    bookingData.forEach((booking: any) => {
+      const updatedAt = new Date(booking.updatedAt)
       if (updatedAt.getMonth() + 1 === currentMonth) {
-        const day = updatedAt.getDate() - 1; // Get day index (0-indexed)
-        bookingsPerDay[day] += 1; // Increment count for that day
+        const day = updatedAt.getDate() - 1 // Get day index (0-indexed)
+        bookingsPerDay[day] += 1 // Increment count for that day
       }
-    });
+    })
 
-    return bookingsPerDay;
-  };
+    return bookingsPerDay
+  }
 
   const chartConfig = {
     type: "bar",
-    height:348 ,
+    height: 348,
     series: [
       {
         name: "Bookings",
@@ -100,7 +99,7 @@ const BookingChart = () => {
         x: { show: false },
       },
     },
-  };
+  }
 
   return (
     <Card>
@@ -110,7 +109,6 @@ const BookingChart = () => {
         color="transparent"
         className="flex flex-col h-8 rounded-lg gap-4 md:flex-row md:items-center"
       >
-
         <div>
           <Typography variant="h3" color="blue-gray">
             Booking Chart
@@ -118,10 +116,15 @@ const BookingChart = () => {
         </div>
       </CardHeader>
       <CardBody className="px-2 pb-0">
-        <Chart options={chartConfig.options} series={chartConfig.series} type={chartConfig.type} height={chartConfig.height} />
+        <Chart
+          options={chartConfig.options}
+          series={chartConfig.series}
+          type={"bar"}
+          height={chartConfig.height}
+        />
       </CardBody>
     </Card>
-  );
-};
+  )
+}
 
-export default BookingChart;
+export default BookingChart

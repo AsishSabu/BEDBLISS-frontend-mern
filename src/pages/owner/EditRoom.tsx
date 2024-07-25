@@ -5,14 +5,8 @@ import axios from "axios";
 import { OWNER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { useFetchData } from "../../utils/fetcher";
-import { RoomInterface } from "../../types/hotelInterface";
-
 const EditRoom: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, isError: error } = useFetchData<RoomInterface>(
-    `${OWNER_API}/hotelDetails/${id}`
-  )
   const navigate = useNavigate();
   const [roomNumbers, setRoomNumbers] = useState<number[]>([]);
   const [roomNumberError, setRoomNumberError] = useState<string | null>(null);
@@ -73,7 +67,7 @@ const EditRoom: React.FC = () => {
       );
       showToast(response.data.message);
       navigate("/owner/hotels");
-    } catch (error) {
+    } catch (error:any) {
       showToast(error.response?.data?.message, "error");
     }
   };

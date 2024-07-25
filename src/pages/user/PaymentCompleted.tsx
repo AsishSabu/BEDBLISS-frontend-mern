@@ -1,28 +1,33 @@
-import React, { useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import { USER_API } from "../../constants";
-import axios from "axios";
-import PaymentMessage from "../../components/user/PaymentMessage";
-import { useSocket } from "../../redux/contexts/SocketContext";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/reducer/reducer";
-import { useFetchData } from "../../utils/fetcher";
-import { BookingResponse } from "../../types/hotelInterface";
+import React, { useEffect, useRef } from "react"
+import { useParams, useSearchParams } from "react-router-dom"
+import { USER_API } from "../../constants"
+import axios from "axios"
+import PaymentMessage from "../../components/user/PaymentMessage"
+import { useSocket } from "../../redux/contexts/SocketContext"
+import { useSelector } from "react-redux"
+import { RootState } from "../../redux/reducer/reducer"
+import { useNotification } from "../../hooks/NotificationHook"
 
-const PaymentCompleted = () => {
-  const [searchParams] = useSearchParams();
-  const user = useSelector((state: RootState) => state.userSlice);
-  const { id } = useParams();
-  const socket = useSocket();
-  const status = searchParams.get("success");
-  const isSuccess = status === "true";
+const PaymentCompleted:React.FC = () => {
+  const [searchParams] = useSearchParams()
+  const {sendNotification}=useNotification()
+  const user = useSelector((state: RootState) => state.userSlice)
+  const { id } = useParams()
+  const socket = useSocket()
+  const status = searchParams.get("success")
+  const isSuccess = status === "true"
+
+  const hasUpdatedPaymentStatus = useRef(false)
 
   useEffect(() => {
-    let isMounted = true;
-    const paymentStatusUpdated = localStorage.getItem(`paymentStatusUpdated_${id}`);
+    const paymentStatusUpdated = localStorage.getItem(
+      `paymentStatusUpdated_${id}`
+    )
 
-    if (status && isMounted && !paymentStatusUpdated) {
-      const paymentStatus = isSuccess ? "Paid" : "Failed";
+    if (status && !paymentStatusUpdated && !hasUpdatedPaymentStatus.current) {
+      hasUpdatedPaymentStatus.current = true
+      const paymentStatus = isSuccess ? "Paid" : "Failed"
+
       axios
         .patch(
           `${USER_API}/payment/status/${id}`,
@@ -34,69 +39,21 @@ const PaymentCompleted = () => {
           }
         )
         .then(({ data }) => {
-          console.log(data, "..................");
-
-          if (isMounted) {
-            const notification = {
-              type: "1",
-              message: `${data.result.hotelId.name} booked by ${user.name}`,
-              data: {
-                senderId: user.id,
-                name: user.name,
-                image: user.image,
-                onClickPath: `/owner/bookingDetails/${data.result._id}`,
-              },
-            };
-
-            const socketNotification = {
-              type: "1",
-              message: `${data.result.hotelId.name} booked by ${user.name}`,
-              data: {
-                senderId: user.id,
-                name: user.name,
-                image: user.image,
-                onClickPath: `/owner/bookingDetails/${data.result._id}`,
-              },
-              createdAt: new Date(Date.now()),
-            };
-
-            socket?.emit(
-              "noti",
-              socketNotification,
-              data.result.hotelId.ownerId._id
-            );
-            axios.patch(
-              `${USER_API}/addNotification/${data.result.hotelId.ownerId._id}`,
-              notification,
-              {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem(
-                    "access_token"
-                  )}`,
-                },
-              }
-            );
-
-            // Set flag in local storage
-            localStorage.setItem(`paymentStatusUpdated_${id}`, "true");
-          }
+          const message=`${data.result.hotelId.name} booked by ${user.name}`
+          const path=`/owner/bookingDetails/${data.result._id}`
+          const receiverId=data.result.hotelId.ownerId._id
+         sendNotification(message,path,user,receiverId,1)
+          localStorage.setItem(`paymentStatusUpdated_${id}`, "true")
         })
-        .catch(err => console.log(err));
     }
-    return () => {
-      isMounted = false;
-    };
-  }, [status, id, isSuccess, user.id, socket]);
+  }, [status, id, isSuccess, user.id, user.name, user.image, socket])
 
-  const { data, isError } = useFetchData<BookingResponse>(
-    `${USER_API}/bookingDetailsByBookingId/${id}`
-  );
 
   return (
     <div>
       <PaymentMessage isSuccess={isSuccess} />
     </div>
-  );
-};
+  )
+}
 
-export default PaymentCompleted;
+export default PaymentCompleted

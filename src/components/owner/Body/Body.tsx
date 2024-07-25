@@ -4,7 +4,7 @@ import useHotelList from "../../../hooks/owner/UseHotelList"
 import BookingChart from "../BookingChart"
 import RevenueChart from "../RevenueChart"
 
-const Body = () => {
+const Body:React.FC = () => {
   const { hotels } = useHotelList()
   console.log(hotels, "hotels.........")
 
@@ -13,9 +13,6 @@ const Body = () => {
     navigate(`/owner/hotelDetails/${id}`)
   }
 
-  const handleAddHotel = () => {
-    navigate("/owner/addHotel")
-  }
 
   return (
     <div className="bg-varWhite">

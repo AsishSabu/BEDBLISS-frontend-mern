@@ -1,6 +1,4 @@
 import React from "react";
-// import useUsers from "../../hooks/admin/useUsers";
-import UserData from "./UserData";
 import { Table } from "flowbite-react";
 
 const Bookings: React.FC = () => {

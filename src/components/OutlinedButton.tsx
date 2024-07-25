@@ -1,15 +1,19 @@
-import React from "react"
-import { Button } from "@material-tailwind/react"
+import React from "react";
+import { Button } from "@material-tailwind/react";
 
-const OutlinedButton = ({ text, onclick, color }) => {
-  const handleClick = () => {
-    onclick()
-  }
+// Define the props interface
+interface OutlinedButtonProps {
+  text: string;
+  onClick: () => void;
+  color: any;
+}
+
+const OutlinedButton: React.FC<OutlinedButtonProps> = ({ text, onClick, color }) => {
   return (
     <div>
       <Button
         size="sm"
-      onClick={handleClick}
+        onClick={onClick}
         color={color}
         variant="outlined"
         className="flex items-center gap-3"
@@ -17,7 +21,7 @@ const OutlinedButton = ({ text, onclick, color }) => {
         {text}
       </Button>
     </div>
-  )
-}
+  );
+};
 
-export default OutlinedButton
+export default OutlinedButton;

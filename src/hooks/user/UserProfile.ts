@@ -1,18 +1,20 @@
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
-import { USER_API, nameRegex, phoneRegex } from "../../constants";
+import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
 import axiosJWT from "../../utils/axiosService";
 import uploadImagesToCloudinary from "../../api/imageUpload";
 import { useFetchData } from "../../utils/fetcher";
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { setUser } from "../../redux/slices/userSlice";
+
 axios.defaults.withCredentials = true;
 
 const useProfile = () => {
-  const { data, error } = useFetchData<any>(USER_API + "/profile");
-  const dispatch=useAppDispatch()
-  const user=useAppSelector(state=>state.userSlice)
+  const { data, isError } = useFetchData<any>(`${USER_API}/profile`);
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.userSlice);
+  
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -26,10 +28,8 @@ const useProfile = () => {
   });
 
   const profile = data ? data.user : null;
-  console.log(profile,"profile.,");
-  
 
-  if (error) {
+  if (isError) {
     showToast("Oops! Something went wrong", "error");
   }
 
@@ -62,7 +62,7 @@ const useProfile = () => {
           setImagePreview(reader.result as string);
         };
         reader.readAsDataURL(file);
-        setFormData(prev => ({
+        setFormData((prev :any)=> ({
           ...prev,
           imageFile: [file],
         }));
@@ -75,15 +75,13 @@ const useProfile = () => {
     }
   };
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: any) => {
     setIsSubmitting(true);
-    const url = (await uploadImagesToCloudinary(values.imageFile)).toString();
-    console.log(values,"............................");
-    
+    try {
+      const url = (await uploadImagesToCloudinary(values.imageFile)).toString();
 
-    axiosJWT
-      .patch(
-        USER_API + "/profile/edit",
+      const { data } = await axiosJWT.patch(
+        `${USER_API}/profile/edit`,
         {
           name: values.name,
           phoneNumber: values.phone,
@@ -97,18 +95,15 @@ const useProfile = () => {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
-      )
-      .then(({ data }) => {
-        showToast(data.message);
-        console.log(data,"datttttttt");
-        dispatch(setUser({...user, name:data.user.name, image:data.user.profilePic}))
-        
-        setIsSubmitting(false);
-      })
-      .catch(() => {
-        setIsSubmitting(false);
-        showToast("Oops! Something went wrong while updating profile", "error");
-      });
+      );
+
+      showToast(data.message);
+      dispatch(setUser({ ...user, name: data.user.name, image: data.user.profilePic }));
+    } catch {
+      showToast("Oops! Something went wrong while updating profile", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {
