@@ -6,7 +6,6 @@ import RevenueChart from "../RevenueChart"
 
 const Body:React.FC = () => {
   const { hotels } = useHotelList()
-  console.log(hotels, "hotels.........")
 
   const navigate = useNavigate()
   const handleClick = (id: string) => {
@@ -15,7 +14,7 @@ const Body:React.FC = () => {
 
 
   return (
-    <div className="bg-varWhite">
+    <div className="bg-varBlueGray">
       <header className="bg-shadow rounded-3xl p-4">
         <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900">Welcome, Asish!</h1>
@@ -36,10 +35,6 @@ const Body:React.FC = () => {
                 <header className="flex justify-between mb-5">
                   <h1 className="text-2xl font-bold">Your Listings</h1>
                   <div className="flex space-x-3">
-                    {/* Uncomment and style the button if needed */}
-                    {/* <button className="text-xl" onClick={handleAddHotel}>
-                      ➕
-                    </button> */}
                   </div>
                 </header>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">

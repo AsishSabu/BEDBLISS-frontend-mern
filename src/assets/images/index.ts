@@ -13,6 +13,7 @@ import whishlistBlack from "./images/wishlist-black.png"
 import whishlistWhite from "./images/wishlist-white.png"
 import whishlistRed from "./images/whislist-red.png"
 import addButton from "./images/addButton.svg"
+import banner1 from "./images/banner.jpg"
 
 export {
   logo,
@@ -29,5 +30,6 @@ export {
   whishlistBlack,
   whishlistWhite,
   whishlistRed,
-  addButton
+  addButton,
+  banner1
 }

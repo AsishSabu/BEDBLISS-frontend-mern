@@ -204,27 +204,6 @@ const ChatComponent = () => {
   console.log(currentChat, "current chat 😃")
 
   return (
-    // <div>
-    //   <div className="container mx-auto">
-    //     <div
-    //       className="flex  md:flex-row border border-gray-400 rounded shadow-lg"
-    //       style={{ height: "calc(100vh - 10rem)" }}
-    //     >
-    //       {/* Left */}
-    //       <div className="w-full md:w-1/3 border flex flex-col">
-    //         {/* Header */}
-    //         <div className="py-2 px-3 bg-varBlueGray flex flex-row justify-between items-center">
-
-    //           <>
-    //             <div className=" top-[30%] text-center w-full">
-    //               <h1 className="text-4xl text-gray-400 cursor-default mb-4">
-    //                 Start a Conversation!
-    //               </h1>
-    //               <p className="text-lg text-gray-600">
-    //                 Click on a conversation to start chatting.
-    //               </p>
-    //             </div>
-    //           </>
 
     <div className=" pt-2">
       <div className="flex bg-white dark:bg-gray-900 p-5">
@@ -332,7 +311,7 @@ const ChatComponent = () => {
                 </div>
               </div>
             </div>
-            <div className="w-full flex-grow bg-varWhite dark:bg-gray-900 my-2 p-2 overflow-y-auto">
+            <div className="w-full flex-grow no-scrollbar my-2 p-2 overflow-y-auto">
               {messages.map((m: any) => (
                 <div key={m._id} ref={scrollRef}>
                   <Messages message={m} own={m.senderId === user.id} />
