@@ -7,12 +7,12 @@ import Notifications from "../../components/Notifications"
 import Profile from "../../pages/owner/Profile"
 import UserProfile from "../../components/UserProfile"
 import OwnerWallet from "../../pages/owner/OwnerWallet"
+import Reviews from "../../pages/owner/Reviews"
 
 const Layout = lazy(() => import("../../pages/Layout"))
 const AddRoom = lazy(() => import("../../pages/owner/AddRoom"))
 const BookingList = lazy(() => import("../../pages/owner/BookingList"))
 const BookingDetails = lazy(() => import("../../pages/owner/BookingDetails"))
-// const EditHotelForm = lazy(() => import("../../pages/owner/EditHotel"));
 const ChatComponent = lazy(() => import("../../pages/owner/OwnerChat"))
 const Layout2 = lazy(() => import("../../pages/Layout2"))
 const AddHotel = lazy(() => import("../../pages/owner/AddHotel"))
@@ -44,6 +44,8 @@ const OwnerRouter: FC = () => {
             </Route>
           </Route>
           <Route path="chat" element={<ChatComponent />} />
+          <Route path="reviews" element={<Reviews/>} />
+
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>

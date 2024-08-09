@@ -1,4 +1,5 @@
 import React, { useState, useCallback,useEffect} from "react";
+import { banner} from "../../../assets/images";
 
 const names = ["hotel", "appartment", "villas","resorts"];
 
@@ -14,7 +15,7 @@ const Banner:React.FC= () => {
   }, [shuffle]);
   return (
     <>
-      <div className="relative h-[300px] bg-banner-3 bg-cover bg-no-repeat bg-center">
+      <div className="relative h-[300px] bg-cover bg-no-repeat bg-center" style={{backgroundImage:`url(${banner})`}}>
         <div className="flex flex-col gap-4 justify-center xl:ml-40 lg:ml-2.5 md:ml-3.5  sm:ml-60 w-full h-full px-3 md:px-0">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-varWhite">
             List Your

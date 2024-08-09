@@ -42,9 +42,7 @@ const Layout: React.FC = () => {
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
           <Navbar isOpen={open} toggleSidebar={toggleSideBar} />
           <main>
-            <div
-              className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 bg-varGray"
-            >
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10 bg-varGray">
               <Outlet />
             </div>
           </main>

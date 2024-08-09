@@ -55,13 +55,18 @@ const CheckoutPage:React.FC = () => {
   )
   console.log(totalDays, "days")
   console.log(bookingData.rooms)
+  const totalRoomsPrice=    bookingData.rooms.reduce(
+    (acc, item:any) => acc + item.rooms.length * item.roomDetails.price,
+    0
+  )
+  const totalRooms=    bookingData.rooms.reduce(
+    (acc, item:any) => acc +item.rooms.length ,
+    0
+  )
 
-  const totalPrice =
-    totalDays *
-    bookingData.rooms.reduce(
-      (acc, item:any) => acc + item.rooms.length * item.roomDetails.price,
-      0
-    )
+
+  const totalPrice=totalDays *totalRoomsPrice
+  
   console.log(totalPrice, "total price")
   const today = new Date(Date.now())
   console.log(today, "today")
@@ -153,6 +158,7 @@ const CheckoutPage:React.FC = () => {
         checkOutDate: bookingData.checkOut,
         maxAdults: bookingData.adults,
         maxChildren: bookingData.children,
+        totalRooms,
         rooms: roomDetails,
         price: amountToPay,
         platformFee,
@@ -203,7 +209,7 @@ const CheckoutPage:React.FC = () => {
       {({}) => (
         <Form className="container mx-auto p-4">
           <div className="border p-4 rounded shadow-lg  grid grid-cols-2 gap-4">
-            <div className="text-sm text-gray-500 mb-4">
+            <div className="text-sm text-gray-500 mb-4 col-span-2 md:col-span-1">
               <div className="border p-4 rounded mb-4">
                 <h1 className="text-2xl font-bold mb-4">{bookingData.name}</h1>
                 <p>
@@ -227,7 +233,7 @@ const CheckoutPage:React.FC = () => {
                   Check-out: <strong>{formattedCheckOutDate}</strong>
                 </p>
                 <p>
-                  {/* Total length of stay: <strong>{days} night</strong> */}
+                  Total length of stay: <strong>{totalDays} night</strong>
                 </p>
                 <p>
                   No of Guests: <strong>{maxPeople} guests</strong>
@@ -241,6 +247,7 @@ const CheckoutPage:React.FC = () => {
               </div>
 
               {/* Price Summary */}
+              <div className="hidden md:block">
               <div className="border p-4 rounded mb-4">
                 <h2 className="text-xl font-bold mb-4">Your price summary</h2>
                 <p>
@@ -337,9 +344,11 @@ const CheckoutPage:React.FC = () => {
                   </div>
                 </div>
               </div>
+              </div>
+
               {/* Submit Button */}
             </div>
-            <div className="grid gap-4">
+            <div className="grid gap-4 col-span-2 md:col-span-1">
               <div className="border p-4 rounded mb-4">
                 <h2 className="text-xl font-bold mb-2">Enter your details</h2>
                 <div className="grid gap-4">
@@ -463,6 +472,104 @@ const CheckoutPage:React.FC = () => {
                       ))}
                   </div>
                 </div>
+              </div>
+              <div className="md:hidden">
+              <div className="border p-4 rounded mb-4">
+                <h2 className="text-xl font-bold mb-4">Your price summary</h2>
+                <p>
+                  Total Hotel Amount: <strong>₹ {totalPrice}</strong>
+                </p>
+                <p>
+                  platform fee: <strong>₹ {platformFee}</strong>
+                </p>
+                {discount !== 0 && (
+                  <p>
+                    Discount price: <strong>-₹{discount}</strong>
+                  </p>
+                )}
+                <p>
+                  Total Amount: <strong>₹ {amountToPay}</strong>
+                </p>
+              </div>
+              <div className="border p-4 rounded mb-4">
+                <h2 className="text-xl font-bold mb-4">Wallet</h2>
+                <p>
+                  Balance : <strong>₹ {wallet?.balance}</strong>
+                </p>
+              </div>
+
+              <div className="border p-4 rounded mb-4">
+                <h2 className="text-xl font-bold mb-4">Payment</h2>
+
+                <div className="p-2">
+                  <label
+                    htmlFor="inlineRadio1"
+                    className="block mb-2 text-sm font-semibold text-gray-900 dark:text-white"
+                  >
+                    Payment Method
+                  </label>
+                  <div className="">
+                    <div className="mb-[0.125rem] mr-4 inline-block min-h-[1.5rem] pl-[1.5rem]">
+                      <input
+                        className="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
+                        type="radio"
+                        name="paymentMethod"
+                        id="inlineRadio2"
+                        value="Online"
+                        defaultChecked
+                        onChange={() => handleInputChange("Online")}
+                      />
+                      <label
+                        className="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
+                        htmlFor="inlineRadio2"
+                      >
+                        Online
+                      </label>
+                    </div>
+                    <div className="mb-[0.125rem] mr-4 min-h-[1.5rem] pl-[1.5rem] flex items-center">
+                      <input
+                        className="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
+                        type="radio"
+                        name="paymentMethod"
+                        id="inlineRadio1"
+                        value="Wallet"
+                        onChange={() => handleInputChange("Wallet")}
+                      />
+                      <label
+                        className="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
+                        htmlFor="inlineRadio1"
+                      >
+                        Wallet
+                      </label>
+                    </div>
+                    <div className="mb-[0.125rem] mr-4 min-h-[1.5rem] pl-[1.5rem] flex items-center">
+                      <input
+                        className="relative float-left -ml-[1.5rem] mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
+                        type="radio"
+                        name="paymentMethod"
+                        id="inlineRadio1"
+                        value="pay_on_checkout"
+                        onChange={() => handleInputChange("pay_on_checkout")}
+                      />
+                      <label
+                        className="mt-px inline-block pl-[0.15rem] hover:cursor-pointer"
+                        htmlFor="inlineRadio1"
+                      >
+                        Pay At CheckOut
+                      </label>
+                    </div>
+                    {Error && <p className="text-red-500 ml-2">{Error}</p>}
+                    <div className="text-right">
+                      <button
+                        type="submit"
+                        className="bg-blue-500 text-white py-2 px-4 rounded"
+                      >
+                        Book Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               </div>
             </div>
           </div>

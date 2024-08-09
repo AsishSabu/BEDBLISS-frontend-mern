@@ -109,38 +109,46 @@ const BookingDetails: React.FC = () => {
             <div className="mb-6 grid grid-cols-2 gap-4">
               <div className="items-center rounded-lg mb-4">
                 <div className="border rounded-lg p-4">
-                  <h2 className="text-lg font-medium mb-2">
-                    BOOKING ID : {booking.bookingId}
-                  </h2>
-                  <p className="text-base text-green-500 mb-2">
-                    Booking Status: {booking.bookingStatus}
-                  </p>
-                  <p className="text-base text-red-500 mb-2">
-                    Payment Method: {booking.paymentMethod}
-                  </p>
-                  <p className=" text-lg  mb-2">Amount: {booking.price}</p>
-
                   <div className="flex justify-between">
                     <div>
-                      <p className="text-xl font-bold text-gray-600 mb-1">
+                      <p className="text-sm  text-gray-600 mb-1">
                         Check-in-Date
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xl font-bold text-gray-600">
                         {formatDate(booking.checkInDate)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xl font-bold text-gray-600 mb-1">
+                      <p className="text-sm  text-gray-600 mb-1">
                         Check-out-Date
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xl font-bold text-gray-600">
                         {formatDate(booking.checkOutDate)}
                       </p>
                     </div>
                   </div>
+                  <div className="pt-2">
+                    <p className="font-bold  text-varBlue mb-1 mt-2">
+                      Booking Details
+                    </p>
+                    <h2 className=" text-sm font-semibold  mb-2 ">
+                      BOOKING ID :<span className="font-normal mx-2">{booking.bookingId}</span> 
+                    </h2>
+                    <p className="text-sm font-semibold mb-2">
+                      Booking Status:<span className="font-normal mx-2">{booking.bookingStatus}</span> 
+                    </p>
+                    <p className=" text-sm font-semibold">
+                      Details: {booking.maxAdults && booking.maxAdults + " Adult"},{booking.maxChildren && booking.maxChildren + " Children"}--{booking.totalDays+" nights"},{booking.totalRooms+" rooms"}
+                    </p>
+                  </div>
+
+                  <p className="text-sm font-semibold mb-2">
+                    Payment Method: <span className="font-normal mx-2">{booking.paymentMethod}</span>
+                  </p>
+                  <p className=" text-lg  mb-2">Amount: {booking.price}</p>
                 </div>
                 <div className="border rounded-lg p-4 my-3">
-                  <h2 className="text-lg font-medium mb-2">User Details</h2>
+                  <h2 className="font-bold  text-varBlue mb-2">User Details</h2>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p>
                       Name: {booking.firstName} {booking.lastName}
@@ -150,7 +158,7 @@ const BookingDetails: React.FC = () => {
                   </div>
                 </div>
                 <div className="border rounded-lg p-4 my-3">
-                  <h2 className="text-lg font-medium mb-2">Stay Address</h2>
+                  <h2 className="font-bold  text-varBlue mb-2">Stay Address</h2>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p>Street: {booking.hotelId.address.streetAddress}</p>
                     <p>City: {booking.hotelId.address.city}</p>
@@ -178,7 +186,7 @@ const BookingDetails: React.FC = () => {
                 </div>
 
                 <div className="border rounded-lg p-4 my-3">
-                  <h2 className="text-lg font-medium mb-2">Property Rules</h2>
+                  <h2 className="font-bold  text-varBlue mb-2">Property Rules</h2>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     {booking.hotelId.propertyRules.map((rule, index) => (
                       <p key={index}>{rule}</p>

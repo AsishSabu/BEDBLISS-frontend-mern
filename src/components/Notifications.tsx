@@ -13,6 +13,7 @@ import axios from "axios"
 import { useSocket } from "../redux/contexts/SocketContext"
 import { useNavigate } from "react-router-dom"
 import { noProfile } from "../assets/images"
+import Pagination from "./Pagination"
 
 interface Notification {
   _id: string
@@ -22,15 +23,16 @@ interface Notification {
   privateMessage?: string
 }
 
-const Notifications:React.FC= () => {
+const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const user = useSelector((state: RootState) => state.userSlice)
   const navigate = useNavigate()
+  const [currentPage, setCurrentPage] = useState(1)
+  const dataPerPage = 5
+  const lastPostIndex = currentPage * dataPerPage
+  const firstPostIndex = lastPostIndex - dataPerPage
   const socket = useSocket()
-  const {
-    data,
-    mutate,
-  } = useFetchData<any>(`${USER_API}/user/${user.id}`)
+  const { data, mutate } = useFetchData<any>(`${USER_API}/user/${user.id}`)
 
   useEffect(() => {
     socket?.on("notification", (data: any) => {
@@ -51,16 +53,14 @@ const Notifications:React.FC= () => {
 
   const [value, setValue] = useState("1")
 
-  const handleChange = (_:any, newValue: string) => {
-   
+  const handleChange = (_: any, newValue: string) => {
     setValue(newValue)
   }
 
   const filteredNotifications = notifications.filter(notification => {
     return value === "1" ? !notification.read : notification.read
   })
-  console.log(filteredNotifications);
-  
+  console.log(filteredNotifications.length, "length....")
 
   const handleMarkAsRead = async () => {
     try {
@@ -104,23 +104,31 @@ const Notifications:React.FC= () => {
 
   const handleDeleteNotification = async (notificationId: string) => {
     try {
-      const token=localStorage.getItem("access_token")
-      console.log(token);
-      
-      const result = await axios.patch(`${USER_API}/deleteNotification/${notificationId}`,{},{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Deleted notification:", result);
+      const token = localStorage.getItem("access_token")
+      console.log(token)
+
+      const result = await axios.patch(
+        `${USER_API}/deleteNotification/${notificationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      console.log("Deleted notification:", result)
       // Update notifications state after deletion
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notification) => notification._id !== notificationId)
-      );
+      setNotifications(prevNotifications =>
+        prevNotifications.filter(
+          notification => notification._id !== notificationId
+        )
+      )
     } catch (error) {
       console.error("Error deleting notification:", error)
     }
   }
+
+  const currentData = filteredNotifications.slice(firstPostIndex, lastPostIndex)
 
   return (
     <div className="font-Jakarta w-full bg-primary-l-g-blue grid place-items-center md:px-40 lg:px-80">
@@ -151,7 +159,7 @@ const Notifications:React.FC= () => {
                 >
                   Mark all as read
                 </button>
-                {filteredNotifications.map((notification:any) => (
+                {currentData.map((notification: any) => (
                   <div
                     className="flex justify-between items-center px-3 py-[10px] rounded-md bg-primary-l-g-blue-1"
                     key={notification._id}
@@ -204,7 +212,7 @@ const Notifications:React.FC= () => {
                 >
                   Clear All
                 </button>
-                {filteredNotifications.map((notification:any) => (
+                {currentData.map((notification: any) => (
                   <div
                     className="flex justify-between items-center px-3 py-[10px] rounded-md bg-primary-l-g-blue-1"
                     key={notification._id}
@@ -251,6 +259,14 @@ const Notifications:React.FC= () => {
             </TabPanel>
           </TabContext>
         </Box>
+      </div>
+      <div className="mt-4 flex justify-center">
+        <Pagination
+          currentPage={currentPage}
+          totalData={filteredNotifications.length}
+          dataPerPage={dataPerPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
     </div>
   )

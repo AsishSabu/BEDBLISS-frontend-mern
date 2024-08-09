@@ -13,7 +13,6 @@ import {
   NavbarBrand,
   NavbarCollapse,
   NavbarLink,
-  NavbarToggle,
 } from "flowbite-react"
 import { USER_API } from "../../../constants"
 import NotificationComponent from "../../NotificationComponent"
@@ -28,7 +27,9 @@ const Header: React.FC = () => {
 
   const socket = useSocket()
   const [newMessageCount, setNewMessageCount] = useState<number>(0)
-  const { data } = useFetchData<any>(`${USER_API}/user/${user.id}`)
+  const { data } = useFetchData<any>(
+    user.isAuthenticated ? `${USER_API}/user/${user.id}` : ""
+  )
 
   useEffect(() => {
     if (data && data.user) {
@@ -51,13 +52,10 @@ const Header: React.FC = () => {
       socket.on("connect", () => {
         console.log("connected to socket")
       })
-
       socket.emit("addUser", user.id)
-
       socket.on("getUsers", users => {
         console.log(users)
       })
-
       return () => {
         socket.off("getUsers")
       }
@@ -96,7 +94,10 @@ const Header: React.FC = () => {
 
   const OwnerDropdowns = [
     ...(user.isAuthenticated
-      ? [{ label: "Profile", to: "/owner/profile" }]
+      ? [{ label: "Profile", to: "/owner/profile" },
+        { label: "Conversations", to: "/owner/chat" },
+        { label: "Reviews", to: "/owner/reviews" },
+      ]
       : []),
   ]
 
@@ -105,12 +106,18 @@ const Header: React.FC = () => {
     { label: "Bookings", to: "/owner/bookings" },
     { label: "My Listings", to: "/owner/hotels" },
     { label: "Add Offers", to: "/owner/addOffer" },
-    { label: "Conversations", to: "/owner/chat" },
   ]
 
+  const UserMobileViewSidebar = [
+    { label: "My Bookings", to: "/user/profile/Mybookings" },
+    { label: "My Wallet", to: "/user/profile/MyWallet" },
+  ]
+  const OwnerMobileViewSidebar = [
+    { label: "My Account", to: "/owner/profile/MyWallet" },
+  ]
   const UserNavbarLinks = [
     { label: "Home", to: "/user" },
-    { label: "About", to: "/user/about" },
+    { label: "About", to: "/user/aboutUs" },
     { label: "Contact", to: "/user/contactUs" },
   ]
 
@@ -150,10 +157,31 @@ const Header: React.FC = () => {
                   className="w-10 h-10 cursor-pointer"
                 />
               </div>
-              <div className="px-2">{user && <div>{user.name}</div>}</div>
+              <div className="px-2 hidden md:block">
+                {user && <div>{user.name}</div>}
+              </div>
             </>
           }
         >
+          <div className="md:hidden">
+            {(user.role === "owner" ? OwnerNavbarLinks : UserNavbarLinks).map(
+              (dropdownItem, index) => (
+                <Link key={index} to={dropdownItem.to}>
+                  <DropdownItem>{dropdownItem.label}</DropdownItem>
+                </Link>
+              )
+            )}
+            <DropdownDivider />
+            {(user.role === "owner"
+              ? OwnerMobileViewSidebar
+              : UserMobileViewSidebar
+            ).map((dropdownItem, index) => (
+              <Link key={index} to={dropdownItem.to}>
+                <DropdownItem>{dropdownItem.label}</DropdownItem>
+              </Link>
+            ))}
+          </div>
+          <DropdownDivider />
           {(user.role === "owner" ? OwnerDropdowns : UserDropdowns).map(
             (dropdownItem, index) => (
               <Link key={index} to={dropdownItem.to}>
@@ -161,6 +189,7 @@ const Header: React.FC = () => {
               </Link>
             )
           )}
+
           <DropdownDivider />
           {user.isAuthenticated ? (
             <DropdownItem onClick={handleLogOut}>Sign out</DropdownItem>
@@ -175,9 +204,9 @@ const Header: React.FC = () => {
             </>
           )}
         </Dropdown>
-        <NavbarToggle />
       </div>
-      <NavbarCollapse className=" ">
+      <div className="hidden"></div>
+      <NavbarCollapse>
         {(user.role === "owner" ? OwnerNavbarLinks : UserNavbarLinks).map(
           (navbar, index) => (
             <Link key={index} to={navbar.to}>

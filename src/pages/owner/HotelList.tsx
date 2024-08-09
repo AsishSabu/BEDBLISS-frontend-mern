@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useState } from "react"
 import useHotelList from "../../hooks/owner/UseHotelList"
 import { useNavigate } from "react-router-dom"
 import { addButton } from "../../assets/images"
+import Pagination from "../../components/Pagination"
 
 const HotelList: React.FC = () => {
   const { hotels } = useHotelList()
@@ -15,6 +16,11 @@ const HotelList: React.FC = () => {
   const handleAddHotel = () => {
     navigate("/owner/addHotel")
   }
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const dataPerPage = 8;
+  const lastPostIndex = currentPage * dataPerPage;
+  const firstPostIndex = lastPostIndex - dataPerPage;
+  const currentData = hotels.slice(firstPostIndex, lastPostIndex);
 
   return (
     <>
@@ -33,8 +39,8 @@ const HotelList: React.FC = () => {
               </button>
               </div>
             </header>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 ">
-              {hotels.map((hotel: any) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 min-h-96 max-h-fit">
+              {currentData.map((hotel: any) => (
                 <div
                   key={hotel._id}
                   className="relative rounded-3xl shadow-sm p-2"
@@ -61,8 +67,20 @@ const HotelList: React.FC = () => {
                   </div>
                 </div>
               ))}
+
             </div>
+            <div className="mt-4 flex justify-center ">
+            <Pagination
+              currentPage={currentPage}
+              totalData={hotels.length}
+              dataPerPage={dataPerPage}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
+            
+          </div>
+  
+
         </>
       ) : (
         <>

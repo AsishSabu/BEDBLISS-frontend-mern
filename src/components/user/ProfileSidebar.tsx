@@ -9,7 +9,7 @@ const ProfileSidebar:React.FC = () => {
   return (
     <aside
       id="default-sidebar"
-      className="  w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 fixed"
+      className=" w-64 h-screen transition-transform -translate-x-full sm:translate-x-0 fixed"
       aria-label="Sidebar"
     >
       <div className="h-full px-3 py-4 overflow-y-auto bg-white">

@@ -66,7 +66,7 @@ const Categories: React.FC = () => {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto h-screen">
       <Formik
         initialValues={{ name: "" }}
         validationSchema={Yup.object({

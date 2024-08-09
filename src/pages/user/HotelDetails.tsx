@@ -17,8 +17,6 @@ import axios from "axios"
 import showToast from "../../utils/toast"
 import EditReview from "../../components/EditReview"
 
-
-
 interface RoomSelection {
   roomId: string
   count: number
@@ -27,7 +25,7 @@ interface RoomSelection {
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   console.log(id, "hotel id")
-  const { hotel, loading, error} = useHotelDetails(id)
+  const { hotel, loading, error } = useHotelDetails(id)
   const [err, setErr] = useState("")
   console.log(hotel, "hotel in hotel details")
   const searchingData = useAppSelector(state => state.searchingSlice)
@@ -39,7 +37,7 @@ const HotelDetail: React.FC = () => {
   const [showAllPhotos, setShowAllPhotos] = useState(false)
   const [roomSelections, setRoomSelections] = useState<RoomSelection[]>([])
   const [submitting, setSubmitting] = useState(false)
-  const { data} = useFetchData<any>(`${USER_API}/getRating/${id}`)
+  const { data } = useFetchData<any>(`${USER_API}/getRating/${id}`)
   const [showReviewModal, setShowReviewModal] = useState(false)
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
 
@@ -74,8 +72,6 @@ const HotelDetail: React.FC = () => {
   if (!hotel) {
     return <div>No hotel data available</div>
   }
-  console.log(searchingData.dates, "'''''''''''''''''''''''''''")
-
   const availableRooms = hotel?.rooms
 
   const {
@@ -122,9 +118,12 @@ const HotelDetail: React.FC = () => {
     }
   }
 
-  const checkAvilability = async (roomId:string, count:number, startDate:any, endDate:any) => {
-    console.log(roomId, count, startDate, endDate, "..........................")
-
+  const checkAvilability = async (
+    roomId: string,
+    count: number,
+    startDate: any,
+    endDate: any
+  ) => {
     const response = await axios.post(
       USER_API + "/checkAvailability/" + roomId,
       {
@@ -137,7 +136,7 @@ const HotelDetail: React.FC = () => {
     )
     return response.data.RoomAvailable
   }
-  const discountedPrice = (price:number) => {
+  const discountedPrice = (price: number) => {
     if (offer.type === "flat") {
       if (
         price >= (offer.minAmount ?? 0) &&
@@ -229,12 +228,10 @@ const HotelDetail: React.FC = () => {
     setSubmitting(false)
   }
 
-
-
-  const handleCloseReviewModal = async() => {
-    setSelectedReviewId(null);
-    setShowReviewModal(false);
-  };
+  const handleCloseReviewModal = async () => {
+    setSelectedReviewId(null)
+    setShowReviewModal(false)
+  }
 
   if (showAllPhotos) {
     return (
@@ -325,15 +322,7 @@ const HotelDetail: React.FC = () => {
           <p className="text-gray-600 mb-2">{destination}</p>
         </div>
         <div className="grid grid-cols-4 gap-2">
-          <div className="col-span-2">
-            <div className="mb-4">
-              <p className="text-gray-800 mb-1">Hosted by Kirby</p>
-              <p className="text-gray-600 mb-1">Dedicated workspace</p>
-              <p className="text-gray-600 mb-1">Kirby is a Superhost</p>
-              <p className="text-gray-600 mb-1">
-                Free cancellation before Jun 3
-              </p>
-            </div>
+          <div className="col-span-4 md:col-span-2">
             <div className="mb-4">
               <h2 className="text-xl font-semibold mb-2">Description</h2>
               <p className="text-gray-600">{description}</p>
@@ -349,7 +338,7 @@ const HotelDetail: React.FC = () => {
               </ul>
             </div>
           </div>
-          <div className="col-span-2 ">
+          <div className="col-span-4 md:col-span-2 ">
             <div className="flex justify-center p-3"></div>
             <div className="mb-4 p-5  border rounded-lg ring-2  ">
               <h2 className="text-xl font-semibold mb-2"> Address</h2>
@@ -379,97 +368,189 @@ const HotelDetail: React.FC = () => {
         <div className=" pt-16">
           <SearchBoxDetail id={id} />
         </div>
-        <div className="p-4">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="w-full bg-gray-100">
-                <th className="py-2 px-4 border-r">Room Types</th>
-                <th className="py-2 px-4 border-r">Number of guests</th>
-                <th className="py-2 px-4 border-r">Price per night</th>
-                <th className="py-2 px-4 border-r">No of rooms</th>
-              </tr>
-            </thead>
-            <tbody>
-              {availableRooms.map((item: RoomInterface) => (
-                <tr className="border-b " key={item._id}>
-                  <td className="py-4 px-4 border-r">
-                    <h3 className="text-lg font-semibold text-varRed">
-                      {item.title}
-                    </h3>
-                    <p className="text-green-600">{item.desc}</p>
-                    {/* <p className="text-red-600">Only 3 left on our site</p> */}
-                  </td>
-                  <td className="py-4 px-4 border-r">
-                    <div className="flex items-center">
-                      <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
-                        <svg
-                          className="inline-block h-6 w-6 mr-1 text-gray-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M10 2a6 6 0 016 6 6 6 0 01-2 4.472V15h1.5a1.5 1.5 0 110 3H4.5a1.5 1.5 0 110-3H6v-2.528A6 6 0 1110 2zM4 11.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm10 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
-                        </svg>
-                        {item.maxAdults}
-                      </span>
-                      <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-                        <svg
-                          className="inline-block h-6 w-6 mr-1 text-gray-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M12 12h6.5a1.5 1.5 0 110 3H1.5a1.5 1.5 0 110-3H6v-1.528A6 6 0 119.528 2H12a6 6 0 110 12z" />
-                        </svg>
-                        {item.maxChildren}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 border-r w-fit ">
-                    {offer && new Date(offer.endDate) >= today ? (
-                      discountedPrice(item.price) !== null ? (
-                        <>
-                          <span className="text-sm  text-gray-600 line-through flex justify-center py-2">
+        <div className="py-4 md:px-4 md:py-1 ">
+          <div className="hidden md:block">
+            <table className="min-w-full bg-white border border-gray-200 ">
+              <thead>
+                <tr className="w-full bg-gray-100">
+                  <th className="py-2 px-4 border-r">Room Types</th>
+                  <th className="py-2 px-4 border-r">Number of guests</th>
+                  <th className="py-2 px-4 border-r">Price per night</th>
+                  <th className="py-2 px-4 border-r">No of rooms</th>
+                </tr>
+              </thead>
+              <tbody>
+                {availableRooms.map((item: RoomInterface) => (
+                  <tr className="border-b " key={item._id}>
+                    <td className="py-4 px-4 border-r">
+                      <h3 className="text-lg font-semibold text-varRed">
+                        {item.title}
+                      </h3>
+                      <p className="text-green-600">{item.desc}</p>
+                      {/* <p className="text-red-600">Only 3 left on our site</p> */}
+                    </td>
+                    <td className="py-4 px-4 border-r">
+                      <div className="flex items-center">
+                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+                          <svg
+                            className="inline-block h-6 w-6 mr-1 text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M10 2a6 6 0 016 6 6 6 0 01-2 4.472V15h1.5a1.5 1.5 0 110 3H4.5a1.5 1.5 0 110-3H6v-2.528A6 6 0 1110 2zM4 11.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm10 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+                          </svg>
+                          {item.maxAdults}
+                        </span>
+                        <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                          <svg
+                            className="inline-block h-6 w-6 mr-1 text-gray-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M12 12h6.5a1.5 1.5 0 110 3H1.5a1.5 1.5 0 110-3H6v-1.528A6 6 0 119.528 2H12a6 6 0 110 12z" />
+                          </svg>
+                          {item.maxChildren}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 border-r w-fit ">
+                      {offer && new Date(offer.endDate) >= today ? (
+                        discountedPrice(item.price) !== null ? (
+                          <>
+                            <span className="text-sm  text-gray-600 line-through flex justify-center py-2">
+                              ₹ {item.price}
+                            </span>
+                            <span className="text-lg font-bold text-gray-700 flex justify-center pb-3">
+                              ₹ {discountedPrice(item.price)}
+                            </span>
+                            <span className="text-xs  text-varWhite bg-varGreen flex justify-center w-fit p-0.5 rounded-md ">
+                              {offer.type === "flat"
+                                ? `FLAT ₹  ${offer.amount} off/-`
+                                : `${offer.amount}% off/-`}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-lg font-bold text-gray-700 flex justify-center">
+                            ₹ {item.price}
+                          </span>
+                        )
+                      ) : (
+                        <span className="text-lg font-bold text-gray-700 flex justify-center">
+                          ₹ {item.price}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4 border-r">
+                      <select
+                        title="select"
+                        className="border p-2 rounded"
+                        onChange={e => handleSelectChange(e, item._id)}
+                      >
+                        {Array.from(
+                          { length: item.roomNumbers.length + 1 },
+                          (_, i) => (
+                            <option key={i} value={i}>
+                              {i}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="md:hidden">
+            {availableRooms.map((item: RoomInterface) => (
+              <div
+                className="border border-gray-200 mb-4 p-4 rounded-lg shadow-md"
+                key={item._id}
+              >
+                <h3 className="text-xl font-semibold text-Marine_blue">
+                  {item.title}
+                </h3>
+                <p className="text-green-600 text-sm my-2">{item.desc}</p>
+                <div className="flex items-center mt-2">
+                  <div className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 my-2">
+                    <svg
+                      className="inline-block h-6 w-6 mr-1 text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M10 2a6 6 0 016 6 6 6 0 01-2 4.472V15h1.5a1.5 1.5 0 110 3H4.5a1.5 1.5 0 110-3H6v-2.528A6 6 0 1110 2zM4 11.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm10 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+                    </svg>
+                    {item.maxAdults}
+                  </div>
+                  <div className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                    <svg
+                      className="inline-block h-6 w-6 mr-1 text-gray-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M12 12h6.5a1.5 1.5 0 110 3H1.5a1.5 1.5 0 110-3H6v-1.528A6 6 0 119.528 2H12a6 6 0 110 12z" />
+                    </svg>
+                    {item.maxChildren}
+                  </div>
+                </div>
+                <div className="mt-4 ">
+                  {offer && new Date(offer.endDate) >= today ? (
+                    discountedPrice(item.price) !== null ? (
+                      <>
+                        <div className="flex justify-between">
+                          {" "}
+                          <span className="text-sm text-gray-600 line-through flex justify-center py-2">
                             ₹ {item.price}
                           </span>
                           <span className="text-lg font-bold text-gray-700 flex justify-center pb-3">
                             ₹ {discountedPrice(item.price)}
                           </span>
-                          <span className="text-xs  text-varWhite bg-varGreen flex justify-center w-fit p-0.5 rounded-md ">
+                        </div>
+                        <div>
+                          <span className="text-Strawberry_red">
+                            {" "}
+                            {offer.desc}
+                          </span>
+
+                          <span className="text-xs text-varWhite bg-varGreen flex justify-center w-fit p-0.5 rounded-md">
                             {offer.type === "flat"
-                              ? `FLAT ₹  ${offer.amount} off/-`
+                              ? `FLAT ₹ ${offer.amount} off/-`
                               : `${offer.amount}% off/-`}
                           </span>
-                        </>
-                      ) : (
-                        <span className="text-lg font-bold text-gray-700 flex justify-center">
-                          ₹ {item.price}
-                        </span>
-                      )
+                        </div>
+                      </>
                     ) : (
                       <span className="text-lg font-bold text-gray-700 flex justify-center">
                         ₹ {item.price}
                       </span>
+                    )
+                  ) : (
+                    <span className="text-lg font-bold text-gray-700 flex justify-center">
+                      ₹ {item.price}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-2">select no of rooms</p>
+                <div className="">
+                  <select
+                    title="select"
+                    className="border p-2 rounded w-full"
+                    onChange={e => handleSelectChange(e, item._id)}
+                  >
+                    {Array.from(
+                      { length: item.roomNumbers.length + 1 },
+                      (_, i) => (
+                        <option key={i} value={i}>
+                          {i}
+                        </option>
+                      )
                     )}
-                  </td>
-                  <td className="py-4 px-4 border-r">
-                    <select
-                      title="select"
-                      className="border p-2 rounded"
-                      onChange={e => handleSelectChange(e, item._id)}
-                    >
-                      {Array.from(
-                        { length: item.roomNumbers.length + 1 },
-                        (_, i) => (
-                          <option key={i} value={i}>
-                            {i}
-                          </option>
-                        )
-                      )}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </select>
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="py-4 flex justify-center">
             {availableRooms.length > 0 ? (
               <button

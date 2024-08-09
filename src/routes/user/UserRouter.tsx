@@ -4,6 +4,7 @@ import { ProtectedAllUserRoute, ProtectedUserRoute } from "../protectedRoutes"
 import SavedHotels from "../../pages/user/SavedHotels"
 import Notifications from "../../components/Notifications"
 import ContactUs from "../../pages/user/ContactUs"
+import AboutPage from "../../pages/user/AboutUs"
 
 const Layout = lazy(() => import("../../pages/Layout"))
 const CheckoutPage = lazy(() => import("../../pages/user/CheckoutPage"))
@@ -27,6 +28,7 @@ const UserRouter: FC = () => {
           <Route path="hotels" element={<Hotels />} />
           <Route path="hotelDetails/:id" element={<HotelDetails />} />
           <Route path="contactUs" element={<ContactUs />} />
+          <Route path="AboutUs" element={<AboutPage />} />
         </Route>
         <Route path="" element={<ProtectedUserRoute />}>
           <Route path="saved" element={<SavedHotels />} />

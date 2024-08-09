@@ -95,7 +95,8 @@ export type BookingInterface = {
   email: string
   hotelId: HotelInterface
   userId: UserInterface
-  maxPeople: number
+  maxAdults: number
+  maxChildren: number
   checkInDate: string
   checkOutDate: string
   totalDays: number
@@ -106,6 +107,7 @@ export type BookingInterface = {
   bookingId: string
   createdAt: string
   updatedAt: string
+  totalRooms:number
   __v: number
 }
 

@@ -7,7 +7,7 @@ import "react-date-range/dist/styles.css"
 import "react-date-range/dist/theme/default.css"
 import { useAppSelector } from "../../redux/store/store"
 
-const SearchBoxUser = ({ handleSearch }:any) => {
+const SearchBoxUser = ({ handleSearch }: any) => {
   const data = useAppSelector(state => state.searchingSlice)
   const [openDate, setOpenDate] = useState(false)
   const [openOptions, setOpenOptions] = useState(false)
@@ -25,8 +25,10 @@ const SearchBoxUser = ({ handleSearch }:any) => {
   const dateRef = useRef<HTMLDivElement>(null)
   const optionsRef = useRef<HTMLDivElement>(null)
 
-
-  const handleOption = (name: "adult" | "children" | "room", operation: "i" | "d") => {
+  const handleOption = (
+    name: "adult" | "children" | "room",
+    operation: "i" | "d"
+  ) => {
     setOptions(prev => {
       return {
         ...prev,
@@ -34,7 +36,6 @@ const SearchBoxUser = ({ handleSearch }:any) => {
       }
     })
   }
-
 
   const handleDateChange = (item: any) => {
     const { startDate, endDate } = item.selection
@@ -52,8 +53,7 @@ const SearchBoxUser = ({ handleSearch }:any) => {
     }
   }
 
-
-  const handleClickOutside = (event:any) => {
+  const handleClickOutside = (event: any) => {
     if (dateRef.current && !dateRef.current.contains(event.target)) {
       setOpenDate(false)
     }
@@ -70,15 +70,18 @@ const SearchBoxUser = ({ handleSearch }:any) => {
   }, [])
 
   return (
-    <div className="flex items-center space-x-4 p-4 bg-Alabaster border-blue-200 border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
+    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 p-4 bg-white border border-gray-300 shadow-lg rounded-lg md:mx-auto max-w-full md:max-w-4xl m-4  ">
       <input
         type="text"
         placeholder="Enter your destination"
         value={destination}
         onChange={e => setDestination(e.target.value)}
-        className="px-2 py-1 border border-gray-300 rounded-md"
+        className="px-2 py-1 border border-gray-300 rounded-md w-full md:w-auto"
       />
-      <div className="flex items-center space-x-2 cursor-pointer relative" ref={dateRef}>
+      <div
+        className="flex items-center space-x-2 cursor-pointer relative w-full md:w-fit border rounded-md py-2 px-3 md:border-none justify-center"
+        ref={dateRef}
+      >
         <FontAwesomeIcon icon={faCalendarDays} className="text-gray-500" />
         <span
           onClick={() => setOpenDate(!openDate)}
@@ -93,14 +96,23 @@ const SearchBoxUser = ({ handleSearch }:any) => {
               editableDateInputs={true}
               onChange={handleDateChange}
               moveRangeOnFirstSelection={false}
-              ranges={[{ startDate: dates.startDate, endDate: dates.endDate, key: 'selection' }]}
+              ranges={[
+                {
+                  startDate: dates.startDate,
+                  endDate: dates.endDate,
+                  key: "selection",
+                },
+              ]}
               className="shadow-md rounded-lg"
               minDate={new Date()}
             />
           </div>
         )}
       </div>
-      <div className="flex items-center space-x-2 cursor-pointer relative" ref={optionsRef}>
+      <div
+        className="flex items-center space-x-2 cursor-pointer md:relative w-full md:w-fit md:border-none justify-center border py-2 rounded-md"
+        ref={optionsRef}
+      >
         <FontAwesomeIcon icon={faPerson} className="text-gray-500" />
         <span
           onClick={() => setOpenOptions(!openOptions)}
@@ -169,7 +181,7 @@ const SearchBoxUser = ({ handleSearch }:any) => {
         )}
       </div>
       <button
-        className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2"
+        className="bg-blue-600 text-white font-bold rounded-lg px-4 w-full md:w-52 py-2"
         onClick={() => handleSearch(destination, options, dates)}
       >
         Search

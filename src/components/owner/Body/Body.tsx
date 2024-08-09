@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom"
 import useHotelList from "../../../hooks/owner/UseHotelList"
 import BookingChart from "../BookingChart"
 import RevenueChart from "../RevenueChart"
+import { RootState } from "../../../redux/reducer/reducer"
+import { useAppSelector } from "../../../redux/store/store"
 
 const Body:React.FC = () => {
   const { hotels } = useHotelList()
+  const user = useAppSelector((state: RootState) => state.userSlice)
+
 
   const navigate = useNavigate()
   const handleClick = (id: string) => {
@@ -17,7 +21,7 @@ const Body:React.FC = () => {
     <div className="bg-varBlueGray">
       <header className="bg-shadow rounded-3xl p-4">
         <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">Welcome, Asish!</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Welcome, {user.name}!</h1>
           <p className="mt-1 text-gray-600">
             Add your hotels and earn more
           </p>

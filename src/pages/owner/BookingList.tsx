@@ -3,9 +3,16 @@ import { OWNER_API} from "../../constants";
 import { useNavigate } from "react-router-dom";
 import { BookingInterface } from "../../types/hotelInterface";
 import { useFetchData } from '../../utils/fetcher';
+import Pagination from "../../components/Pagination";
 
 const BookingList:React.FC= () => {
   const [bookings, setBookings] = useState([]);
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const dataPerPage = 4
+  const lastPostIndex = currentPage * dataPerPage
+  const firstPostIndex = lastPostIndex - dataPerPage
+  const currentData = bookings.slice(firstPostIndex, lastPostIndex)
+
   const navigate = useNavigate();
   const { data,isError:error } = useFetchData<any>(OWNER_API + "/bookings");
 
@@ -31,7 +38,7 @@ const BookingList:React.FC= () => {
       <div className="bg-white shadow-md rounded-lg min-h-screen p-6 px-4 py-7 w-2/3 md:px-10 ">
         <h1 className="text-2xl font-semibold mb-6">Bookings</h1>
         <div className="overflow-x-auto">
-          {bookings.length > 0 ? (
+          {currentData.length > 0 ? (
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
@@ -48,7 +55,7 @@ const BookingList:React.FC= () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {bookings.map((data: BookingInterface, index) => (
+                {currentData.map((data: BookingInterface, index) => (
                   <tr key={index}>
                     <td className="py-4 whitespace-nowrap flex items-center">
                       <img
@@ -96,7 +103,21 @@ const BookingList:React.FC= () => {
             <div className="text-center py-4">No bookings yet</div>
           )}
         </div>
+
       </div>
+      <div className="mt-4 flex justify-center  fixed bottom-10">
+            {bookings.length ? (
+              <Pagination
+                currentPage={currentPage}
+                totalData={bookings.length}
+                dataPerPage={dataPerPage}
+                setCurrentPage={setCurrentPage}
+              />
+            ) : (
+              ""
+            )}
+          </div>
+      
     </div>
   );
 };

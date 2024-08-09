@@ -35,14 +35,6 @@ export default  withMT({
         White: "hsl(0, 0%, 100%)"
 
       },
-      backgroundImage: {
-        'banner-1': "url('./src/assets/images/images/banner.jpg')",
-        'banner-2': "url('./src/assets/images/images/bannner2.jpeg')",
-        'banner-3': "url('./src/assets/images/images/banner3.jpg')",
-        'chatBackground': "url('./src/assets/images/images/chatBackground.png')",
-
-
-      },
     },
 
   },

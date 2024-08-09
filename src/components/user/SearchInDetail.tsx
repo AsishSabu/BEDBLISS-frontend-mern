@@ -20,7 +20,7 @@ type datesTypes = {
   endDate: Date
 }
 
-const SearchBoxDetail = ({ id }:any) => {
+const SearchBoxDetail = ({ id }: any) => {
   const { reloadHotelDetails } = useHotelDetails(id)
   const data = useAppSelector(state => state.searchingSlice)
   const dispatch = useAppDispatch()
@@ -62,7 +62,10 @@ const SearchBoxDetail = ({ id }:any) => {
     }
   }
 
-  const handleOption = (name: "adult" | "children" | "room", operation: "i" | "d") => {
+  const handleOption = (
+    name: "adult" | "children" | "room",
+    operation: "i" | "d"
+  ) => {
     setOptions(prev => {
       return {
         ...prev,
@@ -71,10 +74,7 @@ const SearchBoxDetail = ({ id }:any) => {
     })
   }
 
-
-  const handleDateChange = (item: {
-    selection: { startDate: Date; endDate: Date }
-  }) => {
+  const handleDateChange = (item: any) => {
     const { startDate, endDate } = item.selection
     // Ensure endDate is at least one day after startDate
     if (endDate <= startDate) {
@@ -91,7 +91,7 @@ const SearchBoxDetail = ({ id }:any) => {
   }
 
   useEffect(() => {
-    const handleClickOutside = (event:any) => {
+    const handleClickOutside = (event: any) => {
       if (dateRef.current && !dateRef.current.contains(event.target)) {
         setOpenDate(false)
       }
@@ -107,7 +107,7 @@ const SearchBoxDetail = ({ id }:any) => {
   }, [])
 
   return (
-    <div className="flex items-center space-x-4 py-1 px-3 bg-Alabaster  border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
+    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 justify-between p-4 bg-white border border-gray-300 shadow-lg rounded-lg mx-auto max-w-full md:max-w-4xl">
       <div
         className="flex items-center space-x-2 cursor-pointer relative"
         ref={dateRef}
@@ -123,7 +123,7 @@ const SearchBoxDetail = ({ id }:any) => {
           <div className="absolute top-12 left-0 z-50 mt-2">
             <DateRange
               editableDateInputs={true}
-              onChange={()=>handleDateChange}
+              onChange={handleDateChange}
               moveRangeOnFirstSelection={false}
               ranges={[
                 {
@@ -139,7 +139,7 @@ const SearchBoxDetail = ({ id }:any) => {
         )}
       </div>
       <div
-        className="flex items-center space-x-2 cursor-pointer relative"
+        className="flex items-center space-x-2 cursor-pointer md:relative w-full md:w-fit md:border-none justify-center border py-2 rounded-md"
         ref={optionsRef}
       >
         <FontAwesomeIcon icon={faPerson} className="text-gray-500" />
@@ -212,7 +212,7 @@ const SearchBoxDetail = ({ id }:any) => {
         )}
       </div>
       <button
-        className="bg-blue-600 text-white font-bold rounded-lg px-4 py-1"
+        className="bg-blue-600 text-white font-bold rounded-lg px-4 w-full md:w-52 py-2"
         onClick={() => handleSearch(options, dates)}
       >
         Update

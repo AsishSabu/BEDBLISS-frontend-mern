@@ -128,6 +128,13 @@ const Hotels: React.FC = () => {
     }
   }, [searchResults]);
 
+  const truncateText = (text:string, maxLength:number) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text;
+  };
+
   return (
     <div className="md:px-40 lg:px-60 pt-8">
       <SearchBoxUser handleSearch={handleSearchFunction} />
@@ -274,7 +281,7 @@ const Hotels: React.FC = () => {
                   </h5>
                   <p className="text-xs text-gray-500">{hotel?.destination}</p>
                   <p className="mb-4 text-base text-gray-600">
-                    {hotel?.description}
+                    {truncateText(hotel?.description,130)}
                   </p>
                 </div>
               </div>
