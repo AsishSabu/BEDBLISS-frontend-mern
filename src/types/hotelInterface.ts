@@ -108,6 +108,8 @@ export type BookingInterface = {
   createdAt: string
   updatedAt: string
   totalRooms:number
+  review:boolean
+  report:boolean
   __v: number
 }
 

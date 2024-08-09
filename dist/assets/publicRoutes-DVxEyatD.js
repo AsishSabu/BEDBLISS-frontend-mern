@@ -1,1 +1,0 @@
-import{s as a,j as e,N as u,o as s}from"./index-BbR1353G.js";const n=()=>{const{isAuthenticated:r,role:t}=a(o=>o.userSlice);return t==="user"?r?e.jsx(u,{to:"/user",replace:!0}):e.jsx(s,{}):t==="owner"?r?e.jsx(u,{to:"/owner",replace:!0}):e.jsx(s,{}):t==="admin"?r?e.jsx(u,{to:"/admin",replace:!0}):e.jsx(s,{}):e.jsx(s,{})};export{n as P};

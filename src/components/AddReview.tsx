@@ -9,16 +9,16 @@ interface ModalProps {
   isOpen: boolean
   onClose: () => void
   id: any
+  bookingId:any
 }
 
-const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
+const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id ,bookingId}) => {
   const [description, setDescription] = useState("")
   const [rating, setRating] = useState(0)
   const [images, setImages] = useState<{ file: File; url: string }[]>([])
   const [descriptionError, setDescriptionError] = useState(false)
   const [ratingError, setRatingError] = useState(false)
   const [uploading, setUploading] = useState(false)
-  console.log(id, "hotel id..........................")
 
   const modalRef = useRef<HTMLDivElement>(null)
 
@@ -93,6 +93,7 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
           rating,
           description,
           imageUrls: images.map(img => img.url),
+          bookingId
         },
         {
           headers: {

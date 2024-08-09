@@ -204,6 +204,7 @@ const BookingDetails: React.FC = () => {
                 isOpen={showReviewModal}
                 onClose={() => setShowReviewModal(false)}
                 id={booking.hotelId._id}
+                bookingId={booking._id}
               />
 
               <ReportModal
@@ -246,7 +247,7 @@ const BookingDetails: React.FC = () => {
               <img src={chatImg} className="h-10" alt="user" />
               <span>Chat With Owner</span>
             </div>
-            {booking &&
+            {booking &&!booking.review&&
             new Date(booking.checkOutDate).getTime() < Date.now() ? (
               <div
                 onClick={showReview}
@@ -258,7 +259,7 @@ const BookingDetails: React.FC = () => {
             ) : (
               ""
             )}
-            {booking &&
+            {booking &&!booking.report&&
             new Date(booking.checkOutDate).getTime() < Date.now() ? (
               <div
                 onClick={showReport}
